@@ -41,7 +41,18 @@ pipeline {
                 }
             }
             steps {
+<<<<<<< HEAD
                echo "SIN DESPLIEGUE"
+=======
+                withMaven(
+                    mavenSettingsConfig: 'MavenJenkinsSettings') {
+                        withCredentials([usernamePassword(credentialsId: 'emssa-dev-usrpass', usernameVariable: 'USRNM', passwordVariable: 'USRPASS')]){
+                        sh './mvnw clean install -Pdeploy -Dusername.deploy=${USRNM} -Dpassword.deploy=${USRPASS} \
+                        -Dhostname.deploy=192.168.2.31 -Dport.deploy=9990  -Dcas.server=https://desarrollo-emssanar.conexia.com.co:8443/cas \
+                        -Dcas.server.verifier=https://desarrollo-emssanar.conexia.com.co:8443/cas -Dhost.verifier=192.168.2.31 \
+                        -Dprincipal.server=https://desarrollo-emssanar.conexia.com.co:8443 -Dserver-web-service-negociacion=https://desarrollo-emssanar.conexia.com.co:8443'}
+                    }
+>>>>>>> e41a9b98a4d226aa890338087a7a6861f12fb498
             }
         }
     }
