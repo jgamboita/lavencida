@@ -1,14 +1,7 @@
 pipeline {
     agent any
-    stages {
-        
-       stage('Send Email') {
-            steps {
-            node ('master'){
-                echo 'Send Email'
-            }
-        }
-        }
+    stages {       
+       
         stage('Prepare') {
             steps {
                 sh 'chmod +x ./mvnw'
@@ -17,60 +10,28 @@ pipeline {
         stage('Compile') {
             steps {
                 withMaven(
-                    mavenSettingsConfig: 'MavenJenkinsSettings') {
-                    sh './mvnw clean package -DskipTests'
+                    mavenSettingsConfig: 'apache-maven-3.6.3') {
+                    sh './mvn clean package -DskipTests'
+                 }
+            }
+        }
+        
+        stage('Compile') {
+            steps {
+                withMaven(
+                    mavenSettingsConfig: 'apache-maven-3.6.3') {
+                    sh './mvn clean compile'
                  }
             }
         }
         stage('Test') {
             steps {
                 withMaven(
-                    mavenSettingsConfig: 'MavenJenkinsSettings') {
-                    sh './mvnw verify'
+                    mavenSettingsConfig: 'apache-maven-3.6.3') {
+                    sh './mvn verify'
                 }
             }
         }
-        stage('SonarQube analysis') {
-            when {
-                anyOf {
-                    branch 'develop'; branch 'master'; branch 'feature/*'
-                }
-            }
-            steps {
-                withSonarQubeEnv('conexia-sonar') {
-                      sh './mvnw sonar:sonar'
-                }
-            }
-        }
-        stage('Deploy') {
-            when {
-                anyOf {
-                    branch 'develop'
-                }
-            }
-             steps {
-                withMaven(
-                    mavenSettingsConfig: 'MavenJenkinsSettings') {
-                        withCredentials([usernamePassword(credentialsId: 'emssa-dev-usrpass', usernameVariable: 'USRNM', passwordVariable: 'USRPASS')]){ 
-                        
-                        
-               echo "SIN DESPLIEGUE"}
-                   
-
-
-             }
-            }
-        }
-    }
-    post {
-         always { 
-            echo 'I will always say Hello!'
-        }
-        aborted {
-            echo 'I was aborted'
-        }
-        failure {
-           echo 'falló'
-        }
+        
     }
 }
