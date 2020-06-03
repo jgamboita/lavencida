@@ -41,7 +41,7 @@ pipeline {
                 }
             }
             steps {
-               echo "PARA DESPLEGAR"
+               echo "PARA DESPLEGAR"}
         }
     }
     post {
