@@ -7,7 +7,7 @@ pipeline {
                 sh 'chmod +x ./mvnw'
             }
         }
-        stage('Compile') {
+        stage('package') {
             steps {
                 withMaven(
                     mavenSettingsConfig: 'apache-maven-3.6.3') {
