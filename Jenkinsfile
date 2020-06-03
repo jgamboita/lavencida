@@ -63,9 +63,16 @@ pipeline {
         }
     }
     post {
-        always{
-          echo 'Paso final del POST'
-          
+         always { 
+            echo 'I will always say Hello!'
+        }
+        aborted {
+            echo 'I was aborted'
+        }
+        failure {
+            mail to: 'aa@bb.cc',
+            subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+            body: "Something is wrong with ${env.BUILD_URL}"
         }
     }
 }
