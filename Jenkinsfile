@@ -41,7 +41,8 @@ pipeline {
                 }
             }
             steps {
-               echo "PARA DESPLEGAR"}
+                echo "SIN DEPLOY"
+            }
         }
     }
     post {
