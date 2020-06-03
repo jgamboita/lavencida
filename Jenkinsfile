@@ -1,6 +1,14 @@
 pipeline {
     agent any
     stages {
+        
+       stage('Send Email') {
+            steps {
+            node ('master'){
+                echo 'Send Email'
+            }
+        }
+        }
         stage('Prepare') {
             steps {
                 sh 'chmod +x ./mvnw'
