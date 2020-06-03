@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui">
+
+	<ui:composition template="/template/inner.xhtml">
+	 	<ui:define name="title">
+            RIAS
+        </ui:define>
+		<ui:define name="content">
+			<h:form id = "formBandejaRias">
+				<p:panel id = "pnlConsultaRiasl">
+
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.form_label_rias_titulo}"
+								styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+					<div class="form-group">
+
+						<div class="row">
+							<div class="col-lg-3">
+								<p:outputLabel  value="Ruta Integrada de Salud" />
+
+								<p:selectCheckboxMenu id="listRias" required="true"
+									requiredMessage="#{i18n.form_label_required}"
+									styleClass="anchoInput" label="Seleccionar..."
+									converter="omnifaces.SelectItemsConverter"
+									value="#{bandejaConsultaRiasController.riasSeleccionados}">
+									<f:selectItems
+									value="#{bandejaConsultaRiasController.rias}"
+									var="rias" itemLabel="#{rias.descripcion}"
+									itemValue="#{rias}"
+									/>
+
+								</p:selectCheckboxMenu>
+
+							</div>
+
+							<div class="col-lg-offset-1 col-lg-2">
+
+								<p:outputLabel value="Regional" />
+
+								<p:selectOneMenu id="listRegional"  required="true"
+									requiredMessage="#{i18n.form_label_required}"
+									styleClass="anchoInput"  label="Seleccionar..."
+									converter="omnifaces.SelectItemsConverter"
+									value="#{bandejaConsultaRiasController.regionalDto}">
+									<f:selectItem itemLabel="Seleccionar..."/>
+									<f:selectItems
+									value="#{bandejaConsultaRiasController.regionales}"
+									var="regional" itemLabel="#{regional.descripcion}"
+									itemValue="#{regional}"
+									/>
+
+								</p:selectOneMenu>
+
+							</div>
+
+							<div class="col-lg-offset-1 col-lg-2">
+
+								<p:outputLabel value="Departamento" />
+
+								<p:selectOneMenu id="listDepartamento"
+									styleClass="anchoInput"  converter="omnifaces.SelectItemsConverter"
+									value="#{bandejaConsultaRiasController.departamento}">
+									<p:ajax update="listMunicipio" listener="#{bandejaConsultaRiasController.buscarMunicipios}"/>
+									<f:selectItem itemLabel="Seleccionar..."/>
+									<f:selectItems value="#{bandejaConsultaRiasController.departamentos}"
+									var="departamento"
+									itemLabel="#{departamento.descripcion}"
+									itemValue="#{departamento}"/>
+								</p:selectOneMenu>
+
+							</div>
+
+							<div class="col-lg-offset-1 col-lg-2">
+
+								<p:outputLabel value="Municipio" />
+
+								<p:selectOneMenu id="listMunicipio"
+									styleClass="anchoInput"  converter="omnifaces.SelectItemsConverter"
+									value="#{bandejaConsultaRiasController.municipioDto}">
+
+									<f:selectItem itemLabel="Seleccionar..."/>
+									<f:selectItems value="#{bandejaConsultaRiasController.municipios}"
+									var="municipio" itemLabel="#{municipio.descripcion}"
+									itemValue="#{municipio}"/>
+								</p:selectOneMenu>
+
+							</div>
+						</div>
+						<br/>
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="ui-grid-col-12 text-right">
+									<p:commandButton value="#{i18n.form_label_button_buscar}"
+										styleClass="btn btn-sm btn-info" icon="fa fa-search"
+										iconPos="left"
+										actionListener="#{bandejaConsultaRiasController.buscarRutaSalud}"
+										update="rutaSaludTab" />
+									<p:commandButton value="#{i18n.form_label_button_limpiar}"
+										immediate="true" styleClass="btn btn-sm btn-warning"
+										actionListener="#{bandejaConsultaRiasController.limpiar}"
+										icon="fa fa-trash-o" iconPos="left">
+									</p:commandButton>
+								</div>
+							</div>
+					</div>
+				</div>
+				<p:separator/>
+					<div class="form-group">
+						<p:toolbar>
+						<p:toolbarGroup align="right">
+							<div class="col-lg-11">
+								<p:outputLabel class="col-lg-6 text-right"
+									for="gestionRutaSalus"
+									value="Visualización Cups Ruta Salud" />
+								<div class="col-lg-2">
+									<p:selectOneMenu id = "gestionRutaSalus"
+									value="#{bandejaConsultaRiasController.opcionFiltroBandeja}">
+									<p:ajax update="formBandejaRias:rutaSaludTab" event="change" listener="#{bandejaConsultaRiasController.gestionarCupsBandejaRias(bandejaConsultaRiasController.opcionFiltroBandeja)}"/>
+										<f:selectItem itemLabel="Seleccionar..."  itemValue="0"/>
+										<f:selectItem itemLabel="Visualizar Todos"  itemValue="1"/>
+										<f:selectItem itemLabel="Visualizar cups contratados" itemValue="2" />
+										<f:selectItem itemLabel="Visualizar cups no contratados" itemValue="3"/>
+									</p:selectOneMenu>
+								</div>
+							</div>
+						</p:toolbarGroup>
+						</p:toolbar>
+
+						<p:dataTable id="rutaSaludTab" var="ria"
+							value="#{bandejaConsultaRiasController.rutaSalud}"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+							paginator="true" paginatorPosition="bottom"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15">
+
+							<f:facet name="footer">
+								<p:outputPanel style="text-align: right">
+									<h:commandLink>
+										<h:outputText class="fa fa-file-excel-o fa-2x success" />
+										<p:dataExporter type="xlsx" target="rutaSaludTab" fileName="ReporteRias" />
+									</h:commandLink>
+
+									<h:commandLink>
+										<h:outputText class="fa fa-file-pdf-o fa-2x success" />
+										<p:dataExporter type="pdf" target="rutaSaludTab"
+											fileName="ReporteRias" />
+									</h:commandLink>
+
+									<h:commandLink>
+										<h:outputText class="fa fa-file-o fa-2x success" />
+										<p:dataExporter type="csv" target="rutaSaludTab"
+											fileName="ReporteRias" />
+									</h:commandLink>
+								</p:outputPanel>
+							</f:facet>
+
+							<p:column headerText="#{i18n.tab_ria_descripcion_ruta}"
+								styleClass="text-center">
+								<h:outputText value="#{ria.descripcion}" />
+							</p:column>
+							<p:column headerText="#{i18n.tab_ria_servico}"
+								styleClass="text-center">
+								<h:outputText
+									value="#{ria.procedimiento.servicioSalud.codigo} - #{ria.procedimiento.servicioSalud.nombre}" />
+							</p:column>
+							<p:column headerText="#{i18n.tab_ria_cups}"
+								styleClass="text-center">
+								<h:outputText value="#{ria.procedimiento.cups}" />
+							</p:column>
+							<p:column headerText="#{i18n.tab_ria_codigo_cliente}"
+								styleClass="text-center">
+								<h:outputText value="#{ria.procedimiento.codigoCliente}" />
+							</p:column>
+							<p:column headerText="#{i18n.tab_ria_descripcion}"
+								styleClass="text-center">
+								<h:outputText value="#{ria.procedimiento.descripcion}" />
+							</p:column>
+							<p:column headerText="#{i18n.tab_ria_numero_documento}"
+								styleClass="text-center">
+								<h:outputText
+									value="#{ria.negociacion.prestador.numeroDocumento}" />
+							</p:column>
+							<p:column headerText="#{i18n.tab_ria_nombre_prestador}"
+								styleClass="text-center">
+								<h:outputText value="#{ria.negociacion.prestador.nombre}" />
+							</p:column>
+							<p:column headerText="#{i18n.tab_ria_nombre_sede}"
+								styleClass="text-center">
+								<h:outputText
+									value="#{ria.negociacion.sedePrincipal.nombreSede}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tab_ria_municipio}"
+								styleClass="text-center">
+								<h:outputText
+									value="#{ria.areaCobertura.municipioDto.descripcion}" />
+							</p:column>
+
+						</p:dataTable>
+					</div>
+
+				</p:panel>
+			</h:form>
+		</ui:define>
+    </ui:composition>
+</f:view>

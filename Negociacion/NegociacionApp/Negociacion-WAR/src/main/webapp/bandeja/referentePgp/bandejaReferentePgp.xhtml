@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" />
+    <ui:composition template="/template/inner.xhtml">
+	<ui:define name="title">
+			<h:outputLabel value= "Bandeja Referente PGP" />
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form>
+			<p:panel id="panelFiltros">
+					<div class="form-group">
+						<!-- row -->
+						<div class="row">
+
+							<div class="col-lg-3">
+								<p:outputLabel value="Regimen" />
+
+								<p:selectOneMenu id="listRegimen"
+									styleClass="anchoInput" label="Seleccionar..."
+									converter="omnifaces.SelectItemsConverter"
+									value="#{bandejaReferentePgpController.filtro.regimen}">
+									<f:selectItem itemLabel="Seleccionar..." />
+									<f:selectItems
+										value="#{bandejaReferentePgpController.regimenes}"
+										var="regimen" itemLabel="#{regimen}"
+										itemValue="#{regimen}" />
+
+								</p:selectOneMenu>
+							</div>
+
+
+							<div class="col-lg-offset-1 col-lg-3">
+								<p:outputLabel value="Tipo Filtro" />
+
+								<p:selectOneMenu id="listFiltroReferente" styleClass="anchoInput"
+									converter="omnifaces.SelectItemsConverter"
+									value="#{bandejaReferentePgpController.filtro.filtroReferente}">
+									<f:selectItem itemLabel="Seleccionar..." />
+									<f:selectItems
+										value="#{bandejaReferentePgpController.filtroReferente}"
+										var="referente" itemLabel="#{referente.descripcion}"
+										itemValue="#{referente}" />
+								</p:selectOneMenu>
+							</div>
+
+
+							<div class="col-lg-offset-1 col-lg-3">
+								<p:outputLabel for="numeroReferente"
+									value="Número Referente" />
+								<p:message for="numeroReferente" />
+								<p:inputText id="numeroReferente"
+									maxlength="5" styleClass="form-control input-sm"
+									value="#{bandejaReferentePgpController.filtro.numeroReferente}">
+									<!-- Validación de solo número -->
+                                    <f:convertNumber integerOnly="true" />
+								</p:inputText>
+							</div>
+
+						</div>
+
+					</div>
+					<!-- end row -->
+
+					<div class="row">
+						<div class="col-lg-7">
+							<p:outputLabel for="descripcionReferente"
+								value="Descripción Referente" />
+							<p:message for="descripcionReferente" />
+							<p:inputText id="descripcionReferente"
+								validatorMessage="#{i18n.form_label_validar_caracteresConBasicos_msg}"
+								value="#{bandejaReferentePgpController.filtro.descripcion}"
+								maxlength="50" styleClass="form-control input-sm">
+								<f:validateRegex pattern="#{i18n.form_label_validar_caracteresConBasicos}" />
+							</p:inputText>
+						</div>
+						<div class="col-lg-offset-1 col-lg-3">
+							<p:outputLabel for="tiposTecnologias"
+								value="Tipo Tecnologia" />
+							<p:selectManyMenu id="tiposTecnologias" showCheckbox="true" styleClass="anchoInput">
+								 <f:selectItems
+                                        value="#{bandejaReferentePgpController.tiposTecnologias}"
+                                        var="tipoTecnologia" itemValue="#{tipoTecnologia}"
+                                        itemLabel="#{i18n[cnx:enum_key(tipoTecnologia)]}" />
+							</p:selectManyMenu>
+						</div>
+					</div>
+
+					<br/>
+
+					<div class="row">
+						<div class="col-lg-12">
+							<p:commandButton value="Buscar"
+								update="tablaRefentePgp" process = "@all"
+                                styleClass="btn btn-sm btn-info" icon="fa fa-search"
+                                iconPos="left"/>
+                            <p:commandButton value="Limpiar"
+								immediate = "true"
+								styleClass="btn btn-sm btn-warning" icon="fa fa-trash-o"
+                                iconPos="left"/>
+							<p:commandButton value="Crear Referente"
+								immediate="true" actionListener="#{bandejaReferentePgpController.loadViewGestionarPgp}"
+								styleClass="btn btn-sm btn-success" icon="fa fa-tasks"
+								iconPos="left">
+							</p:commandButton>
+						</div>
+					</div>
+
+					<p:separator />
+
+					<p:dataTable id="tablaRefentePgp" var="referente"
+                       emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                       paginator="true" paginatorPosition="bottom"
+                       value="#{bandejaReferentePgpController}"
+                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                       rowsPerPageTemplate="5,10,15" widgetVar="prestadoresTable"
+                       lazy="true">
+
+                        <p:ajax event="page" />
+                        <p:ajax event="sort" />
+                        <p:ajax event="rowSelectCheckbox" />
+                        <p:ajax event="filter" />
+
+                        <p:column headerText="No."
+                        filterBy="#{referente.id}"
+                        filterMatchMode="contains" filterStyleClass="anchoInput"
+                        styleClass="text-center">
+
+                        	<p:outputLabel value="#{referente.id}"/>
+
+                        </p:column>
+
+						<p:column headerText="Regimen"
+							filterBy="#{referente.regimen.descripcion}"
+                       	 	filterMatchMode="contains" filterStyleClass="anchoInput"
+                        	styleClass="text-center">
+
+							<p:outputLabel value="#{referente.regimen.descripcion}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Nombre Referente"
+                        filterBy="#{referente.descripcion}"
+                        filterMatchMode="contains" filterStyleClass="anchoInput"
+                        styleClass="text-center">
+
+							<p:outputLabel value="#{referente.descripcion}"/>
+                        </p:column>
+
+                        <p:column headerText="Tipo "
+                        filterBy="#{referente.filtroReferente.descripcion}"
+                        filterMatchMode="contains" filterStyleClass="anchoInput"
+                        styleClass="text-center">
+
+                        	<p:outputLabel value="#{referente.filtroReferente.descripcion}"/>
+
+                        </p:column>
+
+						<p:column headerText="Estado Referente "
+                        filterBy="#{referente.estadoReferente.descripcion}"
+                        filterMatchMode="contains" filterStyleClass="anchoInput"
+                        styleClass="text-center">
+
+                        	<p:outputLabel value="#{referente.estadoReferente.descripcion}"/>
+
+                        </p:column>
+
+                        <p:column headerText="Acciones" styleClass="text-center">
+
+							<p:commandButton id="btnVerReferente" icon="fa fa-gear"
+								alt="Ver Referente" title="Ver Referente"
+								process="@this" actionListener="#{bandejaReferentePgpController.loadViewVerReferente(referente.id)}"
+								oncomplete="window.location.href = './gestionReferentePgp'"  />
+
+							<p:commandButton id="btnEliminarReferente" icon="fa fa-ban"
+								alt="#{i18n.bandeja_prestador_tabla_alt_eliminar_referente}"
+								title="#{i18n.bandeja_prestador_tabla_alt_eliminar_referente}"
+								action="#{bandejaReferentePgpController.eliminarReferentePgp(referente.id)}"
+                                ajax="true"
+                                process="@this"
+                                update="tablaRefentePgp"/>
+
+							<p:commandButton id="btnHabilitarReferente" icon="fa fa-unlock"
+								alt="Habilitar Referente"
+								title="Habilitar Referente"
+								process="@this"
+								action="#{bandejaReferentePgpController.habilitarReferente(referente.id)}"
+								update="tablaRefentePgp"
+								rendered="#{referente.estadoReferente eq 'FINALIZADO' }"
+								/>
+
+						</p:column>
+                </p:dataTable>
+
+
+           </p:panel>
+		</h:form>
+	</ui:define>
+    </ui:composition>
+</f:view>

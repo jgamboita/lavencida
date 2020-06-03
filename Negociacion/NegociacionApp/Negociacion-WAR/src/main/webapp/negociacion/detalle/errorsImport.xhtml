@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+
+	<h:form id="formErrorsImport">
+		<p:outputPanel id="panelErrorsImport"  rendered="#{not empty negociacionPaqueteDetalleSSController.listErrors}">
+		 <h:outputLabel  value="#{i18n.form_label_importar_errores_tecnologia}" />  
+			<p:dataTable id="tableErrorsImport"
+				value="#{negociacionPaqueteDetalleSSController.listErrors}"
+				var="error" paginator="true" paginatorPosition="bottom"
+				style="font-size:10px;"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink}  {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,20" emptyMessage="Sin Registros...">
+				<p:column headerText="Código Tecnología">
+					<h:outputText value="#{error.codigoTecnologia}" />
+				</p:column>
+				<p:column headerText="Campo">
+					<h:outputText value="#{error.campo}" />
+				</p:column>
+				<p:column headerText="Error">
+					<h:outputText value="#{error.error}" />
+				</p:column>
+			</p:dataTable>
+		</p:outputPanel>
+		<p:outputPanel id="panelErrorsAnexos"  rendered="#{not empty negociacionPaqueteDetalleSSController.listErrorsAnexos}">
+		<h:outputLabel value="#{i18n.form_label_importar_errores_anexos}" />
+			<p:dataTable id="tableErrosAnexos" dynamic="true"
+				value="#{negociacionPaqueteDetalleSSController.listErrorsAnexos}"
+				var="error" rows="5"
+					paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="2,5,10,15" emptyMessage="Sin Registros...">
+				<p:column headerText="Tipo Anexo" width="20%">
+					<h:outputText value="#{error.tipoAnexo}" />
+				</p:column>
+				<p:column headerText="Detalle">
+					<h:outputText style="font-size:9px;" value="#{error.detalle}" />
+				</p:column>
+				<p:column headerText="Error">
+					<h:outputText value="#{error.error}" />
+				</p:column>
+			</p:dataTable>
+		</p:outputPanel>
+	</h:form>
+
+</f:view>

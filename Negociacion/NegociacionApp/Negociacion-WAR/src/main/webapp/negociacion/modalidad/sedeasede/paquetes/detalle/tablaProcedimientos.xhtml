@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:panelGroup id="panelProcedimientos">
+        <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption">
+				<p:outputLabel value="#{i18n.tab_procedimiento_paquete_buscar_cups}" styleClass="titulo-bold"/>
+			</span>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <p:outputLabel for="codigoTecnologiaEmssanar" value="#{i18n.tab_procedimiento_paquete_codigo_emssanar}"
+                               styleClass="col-lg-2"/>
+                <p:inputText id="codigoTecnologiaEmssanar" styleClass="input-sm col-lg-4"
+                             value="#{negociacionPaqueteDetalleSSController.filtroProcedimientoDto.codigoCliente}"/>
+                <p:outputLabel for="descripcionTecnologiaEmssanar"
+                               value="#{i18n.tab_procedimiento_paquete_descripcion_cups}"
+                               styleClass="col-lg-2"/>
+                <p:inputText id="descripcionTecnologiaEmssanar" styleClass="input-sm col-lg-4"
+                             value="#{negociacionPaqueteDetalleSSController.filtroProcedimientoDto.descripcion}"/>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <p:outputLabel for="tipoProcedimiento" value="#{i18n.tab_procedimiento_paquete_tipo_cups}"
+                               styleClass="col-lg-2"/>
+
+                <h:selectOneMenu id="tipoProcedimiento" class="col-lg-4"
+                                 value="#{negociacionPaqueteDetalleSSController.opcionesTipoProcedimiento}">
+                    <f:selectItem itemLabel="#{i18n.tab_procedimiento_paquete_todos}" itemValue="0"/>
+                    <f:selectItem itemLabel="#{i18n.tab_procedimiento_paquete_no_pos}" itemValue="1"/>
+                    <f:selectItem itemLabel="#{i18n.tab_procedimiento_paquete_pos}" itemValue="2"/>
+                </h:selectOneMenu>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <div class="col-lg-10"></div>
+                <p:commandButton id="botonBuscarProcedimientos"
+                                 value="#{i18n.form_label_button_buscar}"
+                                 process="panelProcedimientos" styleClass="btn btn-sm btn-info"
+                                 icon="fa fa-search" iconPos="left"
+                                 actionListener="#{negociacionPaqueteDetalleSSController.buscarProcedimientos}"
+                                 update="procedimientosPaqueteDlgTabla"/>
+            </div>
+        </div>
+    </h:panelGroup>
+    <div class="widget-header" style="margin-top: 20px;">
+		<span class="widget-caption">
+			<p:outputLabel value="#{i18n.tab_procedimiento_paquete_title_cups_asociados}" styleClass="titulo-bold"/>
+		</span>
+    </div>
+
+    <div class="widget-header" style="margin-top: 20px;">
+        <span class="widget-caption"> Tecnologías en Paquete Básico </span>
+    </div>
+
+    <p:dataTable id="procedimientosPaquete" var="procedimiento"
+                 value="#{negociacionPaqueteDetalleSSController.procedimientosPaquetePrestador}"
+                 style="margin: 0 auto" scrollable="true"
+                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                 paginator="true" paginatorPosition="bottom"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15">
+
+        <p:columnGroup type="header">
+            <p:row>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_procedimiento_paquete_codigo_emssanar}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{procedimiento.procedimiento.codigoCliente}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_procedimiento_paquete_descripcion_cups}"
+                          styleClass="text-center col-lg-8"
+                          filterBy="#{procedimiento.procedimiento.descripcion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_cantidad_maxima}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{procedimiento.cantidadMaxima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_cantidad_minima}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{procedimiento.cantidadMinima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_observacion}"
+                          styleClass="text-center col-lg-4"
+                          filterBy="#{procedimiento.observacion}" filterMatchMode="contains"
+                          filterStyleClass="anchoInput"/>
+                <p:column colspan="3"
+                          headerText="#{i18n.tab_tecnologia_paquete_ingreso}"
+                          styleClass="text-center col-lg-7"/>
+                <p:column colspan="3"
+                          headerText="#{i18n.tab_tecnologia_paquete_frecuencia}"
+                          styleClass="text-center col-lg-7"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_principal}"
+                          styleClass="text-center col-lg-2"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_en_negociacion}"
+                          styleClass="text-center col-lg-2"/>
+            </p:row>
+            <p:row>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_aplica}"
+                          colspan="2" styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}"
+                          styleClass="text-center col-lg-2"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_unidad}"
+                          colspan="2" styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}"
+                          styleClass="text-center col-lg-2"/>
+            </p:row>
+        </p:columnGroup>
+
+        <p:column>
+            <h:outputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                          value="#{procedimiento.procedimiento.codigoCliente}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                          value="#{procedimiento.procedimiento.descripcion}"/>
+        </p:column>
+
+        <p:column>
+            <p:inputText class="text-center col-lg-12"
+                         style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         value="#{procedimiento.cantidadMaxima}" maxlength="5" label="-"
+                         validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         disabled="#{!procedimiento.enNegociacion}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaquete"/>
+            </p:inputText>
+        </p:column>
+
+        <p:column>
+            <p:inputText class="text-center col-lg-12"
+                         style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         value="#{procedimiento.cantidadMinima}" maxlength="5" label="-"
+                         validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         disabled="#{!procedimiento.enNegociacion}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaquete"/>
+            </p:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12"
+                         style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         value="#{procedimiento.observacion}"
+                         disabled="#{!procedimiento.enNegociacion}" maxlength="100"
+                         validatorMessage="#{i18n.tab_tecnologia_observacion}">
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaquete"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu class="text-center col-lg-12"
+                             style="#{procedimiento.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}"
+                             disabled="#{!procedimiento.enNegociacion}"
+                             value="#{procedimiento.ingresoAplica}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems
+                        value="#{negociacionPaqueteDetalleSSController.opcionesIngresoAplica}"
+                        var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change" update="procedimientosPaquete"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12"
+                            style="#{!(procedimiento.estado eq 1) ? 'color:red;' : 'color:black;'}"
+                            disabled="#{!procedimiento.enNegociacion}"
+                            value="#{procedimiento.ingresoCantidad}" label="-" maxlength="5"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaquete"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu class="text-center col-lg-12"
+                             style="#{procedimiento.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}"
+                             disabled="#{!procedimiento.enNegociacion}"
+                             value="#{procedimiento.frecuenciaUnidad}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems
+                        value="#{negociacionPaqueteDetalleSSController.opcionesFrecuenciaUnidad}"
+                        var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change" update="procedimientosPaquete"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12"
+                            style="#{!(procedimiento.estado eq 1) ? 'color:red;' : 'color:black;'}"
+                            disabled="#{!procedimiento.enNegociacion}"
+                            value="#{procedimiento.frecuenciaCantidad}"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaquete"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                          value="#{procedimiento.principalTexto}"/>
+        </p:column>
+
+        <p:column>
+            <p:selectBooleanCheckbox value="#{procedimiento.enNegociacion}"
+                                     style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}">
+                <p:ajax
+                        update="formTecnologiasTabs:tecnologiaTabs:procedimientosPaqueteDlgTabla formTecnologiasTabs:tecnologiaTabs:procedimientosPaquete"
+                        listener="#{negociacionPaqueteDetalleSSController.gestionarProcedimientoPaqueteBasico}"
+                        immediate="true"/>
+                <f:attribute name="procedimiento" value="#{procedimiento}"/>
+            </p:selectBooleanCheckbox>
+        </p:column>
+    </p:dataTable>
+
+    <p:growl id="growlProcedimientos" life="2000"/>
+
+    <div class="widget-header" style="margin-top: 20px;">
+        <span class="widget-caption"> Tecnologías IPS </span>
+    </div>
+
+    <p:dataTable id="procedimientosPaqueteIps" var="procedimiento"
+                 value="#{negociacionPaqueteDetalleSSController.paqueteProcedimientoNegociacion}"
+                 widgetVar="procedimientosPaqueteIpsTable" style="margin: 0 auto"
+                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                 paginator="true" paginatorPosition="bottom"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15">
+        <p:columnGroup type="header">
+            <p:row>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_procedimiento_paquete_codigo_emssanar}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{procedimiento.procedimiento.codigoCliente}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_procedimiento_paquete_descripcion_cups}"
+                          styleClass="text-center col-lg-8"
+                          filterBy="#{procedimiento.procedimiento.descripcion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_cantidad_maxima}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{procedimiento.cantidadMaxima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_cantidad_minima}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{procedimiento.cantidadMinima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.tab_tecnologia_paquete_observacion}"
+                          styleClass="text-center col-lg-4"
+                          filterBy="#{procedimiento.observacion}" filterMatchMode="contains"
+                          filterStyleClass="anchoInput"/>
+                <p:column colspan="3"
+                          headerText="#{i18n.tab_tecnologia_paquete_ingreso}"
+                          styleClass="text-center col-lg-7"/>
+                <p:column colspan="3"
+                          headerText="#{i18n.tab_tecnologia_paquete_frecuencia}"
+                          styleClass="text-center col-lg-7"/>
+                <p:column rowspan="2"
+                          headerText="#{i18n.form_label_button_eliminar}"
+                          styleClass="text-center col-lg-2"/>
+            </p:row>
+            <p:row>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_aplica}"
+                          colspan="2" styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}"
+                          styleClass="text-center col-lg-2"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_unidad}"
+                          colspan="2" styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_title_ips}"
+                          styleClass="text-center col-lg-2"/>
+            </p:row>
+        </p:columnGroup>
+
+        <p:column>
+            <h:outputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                          value="#{procedimiento.procedimiento.codigoCliente}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                          value="#{procedimiento.procedimiento.descripcion}"/>
+        </p:column>
+
+        <p:column>
+            <h:inputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         class="text-center col-lg-12"
+                         value="#{procedimiento.cantidadMaxima}" label="-" maxlength="5"
+                         validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+        <p:column>
+            <h:inputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         class="text-center col-lg-12"
+                         value="#{procedimiento.cantidadMinima}" label="-" maxlength="5"
+                         validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+
+        <p:column>
+            <h:inputText style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         class="text-center col-lg-12"
+                         value="#{procedimiento.observacion}" maxlength="100"
+                         validatorMessage="#{i18n.tab_tecnologia_observacion}">
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu
+                    style="#{procedimiento.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}"
+                    class="text-center col-lg-12"
+                    value="#{procedimiento.ingresoAplica}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems
+                        value="#{negociacionPaqueteDetalleSSController.opcionesIngresoAplica}"
+                        var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaqueteIps"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                            class="text-center col-lg-12"
+                            value="#{procedimiento.ingresoCantidad}" label="-" maxlength="5"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaqueteIps"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu
+                    style="#{procedimiento.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}"
+                    class="text-center col-lg-12"
+                    value="#{procedimiento.frecuenciaUnidad}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems
+                        value="#{negociacionPaqueteDetalleSSController.opcionesFrecuenciaUnidad}"
+                        var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaqueteIps"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber style="#{procedimiento.estado != 1 ? 'color:red;' : 'color:black;'}"
+                            class="text-center col-lg-12"
+                            value="#{procedimiento.frecuenciaCantidad}" label="-" maxlength="5"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaProcedimiento(procedimiento)}"
+                        update="procedimientosPaqueteIps"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column>
+            <p:commandButton icon="ui-icon-trash" title="Eliminar"
+                             process="@this"
+                             actionListener="#{negociacionPaqueteDetalleSSController.eliminarProcedimiento}"
+                             update="@form">
+                <f:attribute name="procedimientoBoton" value="#{procedimiento}"/>
+            </p:commandButton>
+        </p:column>
+    </p:dataTable>
+
+    <p:dialog header="Agregar Procedimientos"
+              widgetVar="agregarProcedimientosDlg" modal="true" width="80%"
+              height="80%">
+        <p:dataTable id="procedimientosPaqueteDlgTabla" var="procedimiento"
+                     value="#{negociacionPaqueteDetalleSSController.procedimientosVentanaModal}"
+                     widgetVar="procedimientosPaqueteTable" style="margin: 0 auto"
+                     emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="10"
+                     paginator="true" paginatorPosition="bottom" scrollable="true"
+                     scrollHeight="250"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,15"
+                     selection="#{negociacionPaqueteDetalleSSController.procedimientosSeleccionados}"
+                     rowKey="#{procedimiento.id}">
+            <p:column
+                    headerText="#{i18n.tab_procedimiento_paquete_codigo_emssanar}"
+                    styleClass="text-center col-lg-2"
+                    filterBy="#{procedimiento.codigoCliente}" filterMatchMode="contains"
+                    filterStyleClass="anchoInput">
+                <h:outputText value="#{procedimiento.codigoCliente}"/>
+            </p:column>
+            <p:column
+                    headerText="#{i18n.tab_procedimiento_paquete_descripcion_cups}"
+                    styleClass="text-center col-lg-5"
+                    filterBy="#{procedimiento.descripcion}" filterMatchMode="contains"
+                    filterStyleClass="anchoInput">
+                <h:outputText value="#{procedimiento.descripcion}"/>
+            </p:column>
+            <p:column selectionMode="multiple"
+                      style="width:16px;text-align:center"/>
+
+            <f:facet name="footer">
+                <p:commandButton icon="ui-icon-plus"
+                                 value="#{i18n.form_label_agregar}" process="@parent"
+                                 actionListener="#{negociacionPaqueteDetalleSSController.insertarProcedimientos(negociacionPaqueteDetalleSSController.procedimientosSeleccionados)}"
+                                 update="formTecnologiasTabs:tecnologiaTabs:procedimientosPaqueteDlgTabla formTecnologiasTabs:tecnologiaTabs:procedimientosPaquete formTecnologiasTabs:tecnologiaTabs:procedimientosPaqueteIps"/>
+            </f:facet>
+        </p:dataTable>
+    </p:dialog>
+    <p:confirmDialog id="confirmarDeleteAllProcedures" global="true"
+                     showEffect="fade" hideEffect="fade" widgetVar="confirmDeleteAllPx"
+                     header="Confirmar Eliminación de todos los Procedimientos tecnologías Ips"
+                     message="#{i18n.paquete_msj_confirm_eliminar_px}">
+        <div class="ui-grid-row text-right" style="margin-top: 5px;">
+            <p:commandButton value="Aceptar" styleClass="ui-confirmdialog-yes"
+                             icon="ui-icon-check">
+                <p:ajax event="click" process="@this"
+                        listener="#{negociacionPaqueteDetalleSSController.deleteAllProcedures()}"
+                        update="@form" oncomplete="PF('confirmDeleteAllPx').hide()"/>
+            </p:commandButton>
+            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close">
+                <p:ajax event="click" oncomplete="PF('confirmDeleteAllPx').hide()"/>
+            </p:commandButton>
+        </div>
+    </p:confirmDialog>
+</f:view>

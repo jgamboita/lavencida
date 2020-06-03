@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="medicamentosForm">
+		<p:panel id="panelMedicamentos">
+			<div class="form-group">
+				<div class="row">
+					<p:outputLabel for="categoriasMedicamentos"
+						value="#{i18n.medicamento_label_seleccion_categoria}"
+						class="col-lg-4" />
+					<div class="col-lg-6">
+						<p:selectOneMenu id="categoriasMedicamentos"
+							value="#{detallePortafolioController.categoriaSeleccionada}"
+							converter="omnifaces.SelectItemsConverter" effect="fold"
+							required="true" requiredMessage="#{i18n.form_label_required}"
+							styleClass="anchoInput">
+							<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+								itemValue="" noSelectionOption="true" />
+							<f:selectItems
+								value="#{detallePortafolioController.categoriasMedicamento}"
+								var="categoria" itemValue="#{categoria}"
+								itemLabel="#{categoria.nombre}" />
+						</p:selectOneMenu>
+						<p:message for="categoriasMedicamentos" />
+					</div>
+					<div class="col-lg-2">
+						<p:commandButton id="buscarMedicamentosButton"
+							value="#{i18n.form_label_button_buscar}"
+							update="medicamentosForm,tablaMedicamentosForm"
+							actionListener="#{detallePortafolioController.consultarMedicamentos()}"
+							styleClass="btn btn-sm btn-info" icon="fa fa-search"
+							iconPos="left" 
+							oncomplete="if (PF('medicamentosVar')) PF('medicamentosVar').clearFilters(); PF('medicamentosVar').filter();"
+							/>
+					</div>
+				</div>
+			</div>
+		</p:panel>
+	</h:form>
+	<h:form id="tablaMedicamentosForm">
+		<p:panel id="tablaMedicamentosPanel" rendered="#{not empty detallePortafolioController.medicamentos}">
+			<div class="form-group">
+				<p:dataTable id="medicamentos" var="medicamento"
+					value="#{detallePortafolioController.medicamentos}"
+					style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15"
+					widgetVar="medicamentosVar">
+					
+					<p:column headerText="#{i18n.medicamento_label_atc}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.medicamento.atc}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.medicamento.atc}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.medicamento_label_cum}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.medicamento.cums}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.medicamento.cums}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.medicamento_label_principio_activo}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.medicamento.principioActivo}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.medicamento.principioActivo}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.medicamento_label_unidad_medida}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.medicamento.unidadMedida}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.medicamento.unidadMedida}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.medicamento_label_concentracion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.medicamento.concentracion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.medicamento.concentracion}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.medicamento_label_forma_farmaceutica}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.medicamento.formaFarmaceutica}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.medicamento.formaFarmaceutica}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.medicamento_label_codigo_ips}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.codigoInterno}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.codigoInterno}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_valor}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{medicamento.valor}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{medicamento.valor}" />
+					</p:column>
+					
+				</p:dataTable>
+			</div>
+		</p:panel>
+	</h:form>
+
+</f:view>

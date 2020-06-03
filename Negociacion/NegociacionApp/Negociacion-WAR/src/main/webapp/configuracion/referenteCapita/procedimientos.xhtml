@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui">
+    
+	<h:form id="procedimientosNotaTecnica">
+        <p:panel id="panelTblDatosNota">
+                    <div class="datosTablaNota">
+                        <p:dataTable id="tblProcNotaTecnica" var="procNotaTecnica"
+                            value="#{referenteCapitaController.lsProcedimientos}"
+                            widgetVar="procNotaTecnicaTable" style="margin: 0 auto;"
+                            emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="10"
+                            paginator="true" paginatorPosition="bottom" 
+                            paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            rowsPerPageTemplate="10,15,20" scrollable="true" scrollHeight="100%">
+
+                            <p:column headerText="#{i18n.nota_tcn_col_proc_cups}"
+                                      styleClass="text-center col-lg-1">
+                                <h:outputText value="#{procNotaTecnica.procedimientos.cups}" />
+                            </p:column>
+                            
+                            <p:column headerText="#{i18n.nota_tcn_col_proc_cod_emssanar}"
+                                styleClass="text-center col-lg-1">
+                                <h:outputText value="#{procNotaTecnica.procedimientos.codigoCliente}" />
+                            </p:column>
+                                                    
+                            <p:column headerText="#{i18n.nota_tcn_col_proc_descripcion}"
+                                styleClass="text-center col-lg-2">
+                                <h:outputText value="#{procNotaTecnica.procedimientos.descripcion}" />
+                            </p:column>   
+                            
+                            <p:column headerText="#{i18n.nota_tcn_col_porcentaje_asg}"
+                                styleClass="text-center col-lg-1">
+                                <p:inputText id="valorPorcentajeAsignado" value="#{procNotaTecnica.porcentajeAsignado}"
+                                    required="true" requiredMessage="#{i18n.form_label_required}"
+                                    styleClass="form-control input-sm"
+                                    converterMessage="#{i18n.nota_tcn_vld_proc_numerico}"
+                                    validatorMessage="#{i18n.nota_tcn_vld_proc_negativo}">
+                                    <f:validateDoubleRange minimum="0.0000001" />
+                                    <p:ajax update="tblProcNotaTecnica, notaTecnica:panelTblDistribucion"
+                                                listener="#{referenteCapitaController.guardarPorcentajeAsignadoProcedimiento(procNotaTecnica)}"/>
+                                </p:inputText>
+                                <p:message for="valorPorcentajeAsignado" />
+                            </p:column>
+
+                            <p:column headerText="#{i18n.nota_tcn_col_porcentaje}"
+                                      styleClass="text-center col-lg-1">
+                                <h:outputText id="valorPorcentaje" value="#{procNotaTecnica.porcentaje}" />
+                            </p:column>
+                            
+                            <p:column headerText="#{i18n.nota_tcn_col_proc_valor}"
+                                      styleClass="text-center col-lg-1">
+                                <p:outputLabel id="valorProcedimiento" value="#{procNotaTecnica.valor}" >
+                                	<f:convertNumber currencySymbol="$" type="currency" minFractionDigits="0"/>
+                                </p:outputLabel>
+                            </p:column>
+                            
+                        </p:dataTable>
+                    </div>
+                </p:panel>
+	</h:form>
+</f:view>

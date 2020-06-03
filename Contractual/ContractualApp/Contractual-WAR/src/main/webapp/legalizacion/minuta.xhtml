@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:pe="http://primefaces.org/ui/extensions"
+        >
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Administración de Minutas
+        </ui:define>
+        <script>
+            $(document).ready(function (){
+                CKEDITOR.config.allowedContent = true;
+            })
+        </script>
+        <ui:define name="content">
+            <h:form id="formContrato">
+                <p:panel id="crearMinuta">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Minuta" styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br/>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right" >
+                                <h:outputLabel value="Nombre:" for="nombre"/>
+                            </div>
+                            <div class="ui-grid-col-4" >
+                                <p:inputText id="nombre" requiredMessage="El nombre es obligatorio"
+                                             required="true" style="width:100%"
+                                             value="#{minutaController.minuta.nombre}"/>
+                            </div>
+                            <div class="ui-grid-col-2 text-right" >
+                                <h:outputLabel value="Modalidad negociacion:" for="modalidadNegociacion"/>
+                            </div>
+                            <div class="ui-grid-col-4" >
+                                <p:selectOneMenu id="modalidadNegociacion" class="anchoInput"
+                                                 value="#{minutaController.minuta.modalidad}"  
+                                                 requiredMessage="La modalidad de negociación es obligatoria"
+                                                 converter="omnifaces.SelectItemsConverter" required="true">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{enumController.modalidadesNegociacion}"
+                                                   var="negociacionModalidad"
+                                                   itemLabel="#{negociacionModalidad.descripcion}"
+                                                   itemValue="#{negociacionModalidad}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right" >
+                                <h:outputLabel value="Trámite al que aplica:" for="tramite"/>
+                            </div>
+                            <div class="ui-grid-col-4" >
+                                <p:selectOneMenu id="tramite" class="anchoInput"
+                                                 required="true" requiredMessage="El Trámite es obligatorio"
+                                                 value="#{minutaController.minuta.tramite}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{enumController.tramites}"
+                                                   var="tramite"
+                                                   itemLabel="#{tramite.descripcion}"
+                                                   itemValue="#{tramite}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-grid-col-2 text-right" >
+                                <h:outputLabel value="Estado:" for="estado"/>
+                            </div>
+                            <div class="ui-grid-col-4" >
+                                <p:selectOneMenu id="estado" class="anchoInput"
+                                                 required="true" requiredMessage="El estado es obligatorio"
+                                                 value="#{minutaController.minuta.estado}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{enumController.estados}"
+                                                   var="estado"
+                                                   itemLabel="#{estado.descripcion}"
+                                                   itemValue="#{estado}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right" >
+                                <h:outputLabel value="Descripción:" for="descripcion"/>
+                            </div>
+                            <div class="ui-grid-col-10">
+                                <p:inputText id="descripcion" required="true" requiredMessage="La descripción es obligatoria" style="width: 100%"
+                                             value="#{minutaController.minuta.descripcion}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-offset-8 col-lg-4">
+                                <div class="text-right">
+                                    <p:commandButton                                         
+                                        styleClass="btn btn-sm btn-warning"
+                                        actionListener="#{minutaController.regresar}" 
+                                        value="Regresar" alt="Regresar" immediate="true"
+                                        icon="fa fa-chevron-left" iconPos="left">                                    
+                                    </p:commandButton>
+                                    <p:commandButton 
+                                        styleClass="btn btn-sm btn-info"
+                                        icon="fa fa-floppy-o" 
+                                        iconPos="left"
+                                        value="Duplicar" 
+                                        rendered="#{minutaController.minuta.id ne null}"
+                                        onclick="PF('duplicarDialog').show()">
+                                    </p:commandButton>
+                                    <p:commandButton                                         
+                                        type="submit" styleClass="btn btn-sm btn-success"
+                                        actionListener="#{minutaController.guardarMinuta}" 
+                                        update="formContrato"
+                                        value="Guardar"
+                                        icon="fa fa-floppy-o" iconPos="left">                                    
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+                <p:panel rendered="#{minutaController.minuta.id != null}">
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3" >
+                                <p:outputLabel value="Contenido Minuta"/>
+                                <p:tree id="contenidos" dynamic="true"
+                                        selection="#{minutaController.selectedNode}" 
+                                        selectionMode="single" 
+                                        value="#{minutaController.contenidos}"
+                                        var="contenido" 
+                                        animate="true"
+                                        draggable="true" droppable="true" dragdropScope="demo"
+                                        onNodeClick="CKEDITOR.config.allowedContent = true;">                                    
+                                    <p:ajax event="select" update="formContrato:editor" listener="#{minutaController.onNodeSelect}"/>
+                                    <p:ajax event="dragdrop" listener="#{minutaController.onDragDrop}" update="formContrato:contenidos" />
+                                    <p:treeNode expandedIcon="#{contenido.contenidoMinuta.iconoAbierto}" collapsedIcon="#{contenido.contenidoMinuta.icono}">
+                                        <h:outputText value="#{contenido.titulo}" />
+                                    </p:treeNode>
+                                </p:tree>
+                                <p:contextMenu for="contenidos">
+                                    <p:menuitem 
+                                        update="contenidoMinuta displayCrearContenido"
+                                        value="Agregar" icon="ui-icon-plus" 
+                                        actionListener="#{minutaController.obtieneContenidosMinuta}" />
+                                    <p:menuitem 
+                                        update="detalleMinutaDescripcion"
+                                        value="Editar" icon="ui-icon-pencil" 
+                                        actionListener="#{minutaController.editarMinutaDetalle}"/>
+                                    <p:menuitem 
+                                        actionListener="#{minutaController.generaMensajeEliminar}"
+                                        icon="ui-icon-close"
+                                        update="mensajeEliminar"
+                                        value="Eliminar" />
+                                </p:contextMenu>
+                                <p:dialog widgetVar="crearContenidoDialog" resizable="false"
+                                          width="300" showEffect="clip" hideEffect="fold" id="crearContenido" 
+                                          header="Agregar Contenido">  
+                                    <h:panelGroup id="displayCrearContenido">
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-4 text-right" >
+                                                    <p:outputLabel value="Nombre"/>
+                                                </div>
+                                                <div class="ui-grid-col-8" >
+                                                    <p:inputText id="txtNuevoContenido"
+                                                        autocomplete="false"
+                                                        value="#{minutaController.gestionMinutaDto.tituloContenido}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-4 text-right" >
+                                                    <p:outputLabel value="Tipo"/>
+                                                </div>
+                                                <div class="ui-grid-col-8" >
+                                                    <p:selectOneMenu id="contenidoMinuta" class="anchoInput"
+                                                                     value="#{minutaController.gestionMinutaDto.contenidoSeleccionado}"
+                                                                     converter="omnifaces.SelectItemsConverter">
+                                                        <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                                        <f:selectItems value="#{minutaController.contenidosMinuta}"
+                                                                       var="cont"
+                                                                       itemLabel="#{cont.descripcion}"
+                                                                       itemValue="#{cont}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-12 text-right" >
+                                                    <p:commandButton 
+                                                        type="submit"
+                                                        actionListener="#{minutaController.agregarContenido}" 
+                                                        update="contenidos displayCrearContenido txtNuevoContenido"
+                                                        value="Guardar"
+                                                        styleClass="btn btn-sm btn-success"
+                                                        iconPos="left">                                    
+                                                    </p:commandButton>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>  
+                                </p:dialog>
+                                <p:dialog widgetVar="confirmarEliminarDialog" resizable="false"
+                                          width="400" showEffect="scale" hideEffect="fold" id="confirmarEliminar" 
+                                          header="Eliminar Contenido" >  
+                                    <h:panelGroup id="displayEliminar">
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-12 text-center" >
+                                                    <h:outputText value="#{minutaController.mensajeEliminar}" id="mensajeEliminar" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-12 text-right" >
+                                                    <p:commandButton 
+                                                        oncomplete="PF('confirmarEliminarDialog').hide()"
+                                                        type="submit"
+                                                        update="contenidos"
+                                                        value="Cancelar"
+                                                        styleClass="btn btn-sm btn-info"
+                                                        icon="fa fa-times" iconPos="left" 
+                                                        style ="margin-right: 5px;" />                                    
+                                                    <p:commandButton 
+                                                        oncomplete="PF('confirmarEliminarDialog').hide()"
+                                                        type="submit"
+                                                        actionListener="#{minutaController.eliminarContenido()}" 
+                                                        update="contenidos"
+                                                        value="Aceptar" 
+                                                        styleClass="btn btn-sm btn-warning"
+                                                        iconPos="left" />             
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>  
+                                </p:dialog>
+                                <p:dialog widgetVar="duplicarDialog" resizable="false"
+                                          width="400" showEffect="scale" hideEffect="fold" id="confirmarDuplicar" 
+                                          header="Duplicar Minuta" >  
+                                    <h:panelGroup id="displayDuplicar">
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-12 text-center" >
+                                                    <h:outputText value="Desea duplicar la Minuta #{minutaController.minuta.nombre}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-12 text-right" >
+                                                    <p:commandButton 
+                                                        oncomplete="PF('duplicarDialog').hide()"
+                                                        type="submit"
+                                                        value="Cancelar"
+                                                        styleClass="btn btn-sm btn-info"
+                                                        icon="fa fa-times" iconPos="left" 
+                                                        style ="margin-right: 5px;" />                                    
+                                                    <p:commandButton 
+                                                        oncomplete="PF('duplicarDialog').hide()"
+                                                        type="submit"
+                                                        actionListener="#{minutaController.duplicar()}"
+                                                        value="Aceptar" 
+                                                        ajax="true" update="@this"
+                                                        immediate="true"
+                                                        styleClass="btn btn-sm btn-warning"
+                                                        iconPos="left" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>  
+                                </p:dialog>
+                                <p:dialog widgetVar="editarDetalleMinutaDialog" resizable="false"
+                                          width="400" showEffect="scale" hideEffect="fold" id="editarDetalleMinuta" 
+                                          header="Editar Titulo"> 
+                                    <h:panelGroup id="displayEditar">
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-4 text-right" >
+                                                    <p:outputLabel value="Titulo"/>
+                                                </div>
+                                                <div class="ui-grid-col-8" >
+                                                    <p:inputText id="detalleMinutaDescripcion" autocomplete="false" 
+                                                                 value="#{minutaController.gestionMinutaDto.tituloMinutaDetalle}">
+                                                    </p:inputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ui-grid ui-grid-responsive">
+                                            <div class="ui-grid-row">
+                                                <div class="ui-grid-col-12 text-right" >
+                                                    <p:commandButton 
+                                                        oncomplete="PF('editarDetalleMinutaDialog').hide()"
+                                                        ajax="true"
+                                                        update="contenidos"
+                                                        value="Cancelar"
+                                                        styleClass="btn btn-sm btn-info"
+                                                        icon="fa fa-times" iconPos="left" 
+                                                        style ="margin-right: 5px;" />                                    
+                                                    <p:commandButton 
+                                                        type="submit"
+                                                        actionListener="#{minutaController.actualizarMinutaDetalleTitulo()}" 
+                                                        update="contenidos"
+                                                        value="Aceptar" 
+                                                        styleClass="btn btn-sm btn-warning"
+                                                        icon="fa fa-floppy-o" iconPos="left"/>             
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>  
+                                </p:dialog>
+                                <p:outputLabel value="Variables"/>
+                                <p:tree id="variables" dynamic="true"
+                                        selectionMode="single" 
+                                        value="#{minutaController.variables}"
+                                        var="variable" 
+                                        animate="true">
+                                    <p:treeNode>
+                                        <a onclick="PF('editorWidget').instance.insertHtml('#{variable.codigo}', 'unfiltered_html')">#{variable.descripcion}</a>
+                                    </p:treeNode>
+                                </p:tree>
+                            </div>
+                            <div class="ui-grid-col-9" >
+                                <pe:ckEditor id="editor" 
+                                             widgetVar="editorWidget" 
+                                             width="100%"
+                                             value="#{minutaController.gestionMinutaDto.minutaDetalle.descripcion}"  
+                                             customConfig="#{request.contextPath}/js/config/ckeditor.js" 
+                                             >  
+
+                                </pe:ckEditor>
+                                <div class="text-right" style="padding-top:10px">
+                                    <p:commandButton styleClass="btn btn-sm btn-info"  
+                                                     icon="fa fa-floppy-o" iconPos="left" 
+                                                     value="Guardar" actionListener="#{minutaController.guardaContenido()}" ajax="true">
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

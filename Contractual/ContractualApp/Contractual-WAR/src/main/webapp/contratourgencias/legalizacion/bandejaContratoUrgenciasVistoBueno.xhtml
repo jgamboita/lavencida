@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:p="http://primefaces.org/ui"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:cnx="http://conexia.com/utils"
+		xmlns:c="http://java.sun.com/jstl/core"
+		xmlns:o="http://omnifaces.org/ui"
+		xmlns:pe="http://primefaces.org/ui/extensions">
+		<o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum"  var="EstadoLegalizacionEnum"/>
+        
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Legalización
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="formConsultaContratosUrgencias">
+                <p:panel id="pnlConsultaContratosUrgencias">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="#{i18n.title_page_ctto_urgen_vbo}"  styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right"  >
+                                <h:outputLabel value="#{i18n.form_ctto_urgen_vbo_label_no_contrato}" for="txtNumeroContrato"/>
+                            </div>
+                            <div class="ui-grid-col-2">                              
+                                <p:inputText id="txtNumeroContrato" class="anchoInput"
+                                             value="#{contratoUrgenciasVoBoController.filtro.numeroContrato}" > 
+                                </p:inputText>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.form_ctto_urgen_vbo_label_modalidad}"/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="modalidadNegociacion" class="anchoInput"
+                                                 value="#{contratoUrgenciasVoBoController.filtro.negociacionModalidad}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Evento" itemValue=""/>
+                                    <!-- <f:selectItems value="#{contratoUrgenciasVoBoController.modalidadesNegociacion}"
+                                                   var="negociacionModalidad"
+                                                   itemLabel="#{negociacionModalidad.descripcion}"
+                                                   itemValue="#{negociacionModalidad}"/> -->
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="#{i18n.form_ctto_urgen_vbo_label_tipo_identificacion}"/>
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="tipoIdentificacion" class="anchoInput"
+                                                 value="#{contratoUrgenciasVoBoController.filtro.tipoIdentificacionDto}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>  
+                                    <f:selectItems value="#{contratoUrgenciasVoBoController.tipoIdentificacion}"
+                                                   var="tipoIdentificacion"
+                                                   itemLabel="#{tipoIdentificacion.descripcion}"
+                                                   itemValue="#{tipoIdentificacion}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.form_ctto_urgen_vbo_label_identificacion} "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+							 <p:inputText id="txtNumeroIdentificacion" style="width: 100%" 
+								value="#{contratoUrgenciasVoBoController.filtro.numeroIdentificacion}" >
+										<pe:keyFilter regEx="/[0-9]/" preventPaste="false"/>
+                                </p:inputText> 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="#{i18n.form_ctto_urgen_vbo_label_razon_social}"/>
+                            </div>
+                            <div class="ui-grid-col-8">
+                                <p:inputText id="txtRazonSocial" style="width: 100%"
+                                             value="#{contratoUrgenciasVoBoController.filtro.razonSocial}">
+                                </p:inputText>
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="#{i18n.form_ctto_urgen_vbo_label_estado_contrato}"/>
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="estadoLegalizacion" class="anchoInput"
+                                                 value="#{contratoUrgenciasVoBoController.filtro.estadoLegalizacionEnum}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Vigente" itemValue=""/>
+                                 <!--    <f:selectItems value="#{contratoUrgenciasVoBoController.estadosLegalizacion}"
+                                                   var="estadoLegalizacion"
+                                                   itemLabel="#{estadoLegalizacion.descripcion}"
+                                                   itemValue="#{estadoLegalizacion}"/> -->
+                                </p:selectOneMenu>
+                            </div>
+						</div>
+						
+					</div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12 text-right">
+                                <p:commandButton value="Buscar" styleClass="btn btn-sm btn-info"
+                                                 icon="fa fa-search" iconPos="left"
+                                                 update="tblListaContratosUrgenciasPorVistoBueno"/>
+                                 
+                                <p:commandButton value="Limpiar" styleClass="btn btn-sm btn-warning"
+                                                 actionListener="#{contratoUrgenciasVoBoController.limpiar()}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                    
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12">
+                            <p:toolbar>
+					            <p:toolbarGroup align="left" >
+					                <p:commandButton id="toggler" widgetVar="toggler" type="button" value="#{i18n.form_label_seleccionar_columnas}" icon="ui-icon-calculator" />
+					                <p:columnToggler widgetVar="contratosUrgenciasVoBoToggler"
+					                                 id="contratosUrgenciasVoBoToggler"
+					                                 datasource="tblListaContratosUrgenciasPorVistoBueno"
+					                                 trigger="toggler">
+					                    <p:ajax event="toggle" listener="#{contratoUrgenciasVoBoController.onToggle}" />
+					                </p:columnToggler>
+					            </p:toolbarGroup>
+				        	</p:toolbar>
+                                <p:dataTable id="tblListaContratosUrgenciasPorVistoBueno" lazy="true"
+                                             value="#{contratoUrgenciasVoBoController}"
+                                             var="contratoXVistoBueno"
+                                             rows="15"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,15"
+                                             emptyMessage="Sin registros...">
+                                             
+									<p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_no_negociacion}" style="width:90px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.id}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	 visible="#{contratoUrgenciasVoBoController.listToggler[0]}">
+                                        <h:outputText value=""/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_no_contrato}" style="width:140px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.numeroContrato}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[1]}">
+                                        <h:outputText value="#{contratoXVistoBueno.contratoUrgencias.numeroContrato}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_tipo_contrato}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.tipoContratoEnum}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[2]}">
+                                        <h:outputText value="#{contratoXVistoBueno.contratoUrgencias.tipoContratoEnum}"/>
+                                    </p:column>
+                                                <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_nit_prestador}" style="width:120px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.prestador.numeroDocumento}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[3]}">
+                                        <h:outputText value="#{contratoXVistoBueno.contratoUrgencias.prestador.numeroDocumento}"/>
+                                    </p:column>
+                                                <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_prestador}" style="width:350px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.prestador.nombre}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[4]}">
+                                        <h:outputText value="#{contratoXVistoBueno.contratoUrgencias.prestador.nombre}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_regional}" style="width:190px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.regionalDto.descripcion}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[5]}">
+                                        <h:outputText value="#{contratoXVistoBueno.contratoUrgencias.regionalDto.descripcion}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_modalidad}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.tipoModalidadNegociacion}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[6]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.tipoModalidadNegociacion}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_regimen}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.regimen}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[7]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.regimen}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_subsidio}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.tipoSubsidiado}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[8]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.tipoSubsidiado}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_fecha_incio}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.fechaInicioVigencia}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[9]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.fechaInicioVigencia}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy" />  
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_fecha_fin}" style="width:100px; text-align:center" 
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.fechaFinVigencia}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[10]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.fechaFinVigencia}">
+                                        	<f:convertDateTime pattern="dd/MM/yyyy" />   
+                                        </h:outputText>
+                                    </p:column>
+                                    
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_nivel_contrato}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.nivelContrato}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[11]}">
+                                        <h:outputText
+                                            value=""/>
+                                    </p:column>
+                                   	<p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_tipo_minuta}" style="width:100px; text-align:center"
+                                   		filterBy="#{contratoXVistoBueno.contratoUrgencias.id}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                   		visible="#{contratoUrgenciasVoBoController.listToggler[12]}">
+                                        <h:outputText
+                                            value=""/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_poblacion}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.poblacion}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[13]}">
+                                        <h:outputText
+                                            value=""/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_usuario}" style="width:130px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.usuarioDto.nombreCompleto}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[14]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.usuarioDto.nombreCompleto}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_estado_legalizacion}" style="width:150px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.estadoLegalizacion.descripcion}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[15]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.estadoLegalizacion.descripcion}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_fecha_legalizacion}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.legalizacionContratoUrgencias.fechaVoBo}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[16]}">
+                                        <h:outputText
+                                            value=""/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_estado_contrato}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.estadoContrato}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[17]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.estadoContrato}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.tb_header_ctto_urgen_vbo_sedes_contratadas}" style="width:100px; text-align:center"
+                                    	filterBy="#{contratoXVistoBueno.contratoUrgencias.nroSedes}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[18]}">
+                                        <h:outputText
+                                            value="#{contratoXVistoBueno.contratoUrgencias.nroSedes}"/>
+                                    </p:column>
+                                    <p:column headerText="#{i18n.form_label_acciones}" style="width:100px; text-align:center"
+                                    	visible="#{contratoUrgenciasVoBoController.listToggler[19]}">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <p:commandLink title="Asignar Visto Bueno"
+                                                      action="#{contratoUrgenciasVoBoController.gestionaVistoBueno(contratoXVistoBueno.contratoUrgencias.id)}"
+                                                               ajax="false" immediate="true">
+                                                    <i class="fa fa-check-square-o"></i>
+                                                </p:commandLink>
+                                            </div>
+                                         </div>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+         </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

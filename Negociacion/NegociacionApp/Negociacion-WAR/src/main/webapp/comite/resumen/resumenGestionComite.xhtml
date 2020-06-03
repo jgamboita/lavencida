@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core">
+
+
+
+	<div class="widget-header">
+		<span class="widget-caption">#{i18n.casos_gestionados_comite_lbl_titulo}</span>
+	</div>
+	<p:panel id="panelResumenGestionComite" style="text-align: center">
+		<div class="form-group">
+			<p:dataTable id="tablaResumenGestionComite" var="resumen"
+				value="#{gestionComiteController.resumenGestionCasos}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}"
+				paginator="false">
+
+				<p:column
+					headerText="#{i18n.casos_gestionados_comite_lbl_aprobados}"
+					styleClass="text-center col-lg-1">
+					<h:outputText value="#{resumen.numAprobados}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.casos_gestionados_comite_lbl_negados}"
+					styleClass="text-center col-lg-1">
+					<h:outputText value="#{resumen.numNegados}" />
+				</p:column>
+
+				<p:column
+					headerText="#{i18n.casos_gestionados_comite_lbl_aplazados}"
+					styleClass="text-center col-lg-1">
+					<h:outputText value="#{resumen.numAplazados}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.casos_gestionados_comite_lbl_total}"
+					styleClass="text-center col-lg-1">
+					<h:outputText value="#{resumen.numTotalGestionados}" />
+				</p:column>
+
+			</p:dataTable>
+		</div>
+	</p:panel>
+
+</f:view>

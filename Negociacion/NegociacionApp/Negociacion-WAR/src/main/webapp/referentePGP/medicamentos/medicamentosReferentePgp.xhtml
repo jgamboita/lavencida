@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+	<pe:masterDetail id="masterMx" showBreadcrumb="false">
+		<pe:masterDetailLevel level="1" id="nivelUnoMx">
+		<p:toolbar rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}">
+				<p:toolbarGroup align="right">
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right"
+							for="gestionCategorias"
+							value="Gestionar Grupo" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionCategorias"
+								value="#{gestionReferentePgpController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+									noSelectionOption="true" />
+								<f:selectItems
+									value="#{gestionReferentePgpController.gestionTecnologias}"
+									var="tipoGestionPq" itemValue="#{tipoGestionPq}"
+									itemLabel="#{i18n[cnx:enum_key(tipoGestionPq)]}" />
+								<p:ajax
+									listener="#{gestionReferentePgpController.gestionarGrupoMedicamentos('tabGrupoMedicamentos','gestionCategorias')}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deleteGrup" layout="block">
+				<p:dialog widgetVar="cddeleteGrup" modal="true"
+					header="#{i18n.referente_title_modal_borrar_grupo_medicamento}"
+					icon="fa fa-warning">
+
+					<p:outputPanel>
+						<h:outputLabel
+							value="#{i18n.referente_body_modal_borrar_grupo_medicamentos}" />
+					</p:outputPanel>
+
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{gestionReferentePgpController.eliminarGruposMedicamentosRefente}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+						onclick="PF('cddeleteGrup').hide()" update="@([id$=pnlTecnologias])"/>
+
+					<p:commandButton value="#{i18n.form_label_button_cancelar}"
+						type="button" styleClass="btn btn-sm btn-warning"
+						icon="fa fa-close" onclick="PF('cddeleteGrup').hide()" />
+				</p:dialog>
+			</p:outputPanel>
+			<p:dataTable id="tablaCategoriasMedicamento"
+				value="#{gestionReferentePgpController.listarReferenteCategoriaMedicamento}"
+				selection="#{gestionReferentePgpController.referenteCategoriaMedicamentosSeleccionados}"
+				var="categoria" rowKey="#{categoria.id}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+				widgetVar="tabGrupoMedicamentos" paginator="true"
+				paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+				<p:ajax event="page" update="@this" />
+				<p:ajax event="sort" update="@this" />
+				<p:ajax event="rowSelectCheckbox" update="@this" />
+				<p:ajax event="rowUnselectCheckbox" update="@this" />
+				<p:ajax event="toggleSelect" update="@this" />
+				<p:ajax event="filter" update="@this" />
+
+
+				<p:column headerText="#{i18n.column_ref_codigo_grupo}"
+					styleClass="text-center"
+					filterBy="#{categoria.categoriaMedicamento.codigo}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{categoria.categoriaMedicamento.codigo}"/>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_grupo_terapeutico}"
+				styleClass="text-center"
+					filterBy="#{categoria.categoriaMedicamento.nombre}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{categoria.categoriaMedicamento.nombre}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_ver}" styleClass="text-center">
+					<p:commandButton icon="ui-icon-search" title="Detalle"
+						oncomplete="PF('tablaMedicamentoReferenteW').filter();"
+						actionListener="#{gestionReferentePgpController.mostrarDetalleCategoriaReferente(categoria)}"
+						immediate="true" process="@this" update="@([id$=tabMedicamentosPgp])">
+						<pe:selectDetailLevel step="1" />
+					</p:commandButton>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_frecuencia}" styleClass="text-center">
+					<h:outputText value="#{categoria.frecuencia}" >
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_costo_medio}" styleClass="text-center">
+					<h:outputText value="#{categoria.costoMedioUsuario}" >
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_atenciones}" styleClass="text-center">
+					<h:outputText value="#{categoria.numeroUsuarios}" >
+										<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_usuarios}" styleClass="text-center">
+					<h:outputText value="#{categoria.numeroAtenciones}" >
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column selectionMode="multiple" style="width:50px;text-align:center" />
+			</p:dataTable>
+		</pe:masterDetailLevel>
+
+		<pe:masterDetailLevel level="2" id="nivelDosMx">
+		<p:toolbar rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}">
+				<p:toolbarGroup align="right">
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right" for="gestionCapitulos"
+							value="Gestionar Medicamentos" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionMedicamentos"
+								value="#{gestionReferentePgpController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+									noSelectionOption="true" />
+								<f:selectItems
+									value="#{gestionReferentePgpController.gestionTecnologias}"
+									var="tipoGestionPq" itemValue="#{tipoGestionPq}"
+									itemLabel="#{i18n[cnx:enum_key(tipoGestionPq)]}" />
+								<p:ajax
+									listener="#{gestionReferentePgpController.gestionarMedicamentos('tablaMedicamentoReferenteW','gestionMedicamentos')}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deleteMed" layout="block">
+				<p:dialog widgetVar="cddeleteMed" modal="true"
+					header="#{i18n.referente_title_modal_borrar_medicamento}"
+					icon="fa fa-warning">
+
+					<p:outputPanel>
+						<h:outputLabel
+							value="#{i18n.referente_body_modal_borrar_medicamentos}" />
+					</p:outputPanel>
+
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{gestionReferentePgpController.eliminarMedicamentosReferente}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+						onclick="PF('cddeleteMed').hide()" />
+
+					<p:commandButton value="#{i18n.form_label_button_cancelar}"
+						type="button" styleClass="btn btn-sm btn-warning"
+						icon="fa fa-close" onclick="PF('cddeleteMed').hide()" />
+				</p:dialog>
+			</p:outputPanel>
+			<p:dataTable id="tablaMedicamentosReferente"
+				value="#{gestionReferentePgpController.listarReferenteMedicamento}"
+				selection="#{gestionReferentePgpController.referenteMedicamentoSeleccionados}"
+				var="medicamento" rowKey="#{medicamento.id}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+				widgetVar="tablaMedicamentoReferenteW" paginator="true"
+				paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+				<p:ajax event="page" update="@this" />
+				<p:ajax event="sort" update="@this" />
+				<p:ajax event="rowSelectCheckbox" update="@this" />
+				<p:ajax event="rowUnselectCheckbox" update="@this" />
+				<p:ajax event="toggleSelect" update="@this" />
+				<p:ajax event="filter" update="@this" />
+
+				<p:column headerText="#{i18n.column_ref_atc}"
+				filterBy="#{medicamento.medicamento.atc}"
+				styleClass="text-center"
+				style="width:100px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.atc}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_des_atc}"
+				filterBy="#{medicamento.medicamento.descripcionAtc}"
+				styleClass="text-center"
+				style="width:120px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.descripcionAtc}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_cum}"
+				filterBy="#{medicamento.medicamento.cums}"
+				styleClass="text-center"
+				style="width:100px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.cums}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_principio}"
+				filterBy="#{medicamento.medicamento.principioActivo}"
+				styleClass="text-center"
+				style="width:120px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.principioActivo}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_concentracion}"
+				filterBy="#{medicamento.medicamento.concentracion}"
+				styleClass="text-center"
+				style="width:100px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.concentracion}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_forma}"
+				filterBy="#{medicamento.medicamento.formaFarmaceutica}"
+				styleClass="text-center"
+				style="width:150px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.formaFarmaceutica}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_titular}"
+				filterBy="#{medicamento.medicamento.titularRegistroSanitario}"
+				styleClass="text-center"
+				style="width:150px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.titularRegistroSanitario}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_des_comercial}"
+				filterBy="#{medicamento.medicamento.descripcion}"
+				styleClass="text-center"
+				style="width:150px"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{medicamento.medicamento.descripcion}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_frecuencia}"
+				styleClass="text-center"
+				style="width:80px">
+					<h:outputText value="#{medicamento.frecuencia}">
+						<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_costo_medio}"
+				styleClass="text-center"
+				style="width:80px">
+					<h:outputText value="#{medicamento.costoMedioUsuaro}" >
+						 <f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_atenciones}"
+				styleClass="text-center"
+				style="width:80px">
+						<h:outputText value="#{medicamento.numeroUsuarios}">
+							<f:convertNumber pattern="###,###.######"/>
+					   </h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_usuarios}"
+				styleClass="text-center"
+				style="width:80px">
+					<h:outputText value="#{medicamento.numeroAtenciones}">
+						<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_pgp}"
+					styleClass="text-center"
+					style="width:80px">
+					<h:outputText value="#{medicamento.pgp}">
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column selectionMode="multiple" style="width:50px;text-align:center" >
+
+				</p:column>
+
+			</p:dataTable>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-md-offset-8 col-lg-4">
+							<div class="text-right">
+								<p:commandButton value="Regresar" icon="ui-icon-arrowthick-1-w"
+									oncomplete="PF('tabGrupoMedicamentos').filter();"
+									actionListener="#{gestionReferentePgpController.setActiveTab(1)}"
+									immediate="true" process="@this" update="@([id$=tabsTecnologias])"
+									ajax="true"
+									styleClass="btn btn-sm btn-warning">
+								</p:commandButton>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</pe:masterDetailLevel>
+	</pe:masterDetail>
+</f:view>

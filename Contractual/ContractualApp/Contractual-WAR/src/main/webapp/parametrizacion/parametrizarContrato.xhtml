@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        >
+    <ui:composition template="/template/inner.xhtml">
+
+        <ui:define name="title">
+            Parametrizar Contrato
+        </ui:define>
+        <ui:define name="content">
+
+
+
+            <h:form id="formContrato">
+                <p:panel id="pnlActualizarPrestador">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Prestador" styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br/>
+                    <br/>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <h:outputLabel value="No. Negociación:" for="txtNumeroNegociacion"/>
+                            </div>
+                            <div class="col-lg-2">
+                                <h:outputText id="txtNumeroNegociacion" value="#{parametrizarContratoController.solicitudContratacionParametrizableDto.numeroNegociacion}"> </h:outputText>
+                            </div>
+                            <div class="col-lg-2">
+                                <h:outputLabel value="No. Contrato:" for="txtNumeroContrato"/>
+                            </div>
+                            <div class="col-lg-2">
+                                <h:outputText id="txtNumeroContrato" value="#{parametrizarContratoController.solicitudContratacionParametrizableDto.numeroContrato}"> </h:outputText>
+                            </div>
+                            <div class="col-lg-2">
+                                <h:outputLabel value="Modalidad negociación:" for="lblModalidadNegociacion"/>
+                            </div>
+                            <div class="col-lg-2">
+                                <h:outputText id="lblModalidadNegociacion" value="#{parametrizarContratoController.solicitudContratacionParametrizableDto.modalidadNegociacion}"/>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <ui:include src="../comun/detallePrestador.xhtml" ></ui:include>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-12 text-right">
+                                    <p:commandButton icon="fa fa-save fa-lg"
+                                                     styleClass="btn btn-sm btn-success"
+                                                     value="Guardar" update="@form"
+                                                     action="#{detallePrestadorController.guardarPrestador()}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p:dataTable id="tblListaSedes" lazy="true"
+                                             value="#{parametrizarContratoController}"
+                                             var="sede"
+                                             rows="5"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,20"
+                                             emptyMessage="Sin registros..."
+                                             editable="true"
+                                             editMode="cell">
+                                    <p:ajax event="cellEdit" listener="#{parametrizarContratoController.onCellEdit}" update="@this"/>
+                                    <p:column headerText="Sede">
+                                        <h:outputText value="#{sede.nombreSede}" />
+                                    </p:column>
+                                    <p:column headerText="Código Habilitación">
+                                        <h:outputText value="#{sede.codigoPrestador}" />
+                                    </p:column>
+                                    <p:column headerText="Código Eps" styleClass="text-center">
+                                        <h:outputText value="#{sede.codigoSede}" rendered="#{parametrizarContratoController.estaParametrizada(sede.sedeNegociacionId) > 0}" />
+                                        <p:cellEditor rendered="#{parametrizarContratoController.estaParametrizada(sede.sedeNegociacionId) == 0}">
+                                            <f:facet name="output">
+                                                <h:outputText value="#{sede.codigoSede}" />
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <p:inputText value="#{sede.codigoSede}" size="10"  label="Codigo Sede"
+                                                             validatorMessage="El codigo de la sede debe ser numerico.">
+                                                    <f:validateRegex pattern="^[0-9]+$"  />
+                                                </p:inputText>
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="Departamento">
+                                        <h:outputText value="#{sede.municipio.departamento}" />
+                                    </p:column>
+                                    <p:column headerText="Municipio">
+                                        <h:outputText value="#{sede.municipio.descripcion}" />
+                                    </p:column>
+                                    <p:column headerText="Ips Primaria">
+                                        <h:outputText value="#{sede.ipsPrimaria}" />
+                                    </p:column>
+                                    <p:column headerText="Area de Cobertura" class="text-center">
+                                        <p:commandLink title="Ver area de Influencia"
+                                                       action="#{parametrizarContratoController.mostrarAreaInfluencia(sede)}"
+                                                       oncomplete="PF('areaInfluenciaDialog').show();"
+                                                       update="@form:dialog"
+                                                       immediate="true">
+                                            <i class="fa fa-inbox fa-lg"></i>
+                                        </p:commandLink>
+									</p:column>
+									<p:column headerText="Parametrizar" class="text-center">
+                                        <p:commandLink title="Parametrizar Tecnologias"
+                                                       ajax="false" immediate="true"
+                                                       actionListener="#{parametrizarContratoController.parametrizarSede(sede.sedeNegociacionId, sede.solicitudContratacionId,sede)}">
+                                            <i class="fa fa-cog fa-lg"></i>
+											<p:commandLink title="Replicar Parametrización"
+												action="#{parametrizarContratoController.sedePrincipalReplica(sede)}"
+												oncomplete="PF('replicaParametrizacionDialog').show();"
+												update="@([id$=dialogReplica])" immediate="true"
+												rendered="#{sede.ipsPrimaria eq 'SI'}">
+												<i class="fa fa-files-o fa-lg"></i>
+											</p:commandLink>
+										</p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-12 text-right">
+                                <p:commandButton action="#{FacesUtils.urlRedirect('/parametrizacion/consultaSolicitudes.page')}"
+                                                 icon="fa fa-chevron-left" iconPos="left" immediate="true"
+                                                 styleClass="btn btn-sm btn-warning" value="Regresar" >
+                                </p:commandButton>
+                                <p:commandButton actionListener="#{parametrizarContratoController.finalizarParametrizacion()}"
+                                                 icon="fa fa-save fa-lg"  iconPos="left" estadoParametrizacionimmediate="true" update="@form"
+                                                 styleClass="btn btn-sm btn-success" value="Finalizar Parametrización"
+                                                 rendered="#{parametrizarContratoController.estadoParametrizacion != 'PARAMETRIZADA'}" >
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+
+				<p:dialog
+					header="Area de Influencia #{parametrizarContratoController.sedeIps}"
+					id="dialog" widgetVar="areaInfluenciaDialog" modal="true"
+					width="500">
+					<ui:include src="../comun/areaInfluencia.xhtml"></ui:include>
+				</p:dialog>
+
+				<p:dialog header="Sede principal: #{parametrizarContratoController.sedeIps}" id="dialogReplica"
+                    widgetVar="replicaParametrizacionDialog" modal="true" width="75%" height="40%">
+					<p:outputLabel value="Recuerde que la replica de parametrización se hará con los servicios en común, entre la sede principal
+					y la sede seleccionada para replicar la parametrización" />
+					<p:toolbar>
+						<p:toolbarGroup align="right">
+							<div class="col-lg-11">
+								<p:outputLabel class="col-lg-6 text-right"
+									for="gestionServiciosParam" value="Gestión Replica" />
+								<div class="col-lg-2">
+									<p:selectOneMenu id="gestionServiciosParam"
+										value="#{parametrizarContratoController.gestionSeleccionada}">
+										<f:selectItem itemLabel="Seleccionar..." itemValue=""
+											noSelectionOption="true" />
+										<f:selectItems
+											value="#{parametrizarContratoController.gestionTecnologiasParametrizacion}"
+											var="tipoGestionP" itemValue="#{tipoGestionP}"
+											itemLabel="#{tipoGestionP.descripcion}" />
+										<p:ajax
+											listener="#{parametrizarContratoController.gestionarReplica('tbtReplicaSedeW')}" />
+									</p:selectOneMenu>
+								</div>
+							</div>
+						</p:toolbarGroup>
+					</p:toolbar>
+					<p:dataTable var="sedeRep" id="tbtSedeReplica"
+						value="#{parametrizarContratoController.sedesReplica}"
+						selection="#{parametrizarContratoController.sedesSeleccionadasReplica}"
+						rowStyleClass="#{sedeRep.ipsPrimaria == 'SI' ? 'ui-helper-hidden' : ''}"
+						rowKey ="#{sedeRep.id}"
+						rows="5" paginator="true" paginatorPosition="bottom"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,20" emptyMessage="Sin registros..."
+						rowSelectMode="checkbox"
+						widgetVar="tbtReplicaSedeW">
+
+						<p:ajax event="page" update="@this" />
+						<p:ajax event="sort" update="@this" />
+						<p:ajax event="rowSelectCheckbox" update="@this" />
+						<p:ajax event="rowUnselectCheckbox" update="@this" />
+						<p:ajax event="toggleSelect" update="@this" />
+						<p:ajax event="filter" update="@this" />
+
+						<p:column headerText="Sede">
+							<h:outputText value="#{sedeRep.nombreSede}" />
+						</p:column>
+						<p:column headerText="Código Habilitación">
+							<h:outputText value="#{sedeRep.codigoPrestador}" />
+						</p:column>
+						<p:column headerText="Código Eps" styleClass="text-center">
+							<h:outputText value="#{sedeRep.codigoSede}" />
+						</p:column>
+						<p:column headerText="Departamento">
+							<h:outputText value="#{sedeRep.municipio.departamento}" />
+						</p:column>
+						<p:column headerText="Municipio">
+							<h:outputText value="#{sedeRep.municipio.descripcion}" />
+						</p:column>
+						<p:column headerText="Ips Primaria" visible="false">
+							<h:outputText value="#{sedeRep.ipsPrimaria}" />
+						</p:column>
+						<p:column class="text-center" selectionMode="multiple" width="72">
+						</p:column>
+					</p:dataTable>
+					<div class="row">
+						<div class="col-lg-12 text-center">
+							<p:commandButton icon="fa fa-save fa-lg" iconPos="left"
+								update="@form" styleClass="btn btn-sm btn-success"
+								actionListener="#{parametrizarContratoController.replicarParametrizacion()}"
+								value="Replicar">
+							</p:commandButton>
+						</div>
+					</div>
+				</p:dialog>
+
+			</h:form>
+
+        </ui:define>
+    </ui:composition>
+</f:view>

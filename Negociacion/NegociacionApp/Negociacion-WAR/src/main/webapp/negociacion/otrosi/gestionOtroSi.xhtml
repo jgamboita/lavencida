@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--TODO: ANDRES CAMILO-->
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+        xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoOtroSiEnum"/>
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoModificacionOtroSiEnum" var="tipoModificacionOtroSiEnum"/>
+
+    <h:form id="gestionOtroSiForm">
+
+        <!--
+        <p:remoteCommand name="resetOtroSi" update="gestionOtroSiForm:panelOtroSi,@([id$=outPnlTipoModOtroSi]),gestionOtroSiForm:pnlProrroga,gestionOtroSiForm:pnlTipoModOtroSi" actionListener="#{gestionOtroSiController.reset()}"/>
+        -->
+
+        <p:remoteCommand name="resetOtroSi" update="gestionOtroSiForm:panelOtroSi,gestionOtroSiForm:pnlProrroga" actionListener="#{gestionOtroSiController.reset()}"/>
+
+
+        <h:panelGrid columns="1" style="width:100%">
+            <f:facet name="header">
+                <p:outputLabel
+                    value="#{i18n.negociacion_otrosi_title_negociacion_padre}:
+                                        #{gestionOtroSiController.titleDialog()}"
+                    styleClass="titulo-bold">
+                </p:outputLabel>
+                <div class="separador"></div>
+            </f:facet>
+        </h:panelGrid><br/>
+
+    	<p:panel id="panelOtroSi">
+    		<p:selectOneRadio id="opcionesTipoOtroSi" layout="custom"
+				columns="1" converter="omnifaces.SelectItemsConverter"
+				value="#{gestionOtroSiController.tipoOtroSi}">
+				<f:selectItems
+					value="#{gestionOtroSiController.tipoOtroSiEnumValues}"
+					var="tipo" itemValue="#{tipo}"
+					itemLabel="#{tipo.descripcion}" />
+				<p:ajax event="change" update="@([id$=outPnlTipoModOtroSi])"
+						listener="#{gestionOtroSiController.validarFechaInicioProrroga}"/>
+			</p:selectOneRadio>
+
+			<h:panelGrid >
+				<p:row>
+					<p:radioButton id="optTipoOtro2" for="opcionesTipoOtroSi"
+						itemIndex="2" >
+					</p:radioButton>
+					<p:spacer style="width:10px;"/>
+					<h:outputLabel for="optTipoOtro2"
+						value="#{i18n.negociacion_otrosi_tipo_prorroga}" />
+				</p:row>
+			</h:panelGrid>
+    	</p:panel>
+
+
+                <p:outputPanel id="outPnlTipoModOtroSi">
+                    <!--
+
+                   <p:panel header="#{i18n.negociacion_otrosi_tipo_title_tipo_modificacion}"
+                            id="pnlTipoModOtroSi" rendered="#{gestionOtroSiController.showModificacion()}">
+
+                       <p:selectOneRadio id="opcionesModOtroSi" layout="custom"
+                                         columns="1" converter="omnifaces.SelectItemsConverter"
+                                         value="#{gestionOtroSiController.tipoModificacionOtroSi}">
+                           <f:selectItems
+                               value="#{gestionOtroSiController.tipoMoficacionOtroSiEnumValues}"
+                               var="tipo" itemValue="#{tipo}"
+                               itemLabel="#{tipo.descripcion}" />
+                           <p:ajax event="change" listener="#{gestionOtroSiController.lanzarDialogSedes}"  update="@([id$=OtroSiProrrogaDlg]),@([id$=pnlTipoModOtroSi])" />
+                       </p:selectOneRadio>
+
+
+
+                       <div class="ui-grid ui-grid-responsive">
+                           <div class="ui-grid-row">
+                               <div class="ui-grid-col-9">
+                                   <h:outputLabel for="selContenidoNegVer"
+                                                  value="#{i18n.negociacion_otrosi_cargar_contenido_negociacion}" />
+                               </div>
+                               <div class="ui-grid-col-3">
+                                   <p:selectOneMenu class="anchoInput" id="selContenidoNegVer"
+                                                    rendered="#{negociacion.tipoModalidadNegociacion != NegociacionModalidadEnum.EVENTO}"
+                                                    value="#{gestionOtroSiController.cargarContenido}"
+                                                    converter="omnifaces.SelectItemsConverter">
+                                       <f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+                                                     itemValue="" noSelectionOption="true" />
+                                       <f:selectItem itemLabel="Si" itemValue="Si" />
+                                       <f:selectItem itemLabel="No" itemValue="No" />
+                                       <p:ajax event="change" update="@([id$=selContenidoNegVer]),@([id$=pnlTipoModOtroSi])" process="@this"/>
+                                   </p:selectOneMenu>
+                               </div>
+                           </div>
+
+
+                           <div class="ui-grid-row">
+                               <div class="ui-grid-col-1">
+                                   <p:radioButton id="optModOtro1" for="opcionesModOtroSi"
+                                                  itemIndex="0" rendered="#{gestionOtroSiController.cargarContenido != null}"/>
+                               </div>
+                               <div class="ui-grid-col-11">
+                                   <h:outputLabel for="optModOtro1"
+                                                  value="#{i18n.negociacion_otrosi_tipo_modificacion_corregir}"
+                                                  rendered="#{gestionOtroSiController.cargarContenido != null}"/>
+                               </div>
+                           </div>
+
+                           <div class="ui-grid-row">
+                               <div class="ui-grid-col-1">
+                                   <p:radioButton id="optModOtro2" for="opcionesModOtroSi" itemIndex="1"
+                                                  rendered="#{gestionOtroSiController.cargarContenido != null}"
+                                                  onchange="PF('OtroSiDlg').hide()"/>
+                               </div>
+                               <div class="ui-grid-col-11">
+                                   <h:outputLabel for="optModOtro2" value="#{i18n.negociacion_otrosi_tipo_modificacion_sedes}"
+                                                  rendered="#{gestionOtroSiController.cargarContenido != null}"/>
+                               </div>
+                           </div>
+
+                           <div class="ui-grid-row">
+                               <div class="ui-grid-col-7">
+                                   <p:commandButton value="#{i18n.form_label_button_terminar}"
+                                                    style="float:right;" process="@([id$=pnlTipoModOtroSi])"
+                                                    styleClass="btn btn-sm btn-info"
+                                                    update="@([id$=tblNegociacionesPrestadorForm])"
+                                                    action="#{gestionOtroSiController.crearNegociacionOtroSi}"
+                                                    rendered="#{gestionOtroSiController.tipoModificacionOtroSi != tipoModificacionOtroSiEnum.NO_APLICA }"/>
+
+                                   <p:commandButton value="#{i18n.form_label_button_regresar}"
+                                                    style="float:right;"
+                                                    styleClass="btn btn-sm btn-warning"
+                                                    action="#{gestionOtroSiController.regresarTipoOtroSi}"
+                                                    process="@this"
+                                                    update="@([id$=outPnlTipoModOtroSi])"
+                                                    rendered="#{gestionOtroSiController.tipoModificacionOtroSi != tipoModificacionOtroSiEnum.NO_APLICA }"/>
+
+                               </div>
+                           </div>
+                       </div>
+                       <br/>
+                   </p:panel>
+
+                   -->
+
+                    <p:panel header="#{i18n.negociacion_otrosi_tipo_prorroga}"
+                                 id="pnlProrroga" rendered="#{gestionOtroSiController.validarModOtroSi()}">
+                        <h:panelGrid style="width:100%">
+                    <p:row>
+                        <h:outputLabel for="calendarFechInicioProrroga"
+                                value="#{i18n.negociacion_label_fecha_inicio}" />
+
+                        <p:spacer style="width:10px;"/>
+
+                                          <p:calendar id="calendarFechInicioProrrogaModificacion" pattern="dd/MM/yyyy" size="15"
+                                                      showOn="button" value="#{gestionOtroSiController.fechaInicioProrrogaModif}"
+                                                      locale="#{i18n.locale}"  disabled="true"
+                                                      rendered="#{gestionOtroSiController.tipoOtroSi eq TipoOtroSiEnum.MODIFICACION_Y_PRORROGA}">
+                                          </p:calendar>
+
+                                         <p:calendar id="calendarFechInicioProrroga" pattern="dd/MM/yyyy" size="15"
+                                                     showOn="button" value="#{gestionOtroSiController.fechaInicioProrroga}"
+                                                      locale="#{i18n.locale}"  disabled="true"
+                                                      rendered="#{gestionOtroSiController.tipoOtroSi eq TipoOtroSiEnum.PRORROGA}"
+                                                      >
+                                          </p:calendar>
+
+                                <p:spacer style="width:10px;"/>
+
+                            <h:outputLabel for="calendarFechFinProrroga" pattern="dd/MM/yyyy"
+                                size="15" showOn="button"
+                                value="#{i18n.negociacion_label_fecha_fin}"
+                                locale="#{i18n.locale}"/>
+
+                            <p:spacer style="width:10px;"/>
+
+                                <p:calendar id="calendarFechFinProrroga" pattern="dd/MM/yyyy" size="15"
+                                    showOn="button" value="#{gestionOtroSiController.fechaFinProrroga}"
+                                    locale="#{i18n.locale}" readonlyInput="true" mindate="#{gestionOtroSiController.minFechaFinProrroga}">
+                                    <p:ajax event="dateSelect" listener="#{gestionOtroSiController.validarFechaFinProrroga}"
+                                        update="@this,@([id$=pnlProrroga])"/>
+                                </p:calendar>
+                            </p:row>
+
+                            <br/>
+
+                            <p:row>
+                                <p:commandButton value="#{i18n.form_label_button_cerrar}"
+                                    style="float:right;"
+                                    styleClass="btn btn-sm btn-warning"
+                                    action="#{gestionOtroSiController.limpiarFechaProrroga}"
+                                    process="@this"
+                                       onclick="PF('OtroSiProrrogaDlg').hide()"/>
+
+                                <p:spacer style="width:10px; float:right;"/>
+
+                                <p:commandButton value="#{i18n.form_label_button_generar}"
+                                                                         disabled ="#{gestionOtroSiController.btnGenera}"
+                                     style="float:right;" update="@([id$=outPnlTipoModOtroSi]),@([id$=negociacionesPrestador])"
+                                     action = "#{gestionOtroSiController.crearNegociacionOtroSi}"
+                                     styleClass="btn btn-sm btn-info"/>
+
+                            </p:row>
+
+                        </h:panelGrid>
+                    </p:panel>
+                </p:outputPanel>
+
+            <!--
+
+
+              <p:dialog id="DlgSeleccionSedesOtroSi" header="#{i18n.negociacion_detalle_titulo}"
+                          widgetVar="DlgSeleccionSedesOtroSi" modal="true" resizable="false" style="overflow:hidden !important; overflow-x: hidden !important; width:auto; height:auto;"
+                          draggable="true" closable="true" appendTo="@(body)" dynamic="true"
+                          onShow="PF('DlgSeleccionSedesOtroSi').toggleMaximize();">
+
+                        <ui:include src="../sedes/sedesNegociacionOtroSi.xhtml"></ui:include>
+                </p:dialog>
+             -->
+
+    </h:form>
+
+</f:view>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:pf="http://java.sun.com/jsf/composite/componente">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="Portafolio" />
+		</ui:define>
+		<ui:define name="content">
+			<h:form>
+				<p:panel>
+					<h:panelGrid columns="1" style="width:100%; margin-bottom: 10px;">
+						<f:facet name="header">
+							<p:outputLabel
+								value="#{cupsServicioModel.seleccion.servicioSalud.codigo} - #{cupsServicioModel.seleccion.servicioSalud.nombre}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+
+					<div class="row">
+						<div class="col-lg-12 form-group form-group-sm">
+							<p:outputLabel value="#{i18n.form_ttl_modalidad}"
+								styleClass="col-lg-4" />
+							<div class="col-lg-12 btn-group btn-group-sm" role="group"
+								aria-label="...">
+								<label
+									class="btn btn-info #{cupsServicioModel.activarModalidad('intramuralAmbulatorio')}">Intramural
+									ambulatorio</label> 
+								<label
+									class="btn btn-info #{cupsServicioModel.activarModalidad('intramuralHospitalario')}">Intramural
+									hospitalario</label>
+								<label
+									class="btn btn-info #{cupsServicioModel.activarModalidad('extramuralUnidadMovil')}">Extramural
+									unidad móvil</label>
+								<label
+									class="btn btn-info #{cupsServicioModel.activarModalidad('extramuralDomiciliario')}">Extramural
+									domiciliario</label>
+								<label
+									class="btn btn-info #{cupsServicioModel.activarModalidad('extramuralOtras')}">Otras
+									extramural</label> 
+								<label
+									class="btn btn-info #{cupsServicioModel.activarModalidad('telemedicinaCentroRef')}">Telemedicina
+									centro de referencia</label>
+								<label class="btn btn-info #{cupsServicioModel.activarModalidad('telemedicinaInstitucionRemisora')}">Telemedicina
+									institución remisora</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-lg-6 form-group form-group-sm">
+							<p:outputLabel value="#{i18n.form_ttl_tipo_px}"
+								styleClass="col-lg-4" />
+							<div class="col-lg-6">
+								<p:selectOneMenu id="tipoProcedimiento" effect="fold"
+									styleClass="anchoInput"
+									value="#{cupsServicioModel.tipoProcedimientoVisible}">
+
+									<p:ajax event="change" update="tblCupsHabilitacion" />
+
+									<f:selectItem itemLabel="#{i18n.form_ttl_tipo_px_todos}"
+										itemValue="0" noSelectionOption="true" />
+									<f:selectItem itemLabel="#{i18n.form_ttl_tipo_px_no_pos}"
+										itemValue="2" />
+									<f:selectItem itemLabel="#{i18n.form_ttl_tipo_px_pos}"
+										itemValue="1" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+
+						<div class="col-lg-6 form-group form-group-sm">
+							<p:outputLabel value="#{i18n.form_ttl_complejidad}"
+								styleClass="col-lg-4" />
+							<h:outputText value="#{cupsServicioModel.complejidadServicio}"
+								styleClass="col-lg-6" />
+						</div>
+					</div>
+
+					<div class="form-group form-group-sm">
+						<p:dataTable id="tblCupsHabilitacion" var="px"
+							value="#{cupsServicioModel}" lazy="true"
+							widgetVar="tblCupsHabilitacion" style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+							paginator="true" paginatorPosition="bottom"
+							selection="#{cupsServicioModel.pxSeleccionados}"
+							rowSelectMode="checkbox"
+							disabledSelection="#{sedesPrestadorModel.puedeReabrirPortafolio}"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15">
+
+							<p:ajax event="rowSelectCheckbox"
+								listener="#{cupsServicioModel.seleccionarFila}"	/>
+
+							<p:ajax event="rowUnselectCheckbox"
+								listener="#{cupsServicioModel.deseleccionarFila}" />
+
+							<p:ajax event="toggleSelect"
+								listener="#{cupsServicioModel.seleccionarMasivaProcedimientos}"	/>
+
+							<p:column headerText="#{i18n.tb_procedimiento_cups}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{px.procedimientoServicio.cups}"
+								styleClass="text-center col-lg-1">
+
+								<h:outputText value="#{px.procedimientoServicio.cups}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_procedimiento_cod_emssanar}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{px.procedimientoServicio.codigoCliente}"
+								styleClass="text-center col-lg-1">
+
+								<h:outputText value="#{px.procedimientoServicio.codigoCliente}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_procedimiento_cod_prestador}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{px.codigoInterno}"
+								styleClass="text-center col-lg-2">
+
+								<p:inputText styleClass="col-lg-12" value="#{px.codigoInterno}" >
+									<p:ajax event="change" listener="#{cupsServicioModel.actualizarCodigoInterno(px)}"/>
+								</p:inputText>
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_procedimiento_descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{px.procedimientoServicio.descripcion}"
+								styleClass="text-left">
+
+								<h:outputText value="#{px.procedimientoServicio.descripcion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_procedimiento_complejidad}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{px.procedimientoServicio.complejidad}"								
+								styleClass="text-center col-lg-1">
+								
+								<f:facet name="filter">
+									<p:selectOneMenu id="filtroComplejidad" effect="fold"
+										styleClass="anchoInput"
+										value="#{complejidad}"									
+										onchange="PF('tblCupsHabilitacion').filter()">
+	
+										<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+											itemValue="" noSelectionOption="true" />
+											
+										<f:selectItem itemLabel="Alta"
+											itemValue="3" noSelectionOption="true" />
+										<f:selectItem itemLabel="Media"
+											itemValue="2" />
+										<f:selectItem itemLabel="Baja"
+											itemValue="1" />
+									</p:selectOneMenu>
+								</f:facet>
+								
+								<h:outputText
+									value="#{px.procedimientoServicio.nombreComplejidad}" />
+							</p:column>
+
+							<p:column headerText="Ofertar" selectionMode="multiple"
+								styleClass="text-center col-lg-1" />
+
+						</p:dataTable>
+					</div>
+
+					<div class="row">
+						<div class="text-right col-lg-12 form-group form-group-sm">
+							<p:commandButton value="#{i18n.form_label_button_regresar}"
+								styleClass="btn btn-sm btn-warning" icon="fa fa-chevron-left"
+								iconPos="left" action="#{cupsServicioModel.regresar}" />
+						</div>
+					</div>					
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

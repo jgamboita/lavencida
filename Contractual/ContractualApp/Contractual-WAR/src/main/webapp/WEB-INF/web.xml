@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+          http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <display-name>Contractual - ONE</display-name>
+
+    <context-param>
+        <description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
+        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.UPLOADER</param-name>
+        <param-value>auto</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+        <param-value>.xhtml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Production</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>bootstrap</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.FONT_AWESOME</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+	<context-param>
+		<param-name>server-web-service-negociacion</param-name>
+		<param-value>${server-web-service-negociacion}</param-value>
+	</context-param>
+
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>/faces/*</url-pattern>
+        <url-pattern>*.faces</url-pattern>
+        <url-pattern>*.page</url-pattern>
+    </servlet-mapping>
+
+    <env-entry>
+        <env-entry-name>jsf/ClientSideSecretKey</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>Y29uZXhpYW9uZXBsYXRmbw==</env-entry-value>
+    </env-entry>
+
+    <filter>
+        <filter-name>CAS Single Sign Out Filter</filter-name>
+        <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+        <init-param>
+            <param-name>casServerUrlPrefix</param-name>
+            <param-value>${cas.server.verifier}</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CAS Single Sign Out Filter</filter-name>
+        <url-pattern>/faces/*</url-pattern>
+        <url-pattern>*.faces</url-pattern>
+        <url-pattern>*.page</url-pattern>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <listener>
+        <listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
+    </listener>
+
+    <!-- INICIO: Servlet de logout-->
+    <servlet>
+        <servlet-name>Logout Servlet</servlet-name>
+        <servlet-class>com.conexia.seguridad.LogoutServlet</servlet-class>
+
+        <init-param>
+            <param-name>conexia.seguridad.URL_DESTINO_PARAM</param-name>
+            <!-- TODO: Modificar la url de deslogueo si es necesario -->
+            <param-value>${cas.server}/logout?service=${principal.server}${redirect.server}</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Logout Servlet</servlet-name>
+        <url-pattern>/logout.do</url-pattern>
+    </servlet-mapping>
+    <!-- FIN: Servlet de logout-->
+
+    <!-- INICIO: Autenticación por medio de CAS-->
+    <filter>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+        <init-param>
+            <param-name>casServerLoginUrl</param-name>
+            <param-value>${cas.server}/login</param-value>
+        </init-param>
+        <init-param>
+            <param-name>serverName</param-name>
+            <param-value>${principal.server}</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ignorePattern</param-name>
+            <param-value>/rest/*</param-value>
+        </init-param>
+    </filter>
+    
+    <filter>
+        <description>Filtro para los servicios rest con autenticación.</description>
+        <filter-name>Rest Filter</filter-name>
+        <filter-class>com.conexia.contractual.wap.filter.GeneralRestFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>Rest Filter</filter-name>
+        <url-pattern>/rest/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CAS Validation Filter</filter-name>
+        <filter-class>com.conexia.seguridad.cas.AuthenticationFilterCustom</filter-class>
+        <init-param>
+            <param-name>casServerUrlPrefix</param-name>
+            <param-value>${cas.server.verifier}</param-value>
+        </init-param>
+        <init-param>
+            <param-name>serverName</param-name>
+            <param-value>${principal.server}</param-value>
+        </init-param>
+        <init-param>
+            <param-name>redirectAfterValidation</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>hostnameVerifier</param-name>
+            <param-value>org.jasig.cas.client.ssl.AnyHostnameVerifier</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CAS Validation Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- FIN: Autenticación por medio de CAS-->
+
+    <mime-mapping>
+        <extension>eot</extension>
+        <mime-type>application/vnd.ms-fontobject</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>otf</extension>
+        <mime-type>font/opentype</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ttf</extension>
+        <mime-type>application/x-font-ttf</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>application/x-font-woff</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>svg</extension>
+        <mime-type>image/svg+xml</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>pdf</extension>
+        <mime-type>application/pdf</mime-type>
+    </mime-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.page</welcome-file>
+    </welcome-file-list>
+    
+<!-- 	<error-page> -->
+<!-- 	   <exception-type>java.lang.Exception</exception-type> -->
+<!-- 	   <location>/error/default-error.page?error=ERROR_GENERAL</location> -->
+<!-- 	</error-page> -->
+
+    <!-- Redireccionamiento del puerto 80 al 443 -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>SUCTR</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+    <!-- Restricción de métodos HTTP utilizables  -->
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AllowedMethods</web-resource-name>
+            <url-pattern>/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>POST</http-method>
+            <http-method>HEAD</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+</web-app>

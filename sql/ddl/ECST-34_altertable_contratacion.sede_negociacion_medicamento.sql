@@ -1,0 +1,2 @@
+ALTER TABLE contratacion.sede_negociacion_medicamento
+ ADD COLUMN valor_contrato_anterior integer;

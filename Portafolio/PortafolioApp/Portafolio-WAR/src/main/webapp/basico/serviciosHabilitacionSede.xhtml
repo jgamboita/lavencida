@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+
+	<div class="form-group form-group-sm">
+		<h:form>
+			<p:dataTable id="tblServiciosHabilitacion" var="servicio"
+				value="#{serviciosHabilitacionModel}" lazy="true"
+				style="margin: 0 auto;"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+				paginator="true" paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+				filterDelay="300" disabledSelection="#{sedesPrestadorModel.puedeReabrirPortafolio}"
+				selection="#{serviciosHabilitacionModel.serviciosSeleccionados}">
+
+				<p:ajax event="rowSelectCheckbox"
+					listener="#{serviciosHabilitacionModel.seleccionarFila}"
+					update="tblServiciosHabilitacion" />
+
+				<p:ajax event="rowUnselectCheckbox"
+					listener="#{serviciosHabilitacionModel.deseleccionarFila}"
+					onstart="PF('dlgConfirmarDeseleccion').show()" />
+
+				<p:ajax event="toggleSelect"
+					listener="#{serviciosHabilitacionModel.toggleSelect}"
+					onstart="PF('dlgConfirmarSeleccionMasiva').show()"/>
+
+
+				<p:column headerText="#{i18n.tb_servicio_grupo_hab}"
+					filterMatchMode="contains" filterStyleClass="anchoInput"
+					styleClass="text-center"
+					filterBy="#{servicio.servicioSalud.macroservicio.nombre}">
+
+					<h:outputText
+						value="#{servicio.servicioSalud.macroservicio.nombre}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.tb_servicio_servicio_hab}"
+					filterMatchMode="contains" filterStyleClass="anchoInput"
+					filterBy="#{servicio.servicioSalud.codigo}"
+					styleClass="text-center">
+
+					<h:outputText value="#{servicio.servicioSalud.codigo}" /> -
+					<h:outputText value="#{servicio.servicioSalud.nombre}" />
+				</p:column>
+
+
+				<p:column headerText="#{i18n.tb_servicio_estado}"
+					filterMatchMode="contains" filterStyleClass="anchoInput"
+					styleClass="text-center col-lg-2"
+					filterBy="#{servicio.estadoMinisterio.description}">
+
+					<h:outputText value="#{servicio.estadoMinisterio.description}" />
+				</p:column>
+
+				<p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+					styleClass="text-center col-lg-1">
+
+					<f:facet name="header">
+						<p:outputLabel value="CUPS" />
+						<p style="margin: 0px;">
+							<h:outputText value="#{i18n.tb_servicio_seleccion}"
+								style="font-size:8px;" />
+						</p>
+					</f:facet>
+
+					<h:outputText value="#{servicio.procedimientosSeleccionados}" /> / 
+					<h:outputText value="#{servicio.procedimientosTotales}" />
+				</p:column>
+
+				<p:column selectionMode="multiple" styleClass="text-center col-lg-1">
+					<f:facet name="header">
+						<h:outputText value="Ofertar" />
+					</f:facet>
+				</p:column>
+
+				<p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+					styleClass="text-center col-lg-1">
+
+					<p:commandButton id="btnEditarServicio" icon="fa fa-gear"
+						action="#{contenedorTecnologias.seleccionarServicioSalud(servicio)}"
+						iconPos="left" ttl="#{i18n.tb_servicio_btn_editar_servicio_ttl}" />
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog widgetVar="dlgConfirmarDeseleccion"
+				header="#{i18n.confirm_uncheck_title}" closable="false">
+
+				<f:facet name="message">
+					#{i18n.confirm_uncheck_px_message}				
+				</f:facet>
+
+				<div class="text-right">
+					<p:commandButton value="Cancelar"
+						styleClass="btn btn-sm btn-warning"
+						action="#{serviciosHabilitacionModel.confirmacionDeseleccion(false)}"
+						onclick="PF('dlgConfirmarDeseleccion').hide()"
+						update="tblServiciosHabilitacion" />
+
+					<p:commandButton value="Continuar"
+						styleClass="btn btn-sm btn-success"
+						action="#{serviciosHabilitacionModel.confirmacionDeseleccion(true)}"
+						oncomplete="PF('dlgConfirmarDeseleccion').hide()"
+						update="tblServiciosHabilitacion" />
+				</div>
+			</p:confirmDialog>
+
+			<p:confirmDialog widgetVar="dlgConfirmarSeleccionMasiva"
+				header="#{i18n.confirm_uncheck_title}" closable="false">
+
+				<f:facet name="message">
+					#{i18n.confirm_uncheck_all_px_message}				
+				</f:facet>
+
+				<div class="text-right">
+					<p:commandButton value="Cancelar"
+						styleClass="btn btn-sm btn-warning"
+						onclick="PF('dlgConfirmarSeleccionMasiva').hide()" 
+						update="tblServiciosHabilitacion"/>	
+					
+					<p:commandButton value="Continuar"
+						styleClass="btn btn-sm btn-success"
+						action="#{serviciosHabilitacionModel.confirmacionSeleccionMasiva}"
+						oncomplete="PF('dlgConfirmarSeleccionMasiva').hide()" 
+						update="tblServiciosHabilitacion"/>
+				</div>
+			</p:confirmDialog>
+		</h:form>
+	</div>
+</f:view>
+

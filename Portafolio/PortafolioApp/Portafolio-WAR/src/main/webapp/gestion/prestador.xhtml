@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+        xmlns:o="http://omnifaces.org/ui">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.ClasePrestadorEnum" />
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Gestión Prestador
+        </ui:define>
+        <ui:define name="content">
+       	
+			<h:form id="form">
+
+				<!-- Pop up motivo de rechazo -->
+				<p:dialog header="Motivo de rechazo" modal="true"
+					widgetVar="motivoRechazoDlg" width="35%" height="50%">
+					<p:outputLabel value="Causal de rechazo">
+					</p:outputLabel>
+					<p:selectOneMenu class="anchoInput"
+						value="#{gestionPrestadorController.motivoRechazo}"
+						converter="omnifaces.SelectItemsConverter">
+						<f:selectItems value="#{gestionPrestadorController.motivosRechazo}"
+							var="motivo" itemLabel="#{motivo.descripcion}" itemValue ="#{motivo.descripcion}" />
+					</p:selectOneMenu>
+					<p:commandButton process="@this"
+						styleClass="btn btn-sm btn-warning" update="form" value="Aceptar"
+						actionListener="#{gestionPrestadorController.rechazar}">
+					</p:commandButton>
+				</p:dialog>
+
+				<p:panel id="busquedaPrestador">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Gestión de Prestador"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Clase Prestador: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.clasePrestadorEnum.description}
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Tipo Documento: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                <p:selectOneMenu 
+                                    converter="omnifaces.SelectItemsConverter"
+                                    id="tipo"
+                                    disabled="true"
+                                    value="#{gestionPrestadorController.prestador.tipoIdentificacion}"
+                                    class="anchoInput">
+                                    <f:selectItems value="#{listaTiposDocumento}"
+                                                   var="tipoDocumento" itemLabel="#{tipoDocumento.descripcion} "
+                                                   itemValue="#{tipoDocumento}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Número Documento: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.numeroDocumento}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Categoría Prestador: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.clasificacionPrestador.descripcion}
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Razón Social: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.nombre}
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Correo Electronico: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.correoElectronico}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Contacto: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.contactoAdministrativo}
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Celular: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.celularContactoAdministrativo}
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Telefono: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.telefonoContactoAdministrativo}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Página Web: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.sitioWeb}
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Vigencia: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                <h:outputLabel value="#{gestionPrestadorController.prestador.fechaFinVigencia}">
+                                    <f:convertDateTime pattern="MM/yyyy" />
+                                </h:outputLabel>
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="ESE: " styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-12">
+                                #{gestionPrestadorController.prestador.ese}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">                           
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel 
+                                    value="Servicios asociados: " 
+                                    rendered="#{gestionPrestadorController.prestador.clasePrestadorEnum eq ClasePrestadorEnum.OBJETO_SOCIAL_DIFERENTE}"
+                                    styleClass="col-lg-12" />
+                            </div>                            
+                            <div class="col-lg-6">
+                                <c:forEach items="#{gestionPrestadorController.prestador.grupos}" var="grupo" 
+                                           rendered="#{gestionPrestadorController.prestador.clasePrestadorEnum eq ClasePrestadorEnum.OBJETO_SOCIAL_DIFERENTE}">
+                                    #{grupo.descripcion} <br/>
+                                </c:forEach>
+                            </div>                            
+                        </div>
+                        <div class="ui-grid-col-2 text-right"></div>                            
+                        <div class="col-lg-12"></div>
+                        <div class="ui-grid-col-2 text-right"></div>                            
+                        <div class="col-lg-12"></div>
+                    </div><br/>
+                    <p:dataTable id="prestadores" 
+                                 value="#{gestionPrestadorController.prestador.documentos}"
+                                 var="documento"
+                                 rows="5"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,20"
+                                 rendered="true"
+                                 emptyMessage="Sin registros...">
+                        <f:facet name="header">
+                            Documentos Cargados
+                        </f:facet>
+                        <p:column 
+                            headerText="Documento" style="text-align: center">
+                            <h:outputText value="#{documento.tipoDocumento.descripcion}"/>
+                        </p:column>
+                        <p:column 
+                            headerText="Nombre Archivo" style="text-align: center">
+                            <h:outputText value="#{documento.nombreArchivo}"/>
+                        </p:column>
+                        <p:column 
+                            headerText="Descargar" style="text-align: center">
+                            <p:commandButton id="descargar"
+                                             icon="fa fa-download"
+                                             alt="Descargar"
+                                             title="Descargar" ajax="false"
+                                             actionListener="#{gestionPrestadorController.descargar(documento)}"
+                                             process="@this">
+                                <p:fileDownload
+                                    value="#{gestionPrestadorController.file}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-offset-8 col-lg-4">
+                                    <div class="text-right">
+                                        <p:commandButton process="@this"
+                                                         styleClass="btn btn-sm btn-info" update="form"
+                                                         actionListener="#{gestionPrestadorController.aprobar}"
+                                                         value="Aprobar">
+                                        </p:commandButton>
+                                        <p:commandButton process="@this"
+                                                         styleClass="btn btn-sm btn-warning"
+                                                         value="Rechazar" onclick="PF('motivoRechazoDlg').show();">
+                                        </p:commandButton>
+                                    </div>
+								</div>
+                            </div>
+                        </div>
+						<div>
+							<p:commandButton value="Regresar" onclick="history.back()"
+								styleClass="btn btn-sm btn-warning">
+							</p:commandButton>
+						</div>
+					</div>
+                </p:panel>
+			</h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

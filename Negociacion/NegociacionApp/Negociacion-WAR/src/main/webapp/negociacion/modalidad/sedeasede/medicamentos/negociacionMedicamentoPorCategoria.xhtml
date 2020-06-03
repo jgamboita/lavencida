@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui" id="panelMedicamentoSI">
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.MacroCategoriaMedicamentoEnum" />
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.OpcionesValorCapitaEnum" />
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.AlcanceTecnologiasCapitaEnum" />
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.GestionTecnologiasNegociacionEnum" />
+<!-- 	<p:remoteCommand name="updateMedicamentos" action="#{negociacionMedicamentoCapitaSSController.init()}" -->
+<!-- 		actionListener="#{tecnologiasSSController.consultarPorcentajeTemasCapita()}" -->
+<!-- 		update="tecnologiasSSForm:tabsTecnologias:negociacionServiciosSS, tecnologiasSSForm:totalNegociacion,tecnologiasSSForm:panelTemaCapita"/> -->
+	<script type="text/javascript">
+		function validarComa(text) {
+			if (text.value.match('[,]')) {
+				text.value = '';
+			}
+		}
+	</script>
+	<pe:masterDetail id="masterMedicamentos" showBreadcrumb="false">
+		<pe:masterDetailLevel level="1">
+			<div class="form-group">
+				<h:panelGrid columns="1" style="width:100%">
+					<f:facet name="header">
+						<p:outputLabel value="#{i18n.negociacion_medicamento_titulo}"
+							styleClass="titulo-bold">
+						</p:outputLabel>
+						<div class="separador"></div>
+					</f:facet>
+				</h:panelGrid>
+				<br />
+				<div class="row">
+					<div class="col-lg-3">
+						<p:outputLabel value="Valor a Aplicar" />
+					</div>
+					<div class="col-lg-3">
+						<p:selectOneMenu effect="fold" styleClass="anchoInput"
+							immediate="true"
+							value="#{negociacionMedicamentoCapitaSSController.opcionValor}">
+							<f:selectItem itemLabel="Seleccione" noSelectionOption="true" />
+							<f:selectItems value="#{OpcionesValorCapitaEnum.values()}"
+								var="opcionesValorCapita" itemValue="#{opcionesValorCapita}"
+								itemLabel="#{i18n[cnx:enum_key(opcionesValorCapita)]}" />
+							<p:ajax event="change" update="masterMedicamentos,@([id$=totalNegociacion])" />
+						</p:selectOneMenu>
+					</div>
+					<div class="col-lg-3">
+						<p:outputLabel id="labelValor"
+							rendered="#{negociacionMedicamentoCapitaSSController.mostrarValor()}"
+							for="inputValor"
+							value="#{negociacionMedicamentoCapitaSSController.opcionValor eq OpcionesValorCapitaEnum.OTRO_VALOR 
+                                                ? 'Otro Valor' 
+                                                : negociacionMedicamentoCapitaSSController.opcionValor eq OpcionesValorCapitaEnum.PORCENTAJE 
+                                                ? 'Aumentar/Disminuir Porcentaje' : ''}" />
+					</div>
+					<div class="col-lg-3">
+						<p:inputText id="inputValor"
+							converterMessage="El valor ingresado debe ser un número"
+							rendered="#{negociacionMedicamentoCapitaSSController.mostrarValor()}"
+							value="#{negociacionMedicamentoCapitaSSController.valor}"
+							size="9" maxlength="9">
+						</p:inputText>
+						<p:message for="otroValor" />
+					</div>
+				</div>
+				<br />
+				<div class="ui-grid ui-grid-responsive">
+					<div class="form-group">
+						<div class="row">
+							<div class="col-md-offset-8 col-lg-4">
+								<div class="text-right">
+									<p:commandButton styleClass="btn btn-sm btn-info"
+										process="masterMedicamentos"
+										value="#{i18n.form_label_button_aceptar}" update="@form"
+										actionListener="#{negociacionMedicamentoCapitaSSController.asignarTarifas()}" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<h:panelGrid columns="1" style="width:100%">
+				<f:facet name="header">
+					<p:outputLabel value="Asignación Manual de Tarifas"
+						styleClass="titulo-bold">
+					</p:outputLabel>
+					<div class="separador"></div>
+				</f:facet>
+			</h:panelGrid>
+			<br />
+			<div id="contenedorServicio" class="form_group">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="widget-header">
+							<span class="widget-caption">#{i18n.negociacion_categoria_medicamentos}</span>
+						</div>
+						<h:outputText value="&#160;" />
+					</div>
+					<div class="col-lg-12">
+						<div class="col-lg-2">
+							<p:outputLabel class="col-lg-12 " value="Porcentaje asignacion:" />
+							<h:outputText class="col-lg-12 "
+								value="#{negociacionMedicamentoCapitaSSController.distribucionCategorias.porcentajeAsignado}" />
+						</div>
+
+						<div class="col-lg-2">
+							<p:outputLabel class="col-lg-12 " value="Porcentaje UPC:" />
+							<h:outputText class="col-lg-12 "
+								value="#{negociacionMedicamentoCapitaSSController.distribucionCategorias.porcentaje}" />
+						</div>
+						<div class="col-lg-2">
+							<p:outputLabel class="col-lg-12 " value="#{i18n.negociacion_distribuir_porcentaje}" />
+							<p:selectBooleanCheckbox class="col-lg-12" value="#{negociacionMedicamentoCapitaSSController.distribuirPorcentajeNegociado}">
+								<p:ajax listener="#{negociacionMedicamentoCapitaSSController.seleccionDistribuir}" />
+							</p:selectBooleanCheckbox>
+						</div>
+						<div class="col-lg-3">
+							<p:outputLabel class="col-lg-12 " value="Porcentaje negociado:" />
+							<p:inputText id="porcentajeServicioMed"
+								value="#{negociacionMedicamentoCapitaSSController.porcentajeServNegociado}"
+								size="9" maxlength="9" onkeyup="validarComa(this);"
+								converterMessage="El Porcentaje a aplicar debe ser un número"
+								validatorMessage="El Porcentaje a aplicar no está entre los valores permitidos 0 y 100."
+								valueChangeListener="#{tecnologiasSSController.consultarPorcentajeTemasCapita()}"
+								styleClass="col-lg-12 anchoInput">
+								<f:validateDoubleRange minimum="0" maximum="100" />
+								<pe:keyFilter mask="pnum"/>
+								<p:ajax event="change" 
+									listener="#{negociacionMedicamentoCapitaSSController.actualizarValorCategorias(true)}"
+									update="@form" />
+							</p:inputText>
+						</div>						
+						<div class="col-lg-3">
+							<p:outputLabel class="col-lg-12 " value="Valor negociado:" />
+							<p:inputText id="valorServicioMed"
+								value="#{negociacionMedicamentoCapitaSSController.valorServNegociado}"
+								size="9" maxlength="9"
+								validatorMessage="El valor es inferior que el mínimo permitido"
+								converterMessage="El valor no debe tener decimales"
+								styleClass="col-lg-12 anchoInput"
+								>
+								<f:validateDoubleRange minimum="0" />
+								<pe:keyFilter mask="pnum"/>
+								<p:ajax event="change"
+                                    listener="#{negociacionMedicamentoCapitaSSController.actualizarValorCategorias(false)}"
+                                    update="@form" />
+							</p:inputText>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br />
+			<div class="form-group">
+				<p:toolbar>
+					<p:toolbarGroup align="right">
+						<div class="col-lg-11">
+							<p:outputLabel class="col-lg-6 text-right"
+								value="Gestionar Categorias" />
+							<div class="col-lg-2">
+								<p:selectOneMenu id="gestionSeleccionadaMedicamento"
+									value="#{negociacionMedicamentoCapitaSSController.gestionSeleccionada}">
+									<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItems
+										value="#{GestionTecnologiasNegociacionEnum.values()}"
+										var="tipoGestionServ" itemValue="#{tipoGestionServ}"
+										itemLabel="#{i18n[cnx:enum_key(tipoGestionServ)]}" />
+									<p:ajax
+										listener="#{negociacionMedicamentoCapitaSSController.gestionarCategorias()}"
+										update="negociacionMedicamentosSS, gestionSeleccionadaMedicamento, @([id$=totalNegociacion])" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</p:toolbarGroup>
+				</p:toolbar>
+				<p:outputPanel layout="block">
+					<p:confirmDialog widgetVar="confirmDelete" showEffect="fade"
+						header="#{i18n.negociacion_medicamento_elimininar_header}" icon="fa fa-warning">
+						<f:facet name="message">
+							<p:outputPanel>
+								<h:outputFormat value="#{i18n.negociacion_medicamento_elimininar}" /><br/>
+								<h:outputFormat value="#{i18n.negociacion_medicamento_elimininar_opcion_si}" /><br/>
+                            	<h:outputFormat value="#{i18n.negociacion_medicamento_elimininar_opcion_no}"/>
+							</p:outputPanel>
+						</f:facet>
+						<p:commandButton value="#{i18n.form_label_si}"
+							actionListener="#{negociacionMedicamentoCapitaSSController.eliminarCategorias()}"
+							styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+							onclick="PF('confirmDelete').hide()" process="@this"
+							immediate="true" update="@form,@([id$=totalNegociacion])" />
+						<p:commandButton value="#{i18n.form_label_no}"
+                                     actionListener="#{negociacionMedicamentoCapitaSSController.eliminarCategoriasRedistribuir()}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     onclick="PF('confirmDelete').hide()"
+                                     process="@this" 
+                                     immediate="true"
+                                     update="@form,@([id$=totalNegociacion])"  />          
+                        	
+						<p:commandButton value="#{i18n.form_label_button_cancelar}"
+							type="button" styleClass="btn btn-sm btn-warning"
+							icon="fa fa-close" onclick="PF('confirmDelete').hide()" />
+					</p:confirmDialog>
+				</p:outputPanel>
+				<p:dataTable id="negociacionMedicamentosSS"
+					var="medicamentoNegociacion"
+					value="#{negociacionMedicamentoCapitaSSController.medicamentosNegociacion}"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}"
+					rowKey="#{medicamentoNegociacion.macroCategoriaMedicamento.id}"
+					rowSelectMode="checkbox"
+					selection="#{negociacionMedicamentoCapitaSSController.medicamentosNegociacionSeleccionados}"
+					rows="6" paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="6,12,18"
+					rowStyleClass="#{medicamentoNegociacion.valorNegociado eq 0 ? 'noNegociado' : null}">
+					<p:ajax event="rowSelectCheckbox" />
+					<p:ajax event="rowUnselectCheckbox" />
+					<p:ajax event="toggleSelect"
+						listener="#{negociacionMedicamentoCapitaSSController.seleccionarMasivo}" />
+					<p:column headerText="Categoria" width="200">
+						<h:outputText
+							value="#{medicamentoNegociacion.macroCategoriaMedicamento.descripcion}" />
+					</p:column>
+					<p:column headerText="% Asignación" styleClass="text-right">
+						<h:outputText
+							value="#{medicamentoNegociacion.porcentajeAsginacion}">
+							<pe:keyFilter mask="pnum"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="% UPC" styleClass="text-right">
+						<h:outputText
+							value="#{medicamentoNegociacion.porcentajeReferencia}">
+							<pe:keyFilter mask="pnum"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Valor Referente" styleClass="text-right">
+						<p:outputLabel value="#{medicamentoNegociacion.valorReferencia}">							
+							<pe:keyFilter mask="pnum"/>
+						</p:outputLabel>
+					</p:column>
+					<p:column headerText="% Contrato Anterior" styleClass="text-right">
+						<h:outputText
+							value="#{medicamentoNegociacion.porcentajeContratoAnteriorCategoria}">
+							<pe:keyFilter mask="pnum"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Valor Contrato Anterior" styleClass="text-right">
+						<h:outputText
+							value="#{medicamentoNegociacion.valorContratoAnteriorCategoria}">
+							<pe:keyFilter mask="pnum"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="UPC Contrato Anterior" styleClass="text-right">
+						<h:outputText value="#{medicamentoNegociacion.valorUPCCategoriaAnterior}">
+							<pe:keyFilter mask="pnum"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="% Negociado" styleClass="text-right">
+						<p:inputText id="porcentajeNegociadoMed"
+							value="#{medicamentoNegociacion.porcentajeNegociado}" size="9"
+							maxlength="9"
+							converterMessage="El Porcentaje a aplicar debe ser un número"
+							validatorMessage="El Porcentaje a aplicar no está entre los valores permitidos 0 y 100."
+							valueChangeListener="#{tecnologiasSSController.consultarPorcentajeTemasCapita()}"
+							disabled="true">
+							<f:validateDoubleRange minimum="0" maximum="100" />
+							<pe:keyFilter mask="pnum"/>
+							<p:ajax event="change" 
+								listener="#{negociacionMedicamentoCapitaSSController.guardarNegociacionPorcentaje(medicamentoNegociacion)}"
+								 process="@this"/>
+						</p:inputText>
+					</p:column>
+					<p:column headerText="Valor" styleClass="text-right">
+						<p:inputText id="valorNegociadoMed"
+							value="#{medicamentoNegociacion.valorNegociado}" size="9"
+							maxlength="9"
+							validatorMessage="El valor es inferior que el mínimo permitido"
+							converterMessage="El valor no debe tener decimales"
+							disabled="true">
+							<f:validateDoubleRange minimum="0" />
+							<pe:keyFilter mask="pnum"/>
+							<p:ajax event="change" 
+								listener="#{negociacionMedicamentoCapitaSSController.guardarNegociacionValor(medicamentoNegociacion)}"
+								process="@this"/>
+						</p:inputText>
+					</p:column>
+					<p:column headerText="Ver" styleClass="text-center">
+						<p:commandButton
+							actionListener="#{negociacionMedicamentoCapitaSSController.cargarMedicamentos(medicamentoNegociacion)}"
+							icon="ui-icon-search" title="Detalle" process="@this"
+							immediate="true" update="@form,@([id$=totalNegociacion])">
+							<pe:selectDetailLevel step="1" />
+							<f:setPropertyActionListener value="#{medicamentoNegociacion}"
+								target="#{negociacionMedicamentoCapitaSSController.currentNegociacion}" />
+						</p:commandButton>
+					</p:column>
+					<p:column headerText="Negociado" styleClass="text-center">
+						<p:selectBooleanCheckbox
+							value="#{medicamentoNegociacion.negociado}">
+							<p:ajax update="@([id$=totalNegociacion])"
+								listener="#{negociacionMedicamentoCapitaSSController.guardarNegociacionValor(medicamentoNegociacion)}" />
+						</p:selectBooleanCheckbox>
+					</p:column>
+					<p:column styleClass="text-center" class="text-center"
+						selectionMode="multiple"
+						headerText="#{i18n.negociacion_medicamento_seleccionado}">
+					</p:column>
+				</p:dataTable>
+				<!--Fecha Concertacion Medicamentos-->
+				<p:panel 
+				    header="#{i18n.form_label_fecha_concertacion_mx}"
+					id="panelFechaConcertacionMx" 
+					style="height:90px;"
+					rendered="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+					<p:calendar 
+					    id="fechaConcertacionMx" 
+					    showOn="button" 
+					    size="20"
+						converterMessage="La fecha de Concertacion debe tener formato Día Mes Año"
+						pattern="dd/MM/yyyy" 
+						required="true"
+						requiredMessage="Ingrese la fecha de concertacion"
+						value="#{tecnologiasSSController.negociacion.fechaConcertacionMx}"
+						locale="es">
+					</p:calendar>
+					<p:spacer style="width:50px"></p:spacer>
+					<p:commandButton 
+					    styleClass="btn btn-sm btn-info"
+						value="#{i18n.form_label_button_actualizar}"
+						process="panelFechaConcertacionMx"
+						actionListener="#{tecnologiasSSController.actualizarFechaConcertacion('medicamentos')}"
+						ajax="true">
+					</p:commandButton>
+				</p:panel>
+				<!---->
+			</div>
+		</pe:masterDetailLevel>
+		<pe:masterDetailLevel level="2">
+			<p:dataTable var="medicamento"
+				value="#{negociacionMedicamentoCapitaSSController.medicamentos}"
+				rows="15" paginator="true" paginatorPosition="bottom" rowKey="#{medicamento.sedeNegociacionMedicamentoId}"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15"
+				scrollable="true">
+				<p:column headerText="ATC" width="80">
+					<h:outputText value="#{medicamento.medicamentoDto.atc}" />
+				</p:column>
+				<p:column headerText="Descripcion ATC">
+					<h:outputText value="#{medicamento.medicamentoDto.descripcionAtc}" />
+				</p:column>
+				<p:column headerText="CUMS">
+					<h:outputText value="#{medicamento.medicamentoDto.cums}" />
+				</p:column>
+				<p:column headerText="Forma Farmaceutica">
+					<h:outputText
+						value="#{medicamento.grupoFarmaceutico}" />
+				</p:column>
+				<p:column headerText="Nombre producto">
+					<h:outputText
+						value="#{medicamento.descripcionMedicamento}" />
+				</p:column>
+				<p:column headerText="Descripcion Invima">
+					<h:outputText
+						value="#{medicamento.medicamentoDto.descripcionInvima}" />
+				</p:column>
+				<p:column headerText="Titular Registro Sanitario">
+					<h:outputText
+						value="#{medicamento.medicamentoDto.titularRegistroSanitario}" />
+				</p:column>
+			</p:dataTable>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-md-offset-8 col-lg-4">
+							<div class="text-right">
+								<p:commandButton value="Regresar" icon="ui-icon-arrowthick-1-w"
+									process="@this" immediate="true" update="@form"
+									styleClass="btn btn-sm btn-warning">
+									<pe:selectDetailLevel step="-1" />
+								</p:commandButton>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</pe:masterDetailLevel>
+	</pe:masterDetail>
+</f:view>

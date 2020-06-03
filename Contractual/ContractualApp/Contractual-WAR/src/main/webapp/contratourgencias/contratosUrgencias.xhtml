@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        xmlns:of="http://omnifaces.org/ui">
+    <of:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" />
+    <of:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" />
+    <of:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoContratoEnum" />
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            <h:outputLabel value="#{i18n.contratourg_titulo}" />
+
+        </ui:define>
+
+        <ui:define name="content">
+            <!-- Sección datos del prestador -->
+            <h:form>
+                <p:panel id="panelDatosPrestador">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel 
+                                value="#{i18n.contratourg_prestador_label_datos_generales}:
+                                #{contratoUrgenciasController.prestadorSeleccionado.nombre} 
+                                #{contratoUrgenciasController.prestadorSeleccionado.numeroDocumento}" 
+                                styleClass="titulo-bold">
+                            </p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid><br/>
+                    <!-- Fin Título-->
+
+                    <div class="form-group">
+                        <!-- Primera Columna -->
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p:outputLabel
+                                    value="#{i18n.contratourg_prestador_label_naturaleza_juridica}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{contratoUrgenciasController.prestadorSeleccionado.naturalezaJuridica}" />
+                            </div>
+                            <br />
+
+                            <div class="row">
+                                <p:outputLabel value="#{i18n.form_label_red}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{contratoUrgenciasController.prestadorSeleccionado.prestadorRed}" />
+                            </div>
+                            <br />
+                        </div>
+
+
+                        <!-- Segunda Columna -->
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p:outputLabel value="#{i18n.contratourg_prestador_label_clase}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{contratoUrgenciasController.prestadorSeleccionado.clasePrestador}" />
+                            </div>
+                            <br />
+
+
+                            <br />
+                        </div>
+
+                        <!-- Tercera Columna -->
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p:outputLabel
+                                    value="#{i18n.form_label_correo}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{contratoUrgenciasController.prestadorSeleccionado.correoElectronico}" />
+                            </div>
+                            <br />
+
+                            <br />
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12  text-right">
+                                <div class="col-lg-12">
+                                    <h:form>
+										<p:commandButton id="createContract" value="#{i18n.contratourg_label_crear}"
+											styleClass="btn btn-sm btn-info" icon="fa fa-file"
+											iconPos="left"
+											actionListener="#{contratoUrgenciasController.generarContratoUrgencias(bandejaContratoUrgenciasController.typeUserCode, TipoContratoEnum.URGENCIA, null)}">
+										
+										</p:commandButton>
+                                        <p:commandButton  
+                                            action="#{FacesUtils.urlRedirect('/contratourgencias/bandejaContratoUrgencias.page')}"                                            
+                                            styleClass="btn btn-sm btn-warning" 
+                                            icon="fa fa-angle-left" iconPos="left"
+                                            value="#{i18n.form_label_button_regresar}" />
+									</h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+            </h:form>
+            
+
+            <!-- Sección tabla de negociaciones -->
+            
+        
+            <h:form id="tblContratosPrestadorForm">                
+                <p:panel id="panelDatosContratosUrgencias" style="width:100%;overflow:auto;">
+                    <!-- Inicio Título-->
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel 
+                                value="#{i18n.contratourg_titulo}" 
+                                styleClass="titulo-bold">
+                            </p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                        
+                   
+                    <!-- Fin Título-->
+                 <div class="ui-grid ui-grid-responsive">
+                   <div class="ui-grid-row">
+                    <div class="form-group col-lg-12">
+                    
+                   		<p:toolbar>
+						    <p:toolbarGroup align="left" >
+							    <p:commandButton id="togglerCup" widgetVar="togglerCup" type="button" value="#{i18n.form_label_seleccionar_columnas}" icon="ui-icon-calculator" />
+							    <p:columnToggler widgetVar="contratoUrgenciasPrestadorToggler"
+								     id="contratoUrgenciasPrestadorToggler"
+								     datasource="contratoUrgenciasPrestador"
+								     trigger="togglerCup">
+							    	 <p:ajax event="toggle" listener="#{contratoUrgenciasController.onToggle}" />
+							    </p:columnToggler>
+						    </p:toolbarGroup>
+				        </p:toolbar>
+				        	
+                        <p:dataTable id="contratoUrgenciasPrestador" var="contrato" 
+                                     value="#{contratoUrgenciasController.listContratos}"
+                                     widgetVar="contratoUrgenciasPrestadorTable"
+                                     emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15" 
+                                     paginator="true" paginatorPosition="bottom"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15">
+                                     
+	                        <p:ajax event="toggleSelect" oncomplete="updateToggles(PF('contratoUrgenciasPrestadorToggler'))" update="@this"/>
+		            		<p:ajax event="filter" oncomplete="updateToggles(PF('contratoUrgenciasPrestadorToggler'))" update="@this"/>
+		            		<p:ajax event="page"  oncomplete="updateToggles(PF('contratoUrgenciasPrestadorToggler'))" update="@this"/>
+		           			<p:ajax event="sort" oncomplete="updateToggles(PF('contratoUrgenciasPrestadorToggler'))" update="@this"/>
+		            		<p:ajax event="rowSelectCheckbox" oncomplete="updateToggles(PF('contratoUrgenciasPrestadorToggler'))" update="@this"/>
+		            		<p:ajax event="rowUnselectCheckbox" oncomplete="updateToggles(PF('contratoUrgenciasPrestadorToggler'))" update="@this"/>
+
+
+                            <p:column headerText="#{i18n.contratourg_prestador_tbl_neg_id}" style="width:100px; text-align:center"
+                                      styleClass="text-center col-lg-4" filterBy="#{contrato.negociacionId}" 
+                                      filterMatchMode="contains" filterStyleClass="anchoInput"
+                                      visible="#{contratoUrgenciasController.listToggler[0]}">
+                                <h:outputText value="#{contrato.negociacionId}" />
+                            </p:column>
+
+                            <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_nro_contato}"
+                                styleClass="text-center col-lg-6" style="width:130px; text-align:center"
+                                filterBy="#{contrato.numeroContrato}"
+                                filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[1]}">
+                                <h:outputText value="#{contrato.numeroContrato}">
+                                </h:outputText>
+                            </p:column>
+                            
+                            <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_tipo_contrato}"
+                                styleClass="text-center col-lg-6" style="width:120px; text-align:center"
+                                filterBy="#{contrato.tipoContrato}"
+                                filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[2]}">
+                                <h:outputText value="#{contrato.tipoContrato}">
+                                </h:outputText>
+                            </p:column>
+                            
+                            <p:column
+                                headerText="#{i18n.form_label_regional}"
+                                styleClass="text-center col-lg-6" style="width:200px; text-align:center"
+                                filterBy="#{contrato.regionalDto.descripcion}"
+                                filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[3]}">
+                                <h:outputText value="#{contrato.regionalDto.descripcion}">
+                                </h:outputText>
+                            </p:column>
+                            <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_modalidad}"
+                                styleClass="text-left col-lg-4" style="width:130px; text-align:center"
+                                filterBy="#{contrato.tipoModalidadNegociacion.descripcion}"
+                                filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[4]}">
+                                <h:outputText
+                                    value="#{contrato.tipoModalidadNegociacion.descripcion}"/>
+                            </p:column>
+                            
+                           <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_regimen}"
+                                styleClass="text-left col-lg-4" style="width:130px; text-align:center"
+                                filterBy="#{contrato.regimen}"
+                                filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[5]}">
+                                <h:outputText
+                                    value="#{contrato.regimen}"/>
+                            </p:column>
+                            
+                             <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_subsidio}"
+                                styleClass="text-center col-lg-4"  style="width:130px; text-align:center"
+                                filterBy="#{contrato.tipoSubsidiado}"
+                                filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[6]}">
+                                <h:outputText value="#{contrato.tipoSubsidiado}">
+                                </h:outputText>
+                            </p:column>
+                            
+                           <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_fecha_inicio}"
+                                styleClass="text-center col-lg-4"  style="width:100px; text-align:center"
+                                filterBy="#{contrato.fechaInicioVigencia}"
+                                filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[7]}"
+                                filterFunction="#{contratoUrgenciasController.filterByDate}">
+                                <h:outputText value="#{contrato.fechaInicioVigencia}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                            </p:column>
+                            
+                             <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_fecha_fin}"
+                                styleClass="text-center col-lg-4" style="width:100px; text-align:center"
+                                filterBy="#{contrato.fechaFinVigencia}"
+                                filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[8]}"
+                                filterFunction="#{contratoUrgenciasController.filterByDate}">
+                                <h:outputText value="#{contrato.fechaFinVigencia}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                            </p:column>
+                            
+                             <p:column headerText="#{i18n.contratourg_prestador_tbl_nivel_contrato}"
+                                      styleClass="text-left col-lg-4" style="width:130px; text-align:center"
+                                      filterBy="#{contrato.nivelContrato.descripcion}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                      visible="#{contratoUrgenciasController.listToggler[9]}">
+                                <h:outputText value="#{contrato.nivelContrato.descripcion}" />
+                            </p:column>
+                            
+                             <p:column headerText="#{i18n.contratourg_prestador_tbl_tipo_minuta}"
+                                      styleClass="text-left col-lg-4"  style="width:160px; text-align:center"
+                                      filterBy="#{contrato.tipoMinuta}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                      visible="#{contratoUrgenciasController.listToggler[10]}">
+                                <h:outputText value="#{contrato.tipoMinuta}" />
+                            </p:column>
+                            
+                           <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_poblacion}"
+                                styleClass="text-center col-lg-3" style="width:100px; text-align:center"
+                                filterBy="#{contrato.poblacion}"  filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[11]}"
+                                filterFunction="#{contratoUrgenciasController.filterByPoblacion}">
+                                <h:outputText value="#{contrato.poblacion eq 0 ? 'GENERAL' : contrato.poblacion}" />
+                            </p:column>
+                            
+                                                        
+                           <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_usuario}"
+                                styleClass="text-center col-lg-8" style="width:150px; text-align:center"
+                                filterBy="#{contrato.usuarioDto.nombreCompleto}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[12]}">
+                                <h:outputText value="#{contrato.usuarioDto.nombreCompleto}" />
+                            </p:column>
+                            
+                             <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_estado_legalizacion}"
+                                styleClass="text-center col-lg-6" style="width:150px; text-align:center"
+                                filterBy="#{contrato.estadoLegalizacionEnum.descripcion}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[13]}">
+                                <h:outputText value="#{contrato.estadoLegalizacionEnum.descripcion}" />
+                            </p:column>
+                            
+                            <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_fecha_legalizacion}"
+                                styleClass="text-center col-lg-4" style="width:100px; text-align:center"
+                                filterBy="#{contrato.fechaLegalizacion}" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[14]}"
+                                filterFunction="#{contratoUrgenciasController.filterByDate}">
+                                <h:outputText value="#{contrato.fechaLegalizacion}" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputText>
+                            </p:column>
+                            
+                              <p:column
+                                headerText="#{i18n.contratourg_prestador_tbl_estado_contrato}"
+                                styleClass="text-center col-lg-4" style="width:100px; text-align:center"
+                                filterBy="#{contrato.estadoContrato}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                visible="#{contratoUrgenciasController.listToggler[15]}">
+                                <h:outputText value="#{contrato.estadoContrato}" />
+                            </p:column>
+
+
+                            <p:column headerText="#{i18n.contratourg_prestador_tbl_sedes_contratadas}"
+                                      styleClass="text-center col-lg-4" style="width:120px; text-align:center"
+                                      filterBy="#{contrato.nroSedes}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                      visible="#{contratoUrgenciasController.listToggler[16]}">
+                                <h:outputText value="#{contrato.nroSedes}" />
+                            </p:column>
+
+                            <p:column headerText="#{i18n.form_label_acciones}" style="width:120px; text-align:center"
+                                      styleClass="text-center col-lg-4" visible="#{contratoUrgenciasController.listToggler[17]}">
+
+								<p:commandButton id="btnVerContrato"
+										action="#{contratoUrgenciasController.generarContratoUrgencias(bandejaContratoUrgenciasController.typeUserCode, contrato.tipoContrato, contrato.solicitudContratoId)}"
+											icon="ui-icon-search">
+								<f:setPropertyActionListener target="#{flash.contrato}" value="#{contrato}"/>				
+								<f:setPropertyActionListener target="#{flash.prestador}" value="#{contratoUrgenciasController.prestadorSeleccionado}"/>			
+								</p:commandButton>			
+								
+							   	<p:commandButton id="btnRechazar"
+	                                rendered="#{contrato.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZACION_PRELIMINAR and contrato.tipoContrato==TipoContratoEnum.URGENCIA}"
+	                                update="deleteCttoUrgencias"
+	                                action="#{contratoUrgenciasController.seleccionarContratoUrgenciasEliminar(contrato, bandejaContratoUrgenciasController.typeUserCode)}"
+	                                ajax="true"
+	                                alt="#{i18n.form_label_button_eliminar}"
+	                                title="#{i18n.form_label_button_eliminar}"
+	                                icon="fa fa-ban"
+	                                />
+	                          
+                                <p:commandButton id="descargarActa"
+	                                rendered="#{contrato.tipoContrato!=TipoContratoEnum.URGENCIA and contrato.nombreArchivo ne null}" icon="fa fa-file-pdf-o"
+	                                ajax="false"
+	                                actionListener="#{consultaSolicitudesLegalizarController.descargarActa(contrato.nombreArchivo, contrato.numeroContrato, contrato.nombreOriginalArchivo)}"
+	                                process="@this">
+                                    <p:fileDownload value="#{consultaSolicitudesLegalizarController.file}" />
+                                </p:commandButton>
+                                <p:tooltip id="toolTipActa" for="descargarActa" value="Descargar minuta firmada" position="left"/>
+                              
+							
+                                <p:outputPanel id="deleteCttoUrgencias" layout="block">
+                                    <p:confirmDialog widgetVar="cdDeleteCttoUrgencias"  showEffect="fade"
+                                                     header="Confirmar Eliminar Contrato Urgencias"
+                                                     icon="fa fa-warning" >
+
+                                        <f:facet name="message">  
+                                            <p:outputPanel>  
+                                                <h:outputFormat value="#{i18n.message_eliminar_ctto_urgencias}" escape="false">
+                                                    <f:param value="#{contratoUrgenciasController.numeroContratoDelete}" />
+                                                </h:outputFormat>
+                                            </p:outputPanel>  
+                                        </f:facet>
+                                        
+                                        <p:commandButton value="#{i18n.form_label_button_aceptar}"
+                                                         actionListener="#{contratoUrgenciasController.eliminarContratoUrgencias()}"
+                                                         update="contratoUrgenciasPrestador"
+                                                         styleClass="btn btn-sm btn-info"
+                                                         icon="fa fa-check-circle-o" 
+                                                         onclick="PF('cdDeleteCttoUrgencias').hide()"/>
+
+                                        <p:commandButton value="#{i18n.form_label_button_cancelar}" type="button"
+                                                         styleClass="btn btn-sm btn-warning" icon="fa fa-close"
+                                                         onclick="PF('cdDeleteCttoUrgencias').hide()" />
+
+                                    </p:confirmDialog>
+                                </p:outputPanel>
+                            </p:column> 
+                        </p:dataTable>
+                           </div>
+                        </div>
+                    </div>                
+                     </h:panelGrid>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

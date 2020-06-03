@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            <h:outputLabel value = "#{i18n.negociacion_detalle_oferta}"/>
+        </ui:define>
+    <ui:define name = "content">
+        <!-- Inicio Título-->
+            <div class="widget-header">
+                <span class="widget-caption" title="#{i18n.servicio_detalle_titulo}"> #{negociacionProcedimientoTarifaPropuestaController.tituloComparacion}</span>
+             </div>
+       <!-- Fin Título-->
+    <p:panel id ="panelTableProcedimientoOferta">
+        <h:form>
+            <p:dataTable id ="tarifaPropuestaProcedimiento"
+                    var= "tarifaPropuestaProcedimiento"
+                    value="#{negociacionProcedimientoTarifaPropuestaController.tarifasPropuestas}"
+                    rowKey="#{tarifaPropuestaProcedimiento.procedimientoId}"
+                    emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                    widgetVar="tarifaPropuestaProcedimientoTable" 
+                    paginator="true"
+                    paginatorPosition="bottom"
+                    paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                    rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+                <p:ajax event="page" />
+                <p:ajax event="sort" />
+                <p:ajax event="rowSelectCheckbox" />
+                <p:ajax event="rowUnselectCheckbox" />
+                <p:ajax event="toggleSelect" /> 
+                
+                    <!-- cups -->
+                    <p:column
+                        filterBy="#{tarifaPropuestaProcedimiento.cups}"
+                        filterMatchMode="contains" 
+                        headerText="#{i18n.negociacion_procedimiento_tbl_cups}"
+                        filterStyleClass="anchoInput">
+                        <h:outputText value="#{tarifaPropuestaProcedimiento.cups}" />
+                    </p:column>
+
+                    <!-- codigo emssanar -->
+                    <p:column
+                        filterBy="#{tarifaPropuestaProcedimiento.codigoCliente}"
+                        filterMatchMode="contains" 
+                        headerText="#{i18n.negociacion_procedimiento_tbl_cod_emssanar}"
+                        filterStyleClass="anchoInput">
+                        <h:outputText  value="#{tarifaPropuestaProcedimiento.codigoCliente}" />
+                    </p:column>
+
+                    <!-- Descripcion emssanar -->
+                    <p:column
+                        filterBy="#{tarifaPropuestaProcedimiento.descripcionProcedimiento}"
+                        filterMatchMode="contains" 
+                        headerText="#{i18n.negociacion_procedimiento_tbl_desc_emssanar}"
+                        filterStyleClass="anchoInput">
+                        <h:outputText  value="#{tarifaPropuestaProcedimiento.descripcionProcedimiento}" />
+                    </p:column>
+
+                    
+                    <!-- Complejidad -->
+                    <p:column
+                        filterBy="#{tarifaPropuestaProcedimiento.complejidad}"
+                        filterMatchMode="contains" 
+                        class="text-center"
+                        headerText="#{i18n.negociacion_procedimiento_tbl_nvl_complejidad}"
+                        filterStyleClass="anchoInput">
+                        <h:outputText  value="#{tarifaPropuestaProcedimiento.complejidad}" />
+                    </p:column>
+
+                    <!-- Categoria POS -->
+                    <p:column
+                        filterBy="#{tarifaPropuestaProcedimiento.categoriaPos}"
+                        filterMatchMode="contains" 
+                        headerText="#{i18n.negociacion_procedimiento_tbl_ctg_pos}"
+                        filterStyleClass="anchoInput">
+                        <h:outputText  value="#{tarifaPropuestaProcedimiento.categoriaPos}" />
+                    </p:column>
+
+                    <!-- Tarifario -->
+                    <p:column 
+                        filterBy="#{tarifaPropuestaProcedimiento.tarifarioDescripcion}"
+                        filterMatchMode="contains"
+                        filterStyleClass="anchoInput"
+                        headerText="#{i18n.negociacion_procedimiento_tbl_tarifario}">
+                        <h:outputText value ="#{tarifaPropuestaProcedimiento.tarifarioDescripcion}"/>
+                    </p:column>
+
+                    <!-- % Negociacion -->
+                    <p:column
+                        filterBy="#{tarifaPropuestaProcedimiento.porcentajePropuesto}"
+                        filterMatchMode="contains"
+                        filterStyleClass="anchoInput"
+                        headerText="#{i18n.negociacion_procedimiento_tbl_porc_negociado}" class="text-right">
+                        <h:outputText value ="#{tarifaPropuestaProcedimiento.porcentajePropuesto}"/>
+                    </p:column>
+
+                    <!--Valor Propuesto -->
+                    <p:column 
+                        filterBy="#{tarifaPropuestaProcedimiento.valorPropuesto}"
+                        filterMatchMode="contains"
+                        filterStyleClass="anchoInput"
+                        headerText="#{i18n.negociacion_procedimiento_tbl_vlr}" class="text-right">
+                        <h:outputText value ="#{tarifaPropuestaProcedimiento.valorPropuesto}">
+                            <f:convertNumber type="currency" currencySymbol="$"	maxFractionDigits="2" />
+                        </h:outputText>
+                    </p:column>
+            </p:dataTable>   
+            <div class="row">
+                <div class="col-lg-12 text-right">
+                    <p:commandButton value="#{i18n.form_label_button_cerrar}"
+                        onclick="window.close();"
+                        styleClass="btn btn-sm btn-danger" icon="fa fa-close"
+                        iconPos="left" />
+                </div>
+            </div>
+        </h:form>
+
+    </p:panel>
+    </ui:define>
+    </ui:composition>
+</f:view>

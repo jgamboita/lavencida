@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui">
+    <h:form id="encabezadoForm">
+        <o:importConstants var="AreaCoberturaTipoEnum" type="com.conexia.contratacion.commons.constants.enums.AreaCoberturaTipoEnum"/>
+        <div class="form-group">
+            <h:panelGrid columns="1" style="width:100%">
+                <f:facet name="header">
+                    <p:outputLabel
+                            value="#{empty negociacionController.negociacion.id ? i18n.negociacion_label_detalle : i18n.negociacion_label_detalle_negociacion_existente}"
+                            styleClass="titulo-bold"/>
+                    <p:outputLabel
+                            value="#{not empty negociacionController.negociacion.id ? negociacionController.negociacion.id : ''} "
+                            styleClass="titulo-bold"/>
+                    <div class="separador"></div>
+                </f:facet>
+            </h:panelGrid>
+            <br/>
+
+            <div class="row">
+                <div class="form-group form-group-sm col-lg-4">
+                    <p:outputLabel for="modalidadNegociacion" value="#{i18n.negociacion_label_modalidad}"/>
+                    <p:selectOneMenu id="modalidadNegociacion" style="width: 100%"
+                                     value="#{negociacionController.negociacion.tipoModalidadNegociacion}"
+                                     effect="fold" required="true" immediate="true"
+                                     requiredMessage="#{i18n.form_label_required}"
+                                     disabled="#{not empty negociacionController.negociacion.id}">
+                        <p:ajax event="change" update="encabezadoForm"/>
+                        <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" noSelectionOption="true"/>
+                        <!--@elvariable id="modalidadNegociacion" type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum"-->
+                        <f:selectItems value="#{modalidadesNegociacionProduces}" var="modalidadNegociacion"
+                                       itemValue="#{modalidadNegociacion}"
+                                       itemLabel="#{i18n[cnx:enum_key(modalidadNegociacion)]}">
+                        </f:selectItems>
+                    </p:selectOneMenu>
+                    <p:message for="modalidadNegociacion"/>
+                </div>
+                <div class="form-group form-group-sm  col-lg-4">
+                    <p:outputLabel for="regimenNegociacion" value="#{i18n.negociacion_label_regimen}"/>
+                    <p:selectOneMenu id="regimenNegociacion" style="width: 100%"
+                                     value="#{negociacionController.negociacion.regimen}" effect="fold"
+                                     required="true" requiredMessage="#{i18n.form_label_required}"
+                                     disabled="#{not empty negociacionController.negociacion.id}">
+                        <p:ajax event="valueChange" update="encabezadoForm"/>
+                        <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" noSelectionOption="true"/>
+                        <f:selectItems value="#{regimenNegociacionProduces}" var="regimenNegociacion"
+                                       itemValue="#{regimenNegociacion}"
+                                       itemLabel="#{i18n[cnx:enum_key(regimenNegociacion)]}"/>
+                    </p:selectOneMenu>
+                    <p:message for="regimenNegociacion"/>
+                </div>
+                <div class="form-group form-group-sm col-lg-4">
+                    <p:outputLabel for="poblacionNegociacion" id="labelPoblacion"
+                                   rendered="#{negociacionController.mostrarPoblacion()}"
+                                   value="#{i18n.negociacion_label_poblacion}"/>
+                    <p:inputText id="poblacionNegociacion" rendered="#{negociacionController.mostrarPoblacion()}"
+                                 value="#{negociacionController.negociacion.poblacion}" maxlength="9"
+                                 disabled="#{not empty negociacionController.negociacion.id}"
+                                 converter="javax.faces.Integer" style="width: 100%"
+                                 validatorMessage="#{i18n.form_label_validar_numeros_msg}">
+                        <f:validateLongRange minimum="0"/>
+                        <p:ajax event="change" update="encabezadoForm" process="@this"/>
+                    </p:inputText>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group form-group-sm col-lg-4">
+                    <p:outputLabel for="complejidadNegociacion" value="#{i18n.negociacion_label_complejidad}"/>
+                    <p:selectOneMenu id="complejidadNegociacion" style="width: 100%" required="true"
+                                     value="#{negociacionController.negociacion.complejidad}" effect="fold"
+                                     requiredMessage="#{i18n.form_label_required}"
+                                     disabled="#{not empty negociacionController.negociacion.id}">
+                        <p:ajax event="change" update="encabezadoForm"/>
+                        <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" noSelectionOption="true"/>
+                        <f:selectItems value="#{negociacionController.complejidadNegociacionEnums}"
+                                       var="complejidadNegociacion" itemValue="#{complejidadNegociacion}"
+                                       itemLabel="#{i18n[cnx:enum_key(complejidadNegociacion)]}"/>
+                    </p:selectOneMenu>
+                    <p:message for="complejidadNegociacion"/>
+                </div>
+                <div class="form-group form-group-sm col-lg-4">
+                    <h:outputText styleClass="col-lg-12" value="#{i18n.negociacion_label_es_rias}"
+                                  rendered="#{negociacionController.mostrarEsRias()}"/>
+                    <p:selectBooleanCheckbox id="esRiaNegociacionPgp"
+                                             disabled="#{negociacionController.negociacion.id != null}"
+                                             value="#{negociacionController.negociacion.esRia}"
+                                             rendered="#{negociacionController.mostrarEsRias()}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p:commandButton value="#{i18n.form_label_button_aceptar}" process="@form"
+                                     actionListener="#{negociacionController.crearNegociacion()}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     iconPos="left" update="@form"
+                                     disabled="#{not empty negociacionController.negociacion.id}"/>
+                </div>
+            </div>
+            <br/>
+            <h:panelGroup id="panelOpcionCobertura" rendered="#{not empty negociacionController.negociacion.id}">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <h:outputLabel id="lblArea" value="${i18n.area_cobertura_titulo}" styleClass="titulo-bold"
+                                       rendered="#{not empty negociacionController.negociacion.id }"/>
+                    </div>
+                </div>
+                <div class="separador"></div>
+                <br/>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p:selectOneMenu id="listOpcionesArea" style="width: 100%"
+                                         converter="omnifaces.SelectItemsConverter"
+                                         value="#{negociacionController.negociacion.tipoAreaCobertura}"
+                                         rendered="#{not empty negociacionController.negociacion.id}"
+                                         required="true" requiredMessage="Por favor seleccione una opción de cobertura">
+                            <p:ajax update="encabezadoForm, panelTituloNegociacion"
+                                    listener="#{negociacionController.listarZonasCobertura}"/>
+                            <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" noSelectionOption="true"/>
+                            <f:selectItems value="#{areaCoberturaPruduces}" var="cobertura"
+                                           itemValue="#{cobertura}" itemLabel="#{i18n[cnx:enum_key(cobertura)]}"/>
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <p:selectCheckboxMenu id="listZonasCobertura" style="width: 100%" panelStyle="width: 50%"
+                                              converter="omnifaces.SelectItemsConverter"
+                                              value="#{negociacionController.negociacion.zonaCobertura}"
+                                              rendered="#{negociacionController.negociacion.tipoAreaCobertura eq AreaCoberturaTipoEnum.REFERENCIA_ZONAL}"
+                                              label="${i18n.zonas_cobertura}" required="true"
+                                              requiredMessage="Debe seleccionar por lo menos una zona para aplicar cobertura">
+                            <f:selectItems value="#{negociacionController.zonasMunicipioCobertura}"
+                                           var="zona" itemLabel="#{zona.departamento} - #{zona.zona.descripcion}"
+                                           itemValue="#{zona.zona}"/>
+                        </p:selectCheckboxMenu>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2 ">
+                        <p:commandButton value="#{i18n.form_label_button_guardar}"
+                                         update="formMensajesTecnologiasNegociar,sedesPrestadorForm,areaCoberturaPop"
+                                         styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                         actionListener="#{negociacionController.guardarOpticionTipoCobertura}"
+                                         rendered="#{not empty negociacionController.negociacion.id}"
+                                         process="panelOpcionCobertura"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </div>
+    </h:form>
+</f:view>

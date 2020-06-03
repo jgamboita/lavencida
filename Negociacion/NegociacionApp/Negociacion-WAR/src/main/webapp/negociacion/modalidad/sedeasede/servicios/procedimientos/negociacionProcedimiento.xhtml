@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<script type="text/javascript">
+        function  ValidarPunto(text)
+        {
+            if (text.value.match('[,]'))
+            {
+                text.value = '';
+            }
+        }
+    </script>
+	
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoAsignacionTarifaProcedimientoEnum" var="TipoAsignacionTarifaProcedimientoEnum" />
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" var="NegociacionModalidadEnum" />
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" var="EstadoLegalizacionEnum" />
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="#{i18n.negociacion_detalle_titulo} #{tecnologiasSSController.negociacion.id}"/>
+		</ui:define>
+		<ui:define name="content">
+
+			<!-- Pop-up de procedimientos agregar evento -->
+			<p:dialog header="Procedimientos agregar" closable="true"
+				widgetVar="procedimientosAgregarDlg" modal="true" width="90%" height="500px">
+				<ui:include src="./procedimientosAgregar.xhtml">
+					<ui:param name="componenttoupdate"
+						value="negociacionProcedimientoForm:panelProcedimientosSS" />
+				</ui:include>
+			</p:dialog>
+
+			<h:form id="negociacionProcedimientoForm">
+			<p:panel>
+					<div class="row">
+						<div class="col-lg-12">
+							<p:outputLabel
+								value="#{i18n.negociacion_prestador_label_datos_generales}:
+                               		#{gestionNegociacionController.prestadorSeleccionado.nombre} 
+                                	#{gestionNegociacionController.prestadorSeleccionado.numeroDocumento}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+						</div>
+						<p:outputLabel
+							value="#{i18n.negociacion_detalle_titulo}: #{tecnologiasSSController.negociacion.id}"
+							styleClass="titulo-bold col-lg-7" />
+						<p:outputLabel id="negociacionModalidadLabel"
+							value="Modalidad negociacion: #{tecnologiasSSController.negociacion.tipoModalidadNegociacion.descripcion} "
+							styleClass="titulo-bold col-lg-3" />
+					</div>
+					<div class="separador"></div>
+				</p:panel>
+				<p:panel id="panelProcedimientosSS">
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+						     <p:outputLabel value="#{negociacionProcedimientoSSController.tituloServicioCapitulo}"
+						          styleClass="titulo-bold">
+						     </p:outputLabel>
+						     <p:separator/>
+						</f:facet>
+					</h:panelGrid>
+					<br/>
+					<p:accordionPanel id="accordionOpciones">
+						<p:tab id="tabOpcionesMasivoGrid" 
+							title="#{i18n.negociacion_asignacion_masiva_titulo}">
+							<div class="form-group">
+								
+								<div class="row">
+									<div class="col-lg-5" style="border: 1px solid #E5E5E5;">
+										<h:panelGroup id="opcionesMasivoGrid" layout="block"
+											styleClass="radioButtonSpaceLeft" border="0" rendered="#{!negociacionProcedimientoSSController.pgp}">
+											<p:selectOneRadio id="opcionesMasivo" layout="custom"
+												columns="1"
+												value="#{negociacionProcedimientoSSController.tipoAsignacionSeleccionado}">
+												<f:selectItems
+													value="#{negociacionProcedimientoSSController.tipoAsignacionTarifaProcedimientoEnum}"
+													var="tipoAsignacion" itemValue="#{tipoAsignacion}"
+													itemLabel="#{i18n[cnx:enum_key(tipoAsignacion)]}" />
+												<p:ajax process="@this" update="@form" />
+											</p:selectOneRadio>
+
+											<h:panelGrid columns="2">
+												<p:radioButton id="optProc1" for="opcionesMasivo" itemIndex="0" />
+												<h:column>
+													<h:outputLabel for="optProc1"
+														value="#{i18n.negociacion_tarifario_titulo}" />
+													<h:outputLabel />
+													<p:selectOneMenu id="selectFiltroTarifarios"
+														value="#{negociacionProcedimientoSSController.tarifarioAsignar}"
+														converter="omnifaces.SelectItemsConverter" effect="fold"
+														style="width: 100px"
+														disabled="#{negociacionProcedimientoSSController.tipoAsignacionSeleccionado != 'TARIFARIO'}">
+														<f:selectItem
+															itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+															itemValue="" />
+														<f:selectItems value="#{listaTiposTarifariosPermitidos}"
+															var="tarifario" itemValue="#{tarifario}" 
+															itemLabel="#{i18n[(tarifario.descripcion.replaceAll(' ','_'))]}" />
+													</p:selectOneMenu>
+													<h:outputLabel for="optProc1"
+														value="#{i18n.form_label_porcentaje_simbolo}" />
+													<p:inputText id="porcentajeValorProdTaf"
+													onkeyup="ValidarPunto(this);"
+													value="#{negociacionProcedimientoSSController.porcentajeValor}"
+													maxlength="6"
+													label="#{i18n.negociacion_servicios_tarifario}" size="4"
+													disabled="#{negociacionProcedimientoSSController.tipoAsignacionSeleccionado != 'TARIFARIO'}"
+													validatorMessage="Error de validación: el atributo especificado no esta entre los valores -100 y 100.">
+													<f:validateLongRange minimum="-100" maximum="100" />
+													</p:inputText>	
+												</h:column>
+												
+
+												<p:radioButton id="optProc2" for="opcionesMasivo" itemIndex="1"/>
+												<h:column>
+													<h:outputLabel for="optProc2"
+														value="#{i18n.negociacion_servicios_valor_tarifa_propia}" />
+													<p:inputText id="porcentajeValorProdProp"
+														label="#{i18n.negociacion_servicios_valor_tarifa_propia}"
+														value="#{negociacionProcedimientoSSController.valorTarifaPropia}"
+														maxlength="9" size="9"
+														disabled="#{negociacionProcedimientoSSController.tipoAsignacionSeleccionado != 'VALOR_TARIFA_PROPIA'}">
+														<f:validateLongRange minimum="1" />
+														<f:convertNumber pattern="#0" integerOnly="true"
+															maxFractionDigits="0" />
+													</p:inputText>
+												</h:column>
+
+												<p:radioButton id="optServ3" for= "opcionesMasivo"
+													itemIndex="2" />
+												<h:column>
+													<h:outputLabel for="optServ3"
+														value="#{i18n.negociacion_servicios_incremento_propia}" />
+													<p:inputText id="incrementoPropia"
+														value="#{negociacionProcedimientoSSController.porcentajeAumentoPropia}"
+														size="4" maxlength="4"
+														label="#{i18n.negociacion_servicio_tarifa_propia}"/>
+												</h:column>
+
+												<p:radioButton id = "optProc4" for="opcionesMasivo"
+													itemIndex="3"/>
+												<h:outputLabel for="optProc4"
+													value="#{i18n.negociacion_procedimiento_asigna_tarifa_contrato}" />
+													
+												<p:radioButton id="optProc5" for="opcionesMasivo" 
+													itemIndex="4" />
+												<h:outputLabel for="optProc5"
+													value="#{i18n.negociacion_procedimiento_asigna_tarifa_propuesta}" />
+											</h:panelGrid>
+											<br/>
+											<div class="col-lg-12">
+												<div class="col-lg-3">
+													<p:commandButton id="btnAsignacionTarifasProcedimiento"
+														styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+														value="#{i18n.form_label_button_aceptar}"
+														process="tabOpcionesMasivoGrid"
+														actionListener="#{negociacionProcedimientoSSController.asignarTarifasProcedimiento()}"/>
+												</div>
+												<div class="col-lg-9">
+													<p:selectBooleanCheckbox
+														value="#{negociacionProcedimientoSSController.aplicarPorNegociacion}" />
+													<p:outputLabel
+														value="Aplicar tarifa a tecnologia en otros servicios de habilitación" />
+												</div>
+											</div>
+										</h:panelGroup>
+										
+										<!-- Panel Grip de PGP -->										
+										<h:panelGroup id="opcionesMasivoGridPGP" layout="block"
+											styleClass="radioButtonSpaceLeft" border="0" rendered="#{negociacionProcedimientoSSController.pgp}">
+											<br/>
+											<p:selectOneRadio id="opcionesMasivoPGP" layout="custom"
+												columns="1" converter="omnifaces.SelectItemsConverter"
+												value="#{negociacionProcedimientoSSController.tipoAsignacionSeleccionado}">
+												<f:selectItems
+													value="#{negociacionProcedimientoSSController.tipoAsignacionTarifaProcedimientoEnum}"
+													var="tipoAsignacionProcedimiento" itemValue="#{tipoAsignacionProcedimiento}"
+													itemLabel="#{i18n[cnx:enum_key(tipoAsignacionProcedimiento)]}" />
+											</p:selectOneRadio>
+											
+											<h:panelGrid >
+												<p:row>
+													<p:radioButton id="optProcPGP1" for="opcionesMasivoPGP"
+													itemIndex="0" />
+													<h:outputLabel for="optProcPGP1"
+														value="#{i18n.negociacion_procedimiento_asigna_referente}" />
+													<h:outputLabel />
+												</p:row>
+													
+												<p:row>
+													<p:radioButton id="optProcPGP2" for="opcionesMasivoPGP"
+													itemIndex="1" />
+													<h:outputLabel for="optProcPGP2"
+														value="#{i18n.negociacion_procedimientos_asigna_franja_riesgo}" />
+													<h:outputLabel />
+												</p:row>	
+													
+												<p:row>
+													<h:outputLabel for="optProcPGP2"
+														value="#{i18n.negociacion_masivo_franja_inicio}" />
+													<h:outputLabel />
+													<pe:inputNumber 
+													id="inputFranjaInicio"
+													value="#{negociacionProcedimientoSSController.franjaInicio}"
+													decimalSeparator=","
+													thousandSeparator="."
+													decimalPlaces="2"
+													validatorMessage="#{i18n.negociacion_pgp_valor_franja}"
+													placeholder="0">                            
+													<f:validateDoubleRange minimum="0" maximum="1000" />
+													</pe:inputNumber>
+													
+													<h:outputLabel for="optProcPGP2"
+														value="#{i18n.negociacion_masivo_franja_fin}" />
+													<h:outputLabel />
+													<pe:inputNumber 
+														id="inputFranjaFin"
+														value="#{negociacionProcedimientoSSController.franjaFin}"
+														decimalSeparator=","
+														thousandSeparator="."
+														decimalPlaces="2"
+														validatorMessage="#{i18n.negociacion_pgp_valor_franja}"
+														placeholder="1000">                            
+														<f:validateDoubleRange minimum="0" maximum="1000" />
+													</pe:inputNumber>
+												</p:row>	
+													
+												
+											</h:panelGrid>
+											
+											<br/>
+											<br/>
+											<br/>
+											<div class="col-lg-12">
+												<div class="col-lg-3">
+													<p:commandButton id="btnAsignacionTarifasProcedimientoPGP"
+														styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+														value="#{i18n.form_label_button_aceptar}"
+														rendered="#{negociacionProcedimientoSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+														update="@([id$=negociacionProcedimientosSS]), @([id$=inputFranjaInicio]), @([id$=inputFranjaFin]), @([id$=opcionesMasivoPGP])"
+														process="tabOpcionesMasivoGrid"
+														actionListener="#{negociacionProcedimientoSSController.asignarTarifasProcedimiento()}"/>
+												</div>
+											</div>
+											<br/>
+										</h:panelGroup>
+										
+									</div>
+									<div class="col-lg-7" style="border: 1px solid #E5E5E5;">
+										<h:panelGroup id="panelAgregarProcedimientos" rendered="#{!negociacionProcedimientoSSController.pgp}">
+											<h5 class="title ui-widget-header ui-corner-all col-lg-12">
+												<strong>#{i18n.negociacion_agregar_procedimiento}</strong>
+											</h5>
+											<div class="col-lg-12">
+												<div class="col-lg-4">
+													<p:outputLabel value="Código emssanar: "
+														styleClass="col-lg-12" for="codigoTecnologiaAgregar" />
+													<p:inputText id="codigoTecnologiaAgregar"
+														label="#{i18n.negociacion_servicios_valor_tarifa_propia}"
+														value="#{negociacionProcedimientoSSController.procedimientoAgregar.codigoCliente}"
+														style="col-lg-12" styleClass="anchoInput" />
+													<h:message for="codigoTecnologiaAgregar" />
+												</div>
+												<div class="col-lg-8">
+													<p:outputLabel value="Descripción: " styleClass="col-lg-12"
+														for="descripicionTecnologiaAgregar" />
+													<p:inputText id="descripicionTecnologiaAgregar"
+														value="#{negociacionProcedimientoSSController.procedimientoAgregar.descripcion}"
+														style="col-lg-12" styleClass="anchoInput" />
+													<h:message for="descripicionTecnologiaAgregar" />
+												</div>
+											</div>
+											<p:spacer/>
+											<div class="col-lg-12">
+												<div class="col-lg-12">
+													<p:commandButton id="btnAgregarTecnologia"
+														value="#{i18n.form_label_agregar}"
+														process="panelAgregarProcedimientos"
+														styleClass="btn btn-sm btn-primary"
+														actionListener="#{negociacionProcedimientoSSController.consultarProcedimientosAgregar()}" />
+
+													<p:commandButton id="btnLimpiarPanelAgregar"
+														value="#{i18n.form_label_button_limpiar}"
+														update="negociacionProcedimientoForm:accordionOpciones:panelAgregarProcedimientos"
+														process="@this"
+														styleClass="btn btn-sm btn-warning"
+														actionListener="#{negociacionProcedimientoSSController.limpiarPanelAgregar()}"/>
+												</div>
+											</div>
+										</h:panelGroup>
+
+									</div>
+								</div>
+								<br />
+							</div>
+						</p:tab>
+					</p:accordionPanel>
+					<div class="form-group">
+						<p:toolbar>
+							<p:toolbarGroup align="right">
+								<div class="col-lg-12">
+									<p:outputLabel class="col-lg-7"
+										for="gestionProcedimientos"
+										value="#{i18n.negociacion_gestionar_procedimientos}" />
+									<div class="col-lg-2">
+										<p:selectOneMenu id="gestionProcedimientos"
+											value="#{negociacionProcedimientoSSController.gestionSeleccionada}">
+											<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+												itemValue="" noSelectionOption="true" />
+											<f:selectItems
+												value="#{negociacionProcedimientoSSController.gestionTecnologiasNegociacion}"
+												var="tipoGestion" itemValue="#{tipoGestion}"
+												itemLabel="#{i18n[cnx:enum_key(tipoGestion)]}" />
+											<p:ajax
+												listener="#{negociacionProcedimientoSSController.gestionarProcedimientos('negociacionProcedimientosSSWidget','negociacionProcedimientoForm:gestionProcedimientos')}" />
+										</p:selectOneMenu>
+									</div>
+								</div>
+							</p:toolbarGroup>
+						</p:toolbar>
+						<p:outputPanel id="deleteProd" layout="block">
+							<p:confirmDialog widgetVar="cdDeleteProd" showEffect="fade"
+								header="#{i18n.negociacion_procedimiento_titulo_eliminar}" icon="fa fa-warning">
+
+								<f:facet name="message">
+									<p:outputPanel>
+										<h:outputFormat
+											value="#{i18n.procedimiento_msj_confirm_eliminar}" />
+									</p:outputPanel>
+									<br/>
+									<p:selectBooleanCheckbox value="#{negociacionProcedimientoSSController.eliminarProcedimientosPorNegociacion}"
+										rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion != NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+							            <p:ajax update="@this" />
+							        </p:selectBooleanCheckbox>
+									<h:outputText value="Eliminar en TODOS los servicios de habilitación donde este asociado" 
+										rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion != NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}"/>
+									
+								</f:facet>
+
+								<p:commandButton value="#{i18n.form_label_button_aceptar}"
+									actionListener="#{negociacionProcedimientoSSController.eliminarProcedimientosMasivo()}"
+									styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+									onclick="PF('cdDeleteProd').hide()" />
+
+								<p:commandButton value="#{i18n.form_label_button_cancelar}"
+									type="button" styleClass="btn btn-sm btn-warning"
+									icon="fa fa-close" onclick="PF('cdDeleteProd').hide()" />
+							</p:confirmDialog>
+						</p:outputPanel>
+
+                        <!--@elvariable id="procedimientoNegociacionEncontrato" type="com.conexia.contratacion.commons.dto.negociacion.ProcedimientoNegociacionDto"-->
+						<p:dataTable id="negociacionProcedimientosSS" lazy="true"  
+							binding="#{negociacionProcedimientosSS}"
+							var="procedimientoNegociacionEncontrato"
+							value="#{negociacionProcedimientoSSController}"
+							selection="#{negociacionProcedimientoSSController.procedimientosNegociacionSeleccionados}"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+							widgetVar="negociacionProcedimientosSSWidget" paginator="true"
+							paginatorPosition="bottom"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowSelectMode="checkbox" rowsPerPageTemplate="5,10,15"
+							rowStyleClass="#{empty procedimientoNegociacionEncontrato.valorNegociado ? 'noNegociado' : null}">
+
+							<p:ajax event="page" />
+							<p:ajax event="sort" />
+							<p:ajax event="rowSelectCheckbox" listener="#{negociacionProcedimientoSSController.rowSelect}"/>
+							<p:ajax event="rowUnselectCheckbox" listener="#{negociacionProcedimientoSSController.unRowSelect}"/>
+							<p:ajax event="toggleSelect"  listener="#{negociacionProcedimientoSSController.toggleSelect}"/>
+							<p:ajax event="filter" />
+							
+							<c:if test="#{negociacionProcedimientoSSController.pgp}">
+								<p:columnGroup type="header">
+									<p:row>
+										<p:column colspan="5" headerText="" />
+										<p:column colspan="3" headerText="#{i18n.referente_pgp_title}" />						
+										<p:column colspan="7" headerText="#{i18n.negociacion_emmsanar_header}" style="width:55%" />
+									</p:row>
+									<p:row>
+										<p:column  
+											filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.complejidad}"
+											filterMatchMode="contains"
+											headerText="#{i18n.negociacion_procedimiento_tbl_nvl_complejidad}"
+											filterStyleClass="anchoInput"/>
+	
+										<p:column
+											filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.categoriaPos}"
+											filterMatchMode="contains"							
+											headerText="#{i18n.negociacion_procedimiento_tbl_ctg_pos}"
+											filterStyleClass="anchoInput"/>
+											
+										<p:column filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.cups}"
+												filterMatchMode="contains"
+												headerText="#{i18n.negociacion_procedimiento_tbl_cups}"
+												filterStyleClass="anchoInput"/>
+	
+										<!-- codigo emssanar -->
+										<p:column
+											filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.codigoCliente}"
+											filterMatchMode="contains"
+											headerText="#{i18n.negociacion_procedimiento_tbl_cod_emssanar}"
+											filterStyleClass="anchoInput">
+										</p:column>
+	
+										<!-- descripción emssanar -->
+										<p:column
+											filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.descripcion}"
+											filterMatchMode="contains"
+											headerText="#{i18n.negociacion_procedimiento_tbl_desc_emssanar}"
+											filterStyleClass="anchoInput">
+										</p:column>
+										
+										<p:column filterBy="#{procedimientoNegociacionEncontrato.frecuenciaReferente}"
+											filterMatchMode="contains"
+											headerText="#{i18n.negociacion_pgp_frecuencia}"
+											filterStyleClass="anchoInput" />
+	
+										<p:column filterBy="#{procedimientoNegociacionEncontrato.costoMedioUsuarioReferente}"
+											filterMatchMode="contains"
+											headerText="#{i18n.negociacion_pgp_costo_medio_usuario}"
+											filterStyleClass="anchoInput" />
+											
+										<p:column headerText="#{i18n.negociacion_pgp_valor_referente}"/>	
+								
+										<p:column 
+											headerText="#{i18n.negociacion_pgp_franja_inicio}"
+											filterStyleClass="anchoInput" />	
+											
+										<p:column 
+											headerText="#{i18n.negociacion_pgp_franja_fin}"
+											filterStyleClass="anchoInput" />	
+								
+										<p:column 
+											headerText="#{i18n.negociacion_pgp_frecuencia}"
+											filterStyleClass="anchoInput" />		
+								
+										<p:column 
+											headerText="#{i18n.negociacion_pgp_costo_medio_usuario_negociado}"
+											filterStyleClass="anchoInput" />											
+											
+										<p:column 
+											headerText="#{i18n.negociacion_pgp_valor_negociado}"
+											filterStyleClass="anchoInput" />	
+	
+										<p:column headerText="#{i18n.form_label_negociado}" />
+	
+										<p:column headerText="#{i18n.form_label_seleccionado}" selectionMode="multiple" />
+									</p:row>
+									
+								</p:columnGroup>
+							</c:if>
+							
+							<!-- Nivel de Complejidad -->
+							<p:column
+								filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.complejidad}"
+								filterMatchMode="contains"
+								headerText="#{i18n.negociacion_procedimiento_tbl_nvl_complejidad}"
+								filterStyleClass="anchoInput" width="83">
+								<h:outputText style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+									value="#{procedimientoNegociacionEncontrato.procedimientoDto.complejidad}" />
+							</p:column>
+
+							<!-- Categoría POS -->
+							<p:column
+								filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.categoriaPos}"
+								filterMatchMode="contains"							
+								headerText="#{i18n.negociacion_procedimiento_tbl_ctg_pos}"
+								filterStyleClass="anchoInput" width="72">
+								<h:outputText style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+									value="#{procedimientoNegociacionEncontrato.procedimientoDto.categoriaPos}" />
+							</p:column>
+
+							<!-- cups -->
+							<p:column
+								filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.cups}"
+								filterMatchMode="contains"
+								headerText="#{i18n.negociacion_procedimiento_tbl_cups}"
+								filterStyleClass="anchoInput" width="65">
+								<h:outputText style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+									value="#{procedimientoNegociacionEncontrato.procedimientoDto.cups}" />
+							</p:column>
+
+							<!-- codigo emssanar -->
+							<p:column
+								filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.codigoCliente}"
+								filterMatchMode="contains"
+								headerText="#{i18n.negociacion_procedimiento_tbl_cod_emssanar}"
+								filterStyleClass="anchoInput" width="92">
+								<h:outputText style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+									value="#{procedimientoNegociacionEncontrato.procedimientoDto.codigoCliente}" />
+							</p:column>
+
+							<!-- descripción emssanar -->
+							<p:column
+								filterBy="#{procedimientoNegociacionEncontrato.procedimientoDto.descripcion}"
+								filterMatchMode="contains"
+								headerText="#{i18n.negociacion_procedimiento_tbl_desc_emssanar}"
+								filterStyleClass="anchoInput" width="350">
+								<h:outputText style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+									value="#{procedimientoNegociacionEncontrato.procedimientoDto.descripcion}" />
+							</p:column>
+	
+							<c:if test="#{negociacionProcedimientoSSController.pgp}">
+								<!-- Frecuencia referente-->
+								<p:column
+									headerText="#{i18n.negociacion_pgp_frecuencia}" class="text-center"
+									filterStyleClass="anchoInput" width="90">
+									<h:outputText value="#{procedimientoNegociacionEncontrato.frecuenciaReferente}" >
+										<f:convertNumber pattern="###,###.##########" />
+									</h:outputText>
+								</p:column>
+								<!-- Costo Medio Usuario referente -->
+								<p:column
+									headerText="#{i18n.negociacion_pgp_costo_medio_usuario}" class="text-center"
+									filterStyleClass="anchoInput" width="90">
+									<h:outputText value="#{procedimientoNegociacionEncontrato.costoMedioUsuarioReferente}" >
+										<f:convertNumber locale="es_CO" />
+									</h:outputText>
+								</p:column>
+								<!-- Valor Referente -->
+								<p:column
+									headerText="#{i18n.negociacion_pgp_valor_referente}" class="text-center"
+									filterStyleClass="anchoInput" width="90">
+									<h:outputText value="#{procedimientoNegociacionEncontrato.valorReferente}" >
+										<f:convertNumber locale="es_CO" />
+									</h:outputText>
+								</p:column>
+							</c:if>
+
+							<c:if test="#{!negociacionProcedimientoSSController.pgp}">
+								<!-- Tarifario Contrato Anterior -->
+								<p:column
+									headerText="#{i18n.negociacion_procedimiento_tbl_trf_ctr_ant}"
+									filterStyleClass="anchoInput" width="90">
+									<h:outputText style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.tarifarioContratoAnterior}" />
+								</p:column>
+	
+								<!-- Porcentaje Contrato Anterior -->
+								<p:column
+									class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_prc_ctr_ant}"
+									filterStyleClass="anchoInput" width="72">
+									<p:outputLabel style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.porcentajeContratoAnterior}">
+										<f:convertNumber maxFractionDigits="2"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+	
+								<!-- valor contrato anterior -->
+								<p:column
+									filterBy="#{procedimientoNegociacionEncontrato.valorContratoAnterior}"
+									filterMatchMode="contains" class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_vlr_ctr_ant}"
+									filterStyleClass="anchoInput" width="100">
+									<p:outputLabel value="#{procedimientoNegociacionEncontrato.valorContratoAnterior}"
+                                                   style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"/>
+								</p:column>
+	
+								<!-- Tarifario Propuesta Portafolio -->
+								<p:column
+									class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_trf_prop_por}"
+									filterStyleClass="anchoInput" width="90">
+									<h:outputText style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.tarifarioPropuestoPortafolio}" />
+								</p:column>
+	
+								<!-- % Propuesta Portafolio -->
+								<p:column
+									class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_prc_prop_por}"
+									filterStyleClass="anchoInput" width="74">
+									<p:outputLabel style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.porcentajePropuestoPortafolio}">
+										<f:convertNumber maxFractionDigits="2"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+	
+								<!-- Valor Propuesta Portafolio -->
+								<p:column
+									filterBy="#{procedimientoNegociacionEncontrato.valorPropuestoPortafolio}"
+									filterMatchMode="contains" class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_vlr_prop_por}"
+									filterStyleClass="anchoInput" width="100">
+									<p:outputLabel style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.valorPropuestoPortafolio}">
+										<f:convertNumber type="currency" currencySymbol="$"
+											maxFractionDigits="0"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+	
+								<!-- Valor Tarifa Plena -->
+								<p:column class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_vlr_trf_plena}"
+									filterStyleClass="anchoInput" width="72">
+									<p:outputLabel style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.valorTarifaPlena}">
+										<f:convertNumber type="currency" currencySymbol="$"
+											maxFractionDigits="0"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+	
+								<!-- Selección de tarifario -->
+								<p:column
+								    filterBy="#{procedimientoNegociacionEncontrato.tarifarioNegociado}"
+									filterMatchMode="contains" class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_trf_negociado}"
+									filterStyleClass="anchoInput" width="100">
+									<p:selectOneMenu style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.tarifarioNegociado}"
+										converter="omnifaces.SelectItemsConverter" effect="fold">
+
+											<p:ajax event="change"
+                                                                                                listener="#{negociacionProcedimientoSSController.liquidarValorNegociadoByTarifario(procedimientoNegociacionEncontrato)}" update="col10"/>
+										<f:selectItem
+											itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+											itemValue="" />
+										<f:selectItems
+											value="#{procedimientoNegociacionEncontrato.tarifarioSoportados}"
+											var="tarifario" itemValue="#{tarifario}"
+											itemLabel="#{i18n[(tarifario.descripcion.replaceAll(' ','_'))]}" />
+									</p:selectOneMenu>
+								</p:column>
+	
+								<!-- % Negociado -->
+								<p:column
+									class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_porc_negociado}"
+									filterStyleClass="anchoInput" width="72">
+									<p:inputText id="col10"
+										label="#{i18n.negociacion_procedimiento_tbl_porc_negociado}"
+										value="#{procedimientoNegociacionEncontrato.porcentajeNegociado}"
+										size="12" maxlength="5"
+                                                                                disabled="#{negociacionProcedimientoSSController.desactivarPorcNegciado(procedimientoNegociacionEncontrato)}"
+                                                                                >
+										<p:ajax event="change"
+											listener="#{negociacionProcedimientoSSController.liquidarValorNegociadoByTarifario(procedimientoNegociacionEncontrato)}"
+											update="@form" />
+										<f:validateLongRange minimum="-100" maximum="100" />
+										<f:convertNumber maxFractionDigits="2"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:inputText>
+								</p:column>
+	
+	
+								<!-- diferencia %-->
+								<p:column
+									headerText="#{i18n.negociacion_procedimiento_tbl_dif_porc}"
+									class="text-right" filterStyleClass="anchoInput"
+									style="width:110px">
+									<!-- Filtro de la columna -->
+									<f:facet name="header">
+										<h:outputLabel
+											value="#{i18n.negociacion_procedimiento_tbl_dif_porc}" />
+										<p:selectOneMenu id="selectFiltroPorcentajeProcedimiento"
+											value="#{negociacionProcedimientoSSController.filtroEspecialSeleccionadoPorcentaje}"
+											style="width: 50px">
+											<p:ajax event="change" update="@this" />
+											<f:selectItem
+												itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+												itemValue="" />
+											<f:selectItems
+												value="#{negociacionProcedimientoSSController.filtroEspecialEnum}"
+												var="filtro" itemValue="#{filtro}"
+												itemLabel="#{i18n[cnx:enum_key(filtro)]}" />
+	
+										</p:selectOneMenu>
+	
+										<p:commandButton
+											style="vertical-align: top; padding-bottom: 2px"
+											actionListener="#{negociacionProcedimientoSSController.filtroEspecial(negociacionProcedimientoSSController.diferenciaPorcentaje)}"
+											icon="fa fa-filter" update="negociacionProcedimientoForm"
+											process="@this,inputValorCompararProcedimientos" />
+										<br />
+										<p:inputText id="inputValorCompararProcedimientos"
+											placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+											value="#{negociacionProcedimientoSSController.filtroPorcentaje}"
+											maxlength="20" style="width: 80px">
+											<!-- Validar caracteres permitidos -->
+											<!--                                         <o:validator validatorId="javax.faces.RegularExpression" -->
+											<!--                                                      pattern="#{i18n.negociacion_filtro_especial_validar_caracteres}" -->
+											<!--                                                      message="#{i18n.form_label_validar_filtro_especial_porcentaje}" /> -->
+	
+											<p:ajax event="blur" update="@this" />
+										</p:inputText>
+									</f:facet>
+									<!-- Valor de la columna -->
+									<p:outputLabel style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.diferenciaPorcentajeContratado}">
+										<f:convertNumber maxFractionDigits="2"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+	
+								<!-- diferencia $-->
+								<p:column
+									headerText="#{i18n.negociacion_procedimiento_tbl_dif_valor}"
+									class="text-right" filterStyleClass="anchoInput"
+									style="width:110px">
+									<!-- Filtro de la columna -->
+									<f:facet name="header">
+										<h:outputText
+											value="#{i18n.negociacion_procedimiento_tbl_dif_valor}" />
+										<p:selectOneMenu id="selectFiltroValores"
+											value="#{negociacionProcedimientoSSController.filtroEspecialSeleccionadoValor}"
+											style="width: 50px" converter="omnifaces.SelectItemsConverter">
+											<p:ajax event="change" update="@this" />
+											<f:selectItem
+												itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+												itemValue="" />
+											<f:selectItems
+												value="#{negociacionProcedimientoSSController.filtroEspecialEnum}"
+												var="filtro" itemValue="#{filtro}"
+												itemLabel="#{i18n[cnx:enum_key(filtro)]}" />
+										</p:selectOneMenu>
+	
+										<p:commandButton
+											style="vertical-align: top; padding-bottom: 2px"
+											actionListener="#{negociacionProcedimientoSSController.filtroEspecial(negociacionProcedimientoSSController.diferenciaValor)}"
+											icon="fa fa-filter" update="negociacionProcedimientoForm"
+											process="@this,inputValorCompararPorcProcedimientos" />
+										<br />
+										<p:inputText id="inputValorCompararPorcProcedimientos"
+											value="#{negociacionProcedimientoSSController.filtroValor}"
+											maxlength="20" style="width: 80px">
+											<p:ajax event="blur" update="@this" />
+	
+											<!-- Validar caracteres permitidos -->
+											<!--                                         <o:validator validatorId="javax.faces.RegularExpression"  -->
+											<!--                                                      pattern="#{i18n.negociacion_filtro_especial_validar_caracteres}" -->
+											<!--                                                      message="#{i18n.form_label_validar_filtro_especial_valor}" /> -->
+	
+										</p:inputText>
+									</f:facet>
+									<!-- Valor de la columna -->
+									<p:outputLabel
+										value="#{procedimientoNegociacionEncontrato.diferenciaValorContratado}">
+										<f:convertNumber maxFractionDigits="0" type="currency"
+											currencySymbol="$"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+								
+							</c:if>
+							<!-- Para modalidades de negociación diferentes de evento y pgp 
+								VALOR NEGOCIADO-->
+							<c:if test="#{!negociacionProcedimientoSSController.pgp 
+ 								and negociacionProcedimientoSSController.negociacion.tipoModalidadNegociacion != NegociacionModalidadEnum.EVENTO}"> -->
+								<!-- valor negociado -->
+								<p:column filterBy="#{procedimientoNegociacionEncontrato.valorNegociado}"
+									filterMatchMode="contains" class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_valor}"
+									filterStyleClass="anchoInput" width="100">
+									<p:outputLabel
+										value="#{procedimientoNegociacionEncontrato.valorNegociado}" id="col11">
+										<f:convertNumber type="currency" currencySymbol="$"
+											maxFractionDigits="0"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+							</c:if>
+							
+							<c:if test="#{negociacionProcedimientoSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+								<!-- valor negociado -->
+								<p:column
+                                        filterBy="#{procedimientoNegociacionEncontrato.valorNegociado}"
+									filterMatchMode="contains" class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_valor}"
+									filterStyleClass="anchoInput" width="100">
+									<p:outputLabel style="#{procedimientoNegociacionEncontrato.procedimientoDto.estadoProcedimientoId eq 1 ? 'color:black;' : 'color:red;'}"
+										value="#{procedimientoNegociacionEncontrato.valorNegociado}" id="col11">
+										<f:convertNumber type="currency" currencySymbol="$"
+											maxFractionDigits="0"
+											locale="#{negociacionProcedimientoSSController.locale}" />
+									</p:outputLabel>
+								</p:column>
+							</c:if>
+							
+														
+							<c:if test="#{negociacionProcedimientoSSController.pgp}">
+								<!-- Franja inicio-->
+								<p:column
+									headerText="#{i18n.negociacion_pgp_franja_inicio}" class="text-center"
+									filterStyleClass="anchoInput" width="90">
+									<pe:inputNumber value="#{procedimientoNegociacionEncontrato.franjaInicio}"
+										decimalSeparator=","
+										thousandSeparator="."
+										decimalPlaces="2"
+										validatorMessage="#{i18n.negociacion_pgp_valor_franja}">                            
+										<f:validateDoubleRange minimum="0" maximum="1000"/>
+                            			<p:ajax event="change"
+                                    		listener="#{negociacionProcedimientoSSController.guardarFranjaProcedimiento(procedimientoNegociacionEncontrato, 1)}"
+                             				update="@form"/>                    
+									</pe:inputNumber>
+								</p:column>
+								
+								<!-- Franja fin-->
+								<p:column
+									headerText="#{i18n.negociacion_pgp_franja_fin}" class="text-center"
+									filterStyleClass="anchoInput" width="90">
+									<pe:inputNumber 
+										value="#{procedimientoNegociacionEncontrato.franjaFin}"
+										decimalSeparator=","
+										thousandSeparator="."
+										decimalPlaces="2"
+										validatorMessage="#{i18n.negociacion_pgp_valor_franja}">                            
+										<f:validateDoubleRange minimum="0" maximum="1000" />
+                            			<p:ajax event="change"
+                                    		listener="#{negociacionProcedimientoSSController.guardarFranjaProcedimiento(procedimientoNegociacionEncontrato, 2)}"
+                             				update="@form"/>                     
+									</pe:inputNumber>
+								</p:column>
+							
+								<!-- Frecuencia negociado -->
+								<p:column
+									headerText="#{i18n.negociacion_pgp_frecuencia}" class="text-center"
+									filterStyleClass="anchoInput" width="90">
+									<pe:inputNumber value="#{procedimientoNegociacionEncontrato.frecuenciaUsuario}"
+										decimalSeparator=","
+										thousandSeparator="."
+										decimalPlaces="10"
+										validatorMessage="#{i18n.negociacion_pgp_valor_minimo}">                            
+										<f:validateDoubleRange minimum="0" />
+                            			<p:ajax event="change"
+                                    		listener="#{negociacionProcedimientoSSController.guardarValorProcedimiento(procedimientoNegociacionEncontrato)}"
+                             				update="@form"/> 
+                             			                        
+									</pe:inputNumber>
+								</p:column>
+								<!-- Costo medio usuario -->
+								<p:column filterBy="#{procedimientoNegociacionEncontrato.costoMedioUsuario}"
+									filterMatchMode="contains" class="text-right"
+									headerText="#{i18n.negociacion_procedimiento_tbl_valor}"
+									filterStyleClass="anchoInput" width="75">
+									<pe:inputNumber value="#{procedimientoNegociacionEncontrato.costoMedioUsuario}" id="col14"
+										decimalSeparator=","
+										thousandSeparator="."
+										decimalPlaces="3"
+										validatorMessage="#{i18n.negociacion_pgp_valor_minimo}">                            
+										<f:validateDoubleRange minimum="0" />                       
+                            			<p:ajax event="change"
+                                    		listener="#{negociacionProcedimientoSSController.guardarValorProcedimiento(procedimientoNegociacionEncontrato)}"
+                             				update="@form"/>
+                             			
+									</pe:inputNumber>
+								</p:column>								
+								<!-- valor negociado -->
+								<p:column filterBy="#{procedimientoNegociacionEncontrato.valorNegociado}"
+									filterMatchMode="contains" class="text-center"
+									headerText="#{i18n.negociacion_procedimiento_tbl_valor}"
+									filterStyleClass="anchoInput" width="100">
+									<p:outputLabel value="#{procedimientoNegociacionEncontrato.valorNegociado}" id="col15">
+                            			<f:convertNumber locale="es_CO" />
+									</p:outputLabel>
+								</p:column>							
+							</c:if>
+
+							<!-- check negociado-->
+							<p:column
+								headerText="#{i18n.negociacion_procedimiento_tbl_negociado}"
+                                                                styleClass="text-center" width="74" >
+                                                            <p:selectBooleanCheckbox id="col12" disabled="true"
+									value="#{procedimientoNegociacionEncontrato.negociado}">
+									<p:ajax update="pruebaProd"
+										listener="#{negociacionProcedimientoSSController.marcarProcedimientoNegociado}" />
+								</p:selectBooleanCheckbox>
+								<h:outputText id="pruebaProd" />
+							</p:column>
+
+							<!-- check seleccion -->
+							<p:column class="text-center" selectionMode="multiple"
+								headerText="#{i18n.negociacion_procedimiento_tbl_seleccion}"
+								id="col13" width="72" />	
+						</p:dataTable>
+						<!-- Fin Tabla de Procedimientos -->
+						<p:spacer/>
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="col-lg-10">
+									<p:commandButton value="#{i18n.form_label_button_regresar}"
+										actionListener="#{negociacionProcedimientoSSController.volverAServicios()}"
+										styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left"
+										iconPos="left" process="@this" />
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

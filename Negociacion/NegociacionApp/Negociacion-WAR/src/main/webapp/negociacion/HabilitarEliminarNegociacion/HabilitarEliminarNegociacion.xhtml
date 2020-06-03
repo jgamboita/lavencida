@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://xmlns.jcp.org/jsf/core" locale="es-CO"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:c="http://java.sun.com/jstl/core">
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+             <h:outputLabel value="#{i18n.negociacion_HabilitarEliminarNegociacion_habilitar_heliminar_negociacion}" />
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="idformhabilitarElinarNegociacion">
+
+                <p:growl id="idValidaciones" life="200" />  
+
+                <p:panel id="idpanelhabilitarElinarNegociacion">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="#{i18n.negociacion_HabilitarEliminarNegociacion_Consulta_Contratos}" styleClass="titulo-bold"/>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                     <h:outputText value="&#160;" />
+                    <!--datos de entrada-->
+                    
+                    <div class="row">
+                            <div class="col-lg-6">
+                                <h:outputLabel  for="txtNumeroContrato"
+                                    value="#{i18n.negociacion_HabilitarEliminarNegociacion_numero_contrato}"/>
+                                <p:inputText id="txtNumeroContrato" 
+                                             value="#{habilitarEliminarNegociacionController.filtroBandejaConsultaContratoDto.numeroContrato}"
+                                             styleClass="form-control input-sm">
+                                </p:inputText>
+                            </div>
+                           
+                           <div class="col-lg-6">
+                               <h:outputLabel  for="idModalidad"
+                                    value="#{i18n.negociacion_HabilitarEliminarNegociacion_modalidad}"/>
+                                <p:selectOneMenu id="idModalidad"
+                                                 value="#{habilitarEliminarNegociacionController.filtroBandejaConsultaContratoDto.modalidad}"
+                                                 converter="omnifaces.SelectItemsConverter" effect="fold"
+                                                  styleClass="anchoInput">
+                                    <f:selectItem itemLabel="#{i18n.negociacion_HabilitarEliminarNegociacion_seleccionar}" itemValue=""/>
+                                    <f:selectItems value="#{habilitarEliminarNegociacionController.modalidades}"
+                                                   var="modalidad" itemValue="#{modalidad}"
+                                                   itemLabel="#{i18n[cnx:enum_key(modalidad)]}"/>
+                                </p:selectOneMenu>
+                           </div>
+                    </div>
+                     <h:outputText value="&#160;" />
+                    
+                      <div class="row">
+                            <div class="col-lg-12">
+                                <h:outputLabel for="txtRazonSocial"
+                                     value="#{i18n.negociacion_HabilitarEliminarNegociacion_razon_social}"/>
+                                <p:inputText id="txtRazonSocial"
+                                             value="#{habilitarEliminarNegociacionController.filtroBandejaConsultaContratoDto.razonSocial}" 
+                                             styleClass="form-control input-sm">
+                                </p:inputText>
+                           </div>
+                    </div>
+                     <h:outputText value="&#160;" />
+                     <div class="row">
+                         <div class="col-lg-6">
+                             <h:outputLabel  for="txtNumeroNegociacion"
+                                 value="#{i18n.negociacion_HabilitarEliminarNegociacion_numero_negociacion}"/>
+                               <p:inputText id="txtNumeroNegociacion"
+                                             value="#{habilitarEliminarNegociacionController.filtroBandejaConsultaContratoDto.numeroNegociacion}" 
+                                              styleClass="form-control input-sm">
+                                </p:inputText>
+                         </div>
+                         <div class="col-lg-6">
+                             <h:outputLabel  for="idEstadoContrato"
+                                 value="#{i18n.negociacion_HabilitarEliminarNegociacion_estado_contrato}"/>
+                               <p:selectOneMenu id="idEstadoContrato"
+                                                 value="#{habilitarEliminarNegociacionController.filtroBandejaConsultaContratoDto.estadoContrato}"
+                                                 converter="omnifaces.SelectItemsConverter" effect="fold"
+                                                 styleClass="anchoInput">
+                                    <f:selectItem itemLabel="#{i18n.negociacion_HabilitarEliminarNegociacion_seleccionar}" itemValue=""/>
+                                    <f:selectItems value="#{listaEstadoNegociacionEnum}"
+                                                   var="estadoContrato"
+                                                   itemLabel="#{estadoContrato.descripcion}"
+                                                   itemValue="#{estadoContrato}"/>
+                                </p:selectOneMenu>
+                         </div>
+                     </div>
+                     <h:outputText value="&#160;" />
+                    <!--fin datos de entrada-->
+                     <div class="row">
+                        <div class="col-lg-12" style="text-align: right">
+                                <p:commandButton value="#{i18n.negociacion_HabilitarEliminarNegociacion_buscar}" styleClass="btn btn-sm btn-info"
+                                                 actionListener= "#{habilitarEliminarNegociacionController.buscaContratos()}"
+                                                 update="idTbHabilitaEliminaNegociacion"
+                                                 icon="fa fa-search" iconPos="left"
+                                                 />
+                                <p:commandButton value="#{i18n.negociacion_HabilitarEliminarNegociacion_limpiar}" styleClass="btn btn-sm btn-warning"
+                                                 actionListener="#{habilitarEliminarNegociacionController.limpiar()}"
+                                                 icon="fa fa-trash-o"
+                                                 iconPos="left"
+                                                 immediate="true"/>
+                            </div>
+                        </div>
+                    <!--datos de salida-->
+                     <p:separator />
+                    <p:scrollPanel mode="native" style="width:100%;height:100%">
+                                    <p:dataTable id="idTbHabilitaEliminaNegociacion"
+                                                 var="registros"
+                                                 value="#{habilitarEliminarNegociacionController.negociacionConsultaContratoDto}" lazy="true"
+                                                 emptyMessage="#{i18n.negociacion_HabilitarEliminarNegociacion_sin_registros}"
+                                                 rows="10"
+                                     paginator="true" paginatorPosition="bottom"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15"
+                                     widgetVar="negociacionTable">
+                                     <p:ajax event="page" />
+                                     <p:ajax event="sort" />
+                                     <p:ajax event="filter" />
+                                        <p:column filterBy="#{registros.numeroNegociacion}" 
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_numero_negociacion}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.numeroNegociacion}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.numeroContrato}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_numero_contrato}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.numeroContrato}" />
+                                        </p:column>
+                                        <p:column filterBy ="#{registros.razonSocial}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_razon_social}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.razonSocial}" />
+                                        </p:column>
+                                        <p:column filterBy ="#{registros.nit}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_nit}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.nit}" />
+                                        </p:column>
+                                        <p:column filterBy ="#{registros.tipoContrato}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_tipo_contrato}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.tipoContrato}" />
+                                        </p:column>
+                                        <p:column filterBy ="#{registros.regional}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_reginal}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.regional}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.modalidad}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_modalidad}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.modalidad}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.regimen}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_regimen}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.regimen}" />
+                                        </p:column>
+                                        <p:column filterBy ="#{registros.subsidio}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_subsidiado}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.subsidio}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.fechaInicio}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_fecha_inicio}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.fechaInicio}" >
+                                             <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column filterBy="#{registros.fechaFin}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_fecha_fin}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.fechaFin}">
+                                              <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column filterBy ="#{registros.responsableCreacion}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_responsable_creacion}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.responsableCreacion}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.fechaCreacion}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_fecha_creacion}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.fechaCreacion}">
+                                             <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                           
+                                        </p:column>
+                                        <p:column filterBy="#{registros.estadoLegalizacion}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_estado_legalizacion}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.estadoLegalizacion}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.fechaLegalizacion}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_fecha_legalizacion}"
+                                                  styleClass="text-center"  style="width:100px;">
+                                            <h:outputText value="#{registros.fechaLegalizacion}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.estadoContrato}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_estado_contrato}"
+                                                  styleClass="text-center" style="width:100px;">
+                                            <h:outputText value="#{registros.estadoContrato}" />
+                                        </p:column>
+                                        <p:column filterBy="#{registros.sedesContratadas}"
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_sedes_contratadas}"
+                                                  styleClass="text-center"
+                                                  style="width:100px;">
+                                            <h:outputText value="#{registros.sedesContratadas}" />
+                                        </p:column>
+                                        <p:column 
+                                                  headerText="#{i18n.negociacion_HabilitarEliminarNegociacion_accion}"
+                                                  styleClass="text-center"
+                                                  style="width:100px;">
+                                            <div class="ui-grid ui-grid-responsive">
+                                                <div class="ui-grid-row">
+                                                    <!--Habiliar Negociacion-->
+                                                    <div class="ui-grid-col-6 text-right">
+                                                        <p:commandLink title="#{i18n.negociacion_HabilitarEliminarNegociacion_habilitar_negociacion_msg}"
+                                                                       rendered="#{registros.numeroContrato != null and registros.estadoLegalizacion eq i18n.enum_estado_legalizacion_legalizada}"
+                                                                       oncomplete="PF('dialogHabilitaNegociacionW').show();"
+                                                                       process="@this"
+                                                                       update="idformhabilitarElinarNegociacion:idHabilitaDet"
+                                                                       >
+                                                            <f:setPropertyActionListener value="#{registros}" target="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto}" />
+                                                            <i class="fa fa-cog fa-lg"/>
+                                                        </p:commandLink>
+                                                    </div>
+                                                    <!--Elimina contrato-->
+                                                    <div class="ui-grid-col-6 text-left">
+                                                        <p:commandLink title="#{i18n.negociacion_HabilitarEliminarNegociacion_eliminar_negociacion}"
+                                                                       oncomplete="PF('dialogEliminaContratoW').show();"
+                                                                       process="@this"
+                                                                       update="idformhabilitarElinarNegociacion:idEliminaDetalleDet"
+                                                                       >
+                                                            <f:setPropertyActionListener value="#{registros}" target="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto}" />
+                                                            <i class="fa fa-trash-o"/>
+                                                        </p:commandLink>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </p:column>
+                                    </p:dataTable>
+                        </p:scrollPanel>
+                    <!--fin datos de salida-->
+                    <!--Dialog msg habilita negociacion-->
+                    <p:confirmDialog header="#{i18n.negociacion_HabilitarEliminarNegociacion_habilitar_contrato}"
+                                     widgetVar="dialogHabilitaNegociacionW" 
+                                     icon="fa fa-warning">
+                        <f:facet name="message">
+                        <p:outputPanel id="idHabilitaDet">
+                            <h:outputFormat value="#{i18n.negociacion_HabilitarEliminarNegociacion_se_habilitara_la_negociacion}" escape="false">
+                                <f:param value="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroNegociacion}"/>
+                            </h:outputFormat>
+                            </p:outputPanel>
+                            </f:facet>
+                            <p:commandButton id="idbuttonAceptarHDialog" value="#{i18n.negociacion_HabilitarEliminarNegociacion_aceptar}" 
+                                             action="#{habilitarEliminarNegociacionController.habilitarNegociacion(habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto)}"
+                                             oncomplete="PF('dialogHabilitaNegociacionW').hide()"
+                                             update="idformhabilitarElinarNegociacion"
+                                             styleClass="btn btn-sm btn-info" 
+                                             icon="fa fa-check-circle-o"/>
+                            <p:commandButton value="#{i18n.negociacion_HabilitarEliminarNegociacion_cancelar}"
+                                             update ="idformhabilitarElinarNegociacion"
+                                             immediate="true"
+                                             oncomplete="PF('dialogHabilitaNegociacionW').hide()"
+                                             styleClass="btn btn-sm btn-warning"  
+                                             icon="fa fa-close"/>    
+                    </p:confirmDialog>
+                    <!--Dialog msg elimina contrato-->
+                    <p:confirmDialog header="#{i18n.negociacion_HabilitarEliminarNegociacion_eliminar_negociacion}" 
+                                     widgetVar="dialogEliminaContratoW"
+                                     icon="fa fa-warning">
+                         <f:facet name="message">
+                             <p:outputPanel id="idEliminaDetalleDet">
+                            
+                                 <c:if test="#{!(habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroContrato eq null)}">
+                                        <h:outputFormat value="#{i18n.negociacion_HabilitarEliminarNegociacion_se_eliminara_contrato}" escape="false">
+                                            <f:param value="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroContrato}"/>
+                                            <f:param value="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.estadoLegalizacion}"/>
+                                         </h:outputFormat>
+                                  </c:if>
+                                 <c:if test="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroContrato eq null}">
+                                     <h:outputFormat value="#{i18n.negociacion_HabilitarEliminarNegociacion_se_eliminara_negociacion}" escape="false">
+                                         <f:param value="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroNegociacion}"/>
+                                     </h:outputFormat>
+                                 </c:if>
+                             </p:outputPanel>
+                             </f:facet>
+                                    <p:commandButton id="idButtonAceptarEDialog" value="#{i18n.negociacion_HabilitarEliminarNegociacion_aceptar}" 
+                                             update="idformhabilitarElinarNegociacion"
+                                             actionListener="#{habilitarEliminarNegociacionController.eliminarNegociacion(habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto)}"
+                                             oncomplete="PF('dialogEliminaContratoW').hide()"
+                                             styleClass="btn btn-sm btn-info"
+                                              icon="fa fa-check-circle-o"/>
+                                    <p:commandButton value="#{i18n.negociacion_HabilitarEliminarNegociacion_cancelar}"
+                                             update ="idformhabilitarElinarNegociacion"
+                                             immediate="true"
+                                             oncomplete="PF('dialogEliminaContratoW').hide()"
+                                             styleClass="btn btn-sm btn-warning"  
+                                             icon="fa fa-close"
+                                             />
+                    </p:confirmDialog>  
+                    
+                    <p:confirmDialog header="#{i18n.negociacion_HabilitarEliminarNegociacion_confirmacion_habilitacion}"
+                                     widgetVar="dialogHabilitaNegociacionConfirmacion" 
+                                     icon="fa fa-warning">
+                        <f:facet name="message">
+                            <p:outputPanel id="idDialogHabilitaNegociacionConfirmacion">
+                                <c:if test="#{habilitarEliminarNegociacionController.msgConfirmacion eq null}">
+                                    <h:outputFormat value="#{i18n.negociacion_HabilitarEliminarNegociacion_negociacion_numero}" escape="false">
+                                        <f:param value="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroNegociacion}"/>
+                                    </h:outputFormat>
+                                </c:if>
+                                <c:if test="#{!(habilitarEliminarNegociacionController.msgConfirmacion eq null)}">
+                                    <h:outputFormat value="#{habilitarEliminarNegociacionController.msgConfirmacion}" escape="false" />
+                                </c:if>
+                            </p:outputPanel>
+                        </f:facet>
+                        <p:commandButton id="buttonDialogHabilitaNegociacionConfirmacion" value="#{i18n.negociacion_HabilitarEliminarNegociacion_aceptar}" 
+                                         oncomplete="PF('dialogHabilitaNegociacionConfirmacion').hide()"
+                                         update="idformhabilitarElinarNegociacion"
+                                         styleClass="btn btn-sm btn-info" 
+                                         icon="fa fa-check-circle-o"/>  
+                    </p:confirmDialog> 
+                    
+                    <p:confirmDialog header="#{i18n.negociacion_HabilitarEliminarNegociacion_confirmacion_eliminar}"
+                                     widgetVar="dialogHabilitaNegociacionConfirmacionEliminar" 
+                                     icon="fa fa-warning">
+                        <f:facet name="message">
+                            <p:outputPanel id="idDialogHabilitaNegociacionConfirmacionEliminar">
+                                <c:if test="#{habilitarEliminarNegociacionController.msgConfirmacion eq 'Contrato'}">
+                                    <h:outputFormat value="#{i18n.negociacion_HabilitarEliminarNegociacion_se_eliminar_contrato}" escape="false">
+                                        <f:param value="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroContrato}"/>
+                                    </h:outputFormat>
+                                </c:if>
+                                <c:if test="#{habilitarEliminarNegociacionController.msgConfirmacion eq 'Negociacion'}">
+                                    <h:outputFormat value="#{i18n.negociacion_HabilitarEliminarNegociacion_se_eliminar_negociacion}" escape="false">
+                                        <f:param value="#{habilitarEliminarNegociacionController.selectionNegociacionConsultaContratoDto.numeroNegociacion}"/>
+                                    </h:outputFormat>
+                                </c:if>
+                                <c:if test="#{!(habilitarEliminarNegociacionController.msgConfirmacion eq 'Negociacion') and !(habilitarEliminarNegociacionController.msgConfirmacion eq 'Contrato')}">
+                                    <h:outputFormat value="#{habilitarEliminarNegociacionController.msgConfirmacion}" escape="false" />
+                                </c:if>
+                            </p:outputPanel>
+                        </f:facet>
+                        <p:commandButton id="buttonIdDialogHabilitaNegociacionConfirmacionEliminar" value="#{i18n.negociacion_HabilitarEliminarNegociacion_aceptar}" 
+                                         oncomplete="PF('dialogHabilitaNegociacionConfirmacionEliminar').hide()"
+                                         update="idformhabilitarElinarNegociacion"
+                                         styleClass="btn btn-sm btn-info" 
+                                         icon="fa fa-check-circle-o"/>  
+                    </p:confirmDialog>
+
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>
+

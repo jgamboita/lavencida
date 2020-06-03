@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+	<pe:masterDetail id="masterCapitulos" showBreadcrumb="false">
+		<pe:masterDetailLevel level="1" >
+
+			<p:dataTable id="tablaCapituloReferenteDialog"
+						value="#{tecnologiasSSController.listarReferenteCapitulo}"
+						var="capitulo" rowKey="#{capitulo.id}"
+						emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+						widgetVar="tabCapitulosReferenteDialogW" paginator="true"
+						paginatorPosition="bottom"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+						<p:ajax event="page" update="@this" />
+						<p:ajax event="sort" update="@this" />
+						<p:ajax event="filter" update="@this" />
+
+						<p:column headerText="#{i18n.column_ref_capitulo}"
+							styleClass="text-center"
+							filterBy="#{capitulo.capituloProcedimiento.descripcion}"
+							filterMatchMode="contains" filterStyleClass="anchoInput">
+							<h:outputText
+								value="#{capitulo.capituloProcedimiento.descripcion}" />
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_categoria}"
+							styleClass="text-center"
+							filterBy="#{capitulo.categoriaProcedimiento.descripcion}"
+							filterMatchMode="contains" filterStyleClass="anchoInput">
+							<h:outputText
+								value="#{capitulo.categoriaProcedimiento.descripcion}"
+								maxlength = "50"/>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_frecuencia}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.frecuencia}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_costo_medio}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.costoMedioUsuaro}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_n_atenciones}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.numeroUsuarios}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_n_usuarios}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.numeroAtenciones}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+					</p:dataTable>
+		</pe:masterDetailLevel>
+	</pe:masterDetail>
+</f:view>

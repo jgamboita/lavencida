@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:o="http://omnifaces.org/ui">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.ClasePrestadorEnum" />
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Registro Prestador
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="form">
+                <p:panel id="panel">
+                    <pe:masterDetail id="master" level="#{registroPrestadorController.currentLevel}" showBreadcrumb="false">
+                        <pe:masterDetailLevel level="1">
+                            <h:panelGrid columns="1" style="width:100%">
+                                <f:facet name="header">
+                                    <p:outputLabel value="Busqueda de Prestador"
+                                                   styleClass="titulo-bold"></p:outputLabel>
+                                    <div class="separador"></div>
+                                </f:facet>
+                            </h:panelGrid>
+                            <br />
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Clase Prestador: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:selectOneMenu id="clasePrestador" effect="fold"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         required="true"
+                                                         requiredMessage="La clase del prestador es obligatoria"
+                                                         value="#{registroPrestadorController.prestador.clasePrestadorEnum}"
+                                                         styleClass="anchoInput">
+                                            <f:selectItem  itemLabel="Seleccione..." itemValue="" />
+                                            <f:selectItems value="#{ClasePrestadorEnum.values()}"
+                                                           var="clasePrestador" itemLabel="#{clasePrestador.description} "
+                                                           itemValue="#{clasePrestador}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Tipo Documento: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:selectOneMenu id="tipoDocumento" effect="fold"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         value="#{registroPrestadorController.prestador.tipoIdentificacion}"
+                                                         required="true"
+                                                         requiredMessage="El tipo de documento es obligatorio"
+                                                         styleClass="anchoInput">
+                                            <f:selectItem  itemLabel="Seleccione..." itemValue=""/>
+                                            <f:selectItems value="#{listaTiposDocumento}"
+                                                           var="tipoDocumento" itemLabel="#{tipoDocumento.descripcion} "
+                                                           itemValue="#{tipoDocumento}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Número Documento: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:inputText id="numeroDocumento"
+                                                     required="true"
+                                                     requiredMessage="Ingrese el número de documento"
+                                                     value="#{registroPrestadorController.prestador.numeroDocumento}"
+                                                     styleClass="anchoInput" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-offset-8 col-lg-4">
+                                            <div class="text-right">
+                                                <p:commandButton 
+                                                    styleClass="btn btn-sm btn-warning"
+                                                    actionListener="#{registroPrestadorController.limpiarPrestador}"
+                                                    value="Limpiar" update="form" process="@this" />
+                                                <p:commandButton process="@this clasePrestador numeroDocumento tipoDocumento"
+                                                                 styleClass="btn btn-sm btn-info" 
+                                                                 actionListener="#{registroPrestadorController.buscar}"
+                                                                 value="Buscar" update="form"/>              
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </pe:masterDetailLevel>
+                        <pe:masterDetailLevel id="registro" level="2">
+                            <h:panelGrid columns="1" style="width:100%">
+                                <f:facet name="header">
+                                    <p:outputLabel value="Registro de Información"
+                                                   styleClass="titulo-bold"></p:outputLabel>
+                                    <div class="separador"></div>
+                                </f:facet>
+                            </h:panelGrid>
+                            <br />
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Clase Prestador: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:selectOneMenu 
+                                            converter="omnifaces.SelectItemsConverter"
+                                            id="clase"
+                                            immediate="true"
+                                            value="#{registroPrestadorController.prestador.clasePrestadorEnum}"
+                                            class="anchoInput">
+                                            <f:selectItems value="#{ClasePrestadorEnum.values()}"
+                                                           var="clasePrestador" itemLabel="#{clasePrestador.description} "
+                                                           itemValue="#{clasePrestador}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Tipo Documento: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:selectOneMenu 
+                                            converter="omnifaces.SelectItemsConverter"
+                                            id="tipo"
+                                            required="true"
+                                            value="#{registroPrestadorController.prestador.tipoIdentificacion}"
+                                            class="anchoInput">
+                                            <f:selectItems value="#{listaTiposDocumento}"
+                                                           var="tipoDocumento" itemLabel="#{tipoDocumento.descripcion} "
+                                                           itemValue="#{tipoDocumento}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Número Documento: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:inputText 
+                                            id="numero"
+                                            required="true"
+                                            requiredMessage="Ingrese el número de documento"
+                                            value="#{registroPrestadorController.prestador.numeroDocumento}"
+                                            styleClass="anchoInput" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Categoría Prestador: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:selectOneMenu 
+                                            converter="omnifaces.SelectItemsConverter" 
+                                            id="clasificacion"
+                                            required="true"
+                                            requiredMessage="Ingrese la Categoría"
+                                            value="#{registroPrestadorController.prestador.clasificacionPrestador}"
+                                            class="anchoInput">
+                                            <f:selectItem itemLabel="Seleccione" />
+                                            <f:selectItems value="#{listaClasificacionesPrestador}"
+                                                           var="clasificacionPrestador" itemLabel="#{clasificacionPrestador.descripcion} "
+                                                           itemValue="#{clasificacionPrestador}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Razón Social: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:inputText 
+                                            id="nombre"
+                                            required="true" maxlength="100"
+                                            requiredMessage="Ingrese la Razón Social"
+                                            value="#{registroPrestadorController.prestador.nombre}"
+                                            styleClass="anchoInput" />
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Correo Electronico: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:inputText
+                                            id="correo"
+                                            value="#{registroPrestadorController.prestador.correoElectronico}"
+                                            required="true" maxlength="100"
+                                            requiredMessage="Ingrese el Correo Electronico"
+                                            validatorMessage="#{i18n.form_validar_correo_mensaje}"	
+                                            styleClass="anchoInput">
+                                            <f:validateRegex pattern="#{i18n.form_validar_correo}" />
+                                        </p:inputText>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Contacto: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:inputText 
+                                            id="contacto"
+                                            required="true" maxlength="50"
+                                            requiredMessage="Ingrese la Persona de Contacto"
+                                            value="#{registroPrestadorController.prestador.contactoAdministrativo}"
+                                            styleClass="anchoInput" />
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Celular: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:inputText 
+                                            id="celular"
+                                            value="#{registroPrestadorController.prestador.celularContactoAdministrativo}"
+                                            required="true" maxlength="50"
+                                            requiredMessage="Ingrese el Celular de Contacto"
+                                            styleClass="anchoInput" />
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Telefono: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:inputText 
+                                            id="telefono"
+                                            required="true" maxlength="50"
+                                            requiredMessage="Ingrese el Telefono de Contacto"
+                                            value="#{registroPrestadorController.prestador.telefonoContactoAdministrativo}"
+                                            styleClass="anchoInput"  />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">                           
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Página Web: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-6">
+                                        <p:inputText 
+                                            id="paginaWeb" maxlength="100"
+                                            value="#{registroPrestadorController.prestador.sitioWeb}"
+                                            styleClass="anchoInput" />
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="ESE: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:selectBooleanCheckbox 
+                                            id="ese"
+                                            value="#{registroPrestadorController.prestador.empresaSocialEstado}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-offset-8 col-lg-4">
+                                            <div class="text-right">
+                                                <p:commandButton value="Regresar"
+                                                                 icon="ui-icon-arrowthick-1-w"
+                                                                 process="@this" 
+                                                                 immediate="true"
+                                                                 update="form"
+                                                                 styleClass="btn btn-sm btn-warning">  
+                                                    <pe:selectDetailLevel step="-1"/>  
+                                                </p:commandButton>
+                                                <p:commandButton process="@form"
+                                                                 styleClass="btn btn-sm btn-info"
+                                                                 value="Continuar" update="form">
+                                                    <pe:selectDetailLevel step="1"/>
+                                                </p:commandButton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </pe:masterDetailLevel>
+                        <pe:masterDetailLevel level="3">
+                            <h:panelGrid columns="1" style="width:100%">
+                                <f:facet name="header">
+                                    <p:outputLabel 
+                                        value="Carga de Archivos" styleClass="titulo-bold"></p:outputLabel>
+                                    <div class="separador"></div>
+                                </f:facet>
+                            </h:panelGrid><br/>
+                            <div class="col-lg-12">
+                                <h:outputLabel value="Señor prestador, por favor adjunte la copia vigente de los siguientes documentos: " styleClass="col-lg-12" />
+                            </div>                    
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">                           
+                                    <div class="col-lg-12">
+                                        <h:outputLabel value="Certificado de Camara y Comercio: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:fileUpload id="certificadoCamaraComercio" label="Seleccione"
+                                                      fileLimit="1" multiple="false" fileLimitMessage ="Se ha excedido el número de archivos permitidos"
+                                                      uploadLabel="Subir" cancelLabel="Cancelar"
+                                                      fileUploadListener="#{registroPrestadorController.handleFileUpload}" 
+                                                      mode="advanced" process="@this" auto="true"
+                                                      />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">                           
+                                    <div class="col-lg-12">
+                                        <h:outputLabel value="Formato de tarifas de servicios que ofrece en su portafolio, se sugiere descargar el archivo excel como plantilla: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:fileUpload id="portafolio" label="Seleccione" process="@this"
+                                                      fileLimit="1" multiple="false" fileLimitMessage="Se ha excedido el número de archivos permitidos"
+                                                      uploadLabel="Subir" cancelLabel="Cancelar"
+                                                      fileUploadListener="#{registroPrestadorController.handleFileUpload}" 
+                                                      mode="advanced" auto="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">                           
+                                    <div class="col-lg-12">
+                                        <h:outputLabel value="Propuesta general de contratación donde se estipule tipo de contratación, monto, tarifa, descuentos por servicio o por pronto pago. 
+                                                       Con relación a paquetes integrales de atención las tarifas, las inclusiones y las exclusiones: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-12">
+                                        <p:fileUpload id="propuesta" label="Seleccione" process="@this"
+                                                      fileLimit="1" multiple="false" fileLimitMessage="Se ha excedido el número de archivos permitidos"
+                                                      uploadLabel="Subir" cancelLabel="Cancelar"
+                                                      fileUploadListener="#{registroPrestadorController.handleFileUpload}" 
+                                                      mode="advanced" auto="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">                           
+                                    <div class="ui-grid-col-4 text-right">
+                                        <h:outputLabel value="Fecha fin de vigencia del portafolio: " styleClass="col-lg-12" />
+                                    </div>                            
+                                    <div class="col-lg-6">
+                                        <p:calendar id="popup" 
+                                                    required="true"
+                                                    requiredMessage="Ingrese la fecha de Vigencia" label="Formato incorrecto de fecha"
+                                                    value="#{registroPrestadorController.prestador.fechaFinVigencia}"/>
+                                    </div>
+                                    <div class="ui-grid-col-4 text-right">
+                                        <h:outputLabel value="Servicios a Gestionar: " styleClass="col-lg-12" 
+                                                       rendered="#{registroPrestadorController.prestador.clasePrestadorEnum eq ClasePrestadorEnum.OBJETO_SOCIAL_DIFERENTE}"/>
+                                    </div>                            
+                                    <div class="col-lg-6">
+                                        <p:selectCheckboxMenu 
+                                            id="grupos"
+                                            value="#{registroPrestadorController.prestador.grupos}"
+                                            label="Seleccionar" filter="true" filterMatchMode="startsWith"
+                                            converter="omnifaces.SelectItemsConverter"
+                                            rendered="#{registroPrestadorController.prestador.clasePrestadorEnum eq ClasePrestadorEnum.OBJETO_SOCIAL_DIFERENTE}"
+                                            style="width:300px" required="true" requiredMessage="Debe seleccionar al menos un servicio a gestionar">                                    
+                                            <f:selectItems value="#{listaGruposInsumoEmpresarial}" 
+                                                           var="servicio"
+                                                           itemLabel="#{servicio.descripcion}"  
+                                                           itemValue="#{servicio}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-offset-8 col-lg-4">
+                                            <div class="text-right">
+                                                <p:commandButton value="Regresar"
+                                                                 icon="ui-icon-arrowthick-1-w"  
+                                                                 process="@this" 
+                                                                 immediate="true"
+                                                                 update="form"
+                                                                 styleClass="btn btn-sm btn-warning">  
+                                                    <pe:selectDetailLevel step="-1"/>  
+                                                </p:commandButton>
+                                                <p:commandButton process="@this grupos popup"
+                                                                 styleClass="btn btn-sm btn-info" update="form"
+                                                                 actionListener="#{registroPrestadorController.guardar}"
+                                                                 value="Guardar">
+                                                </p:commandButton>                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </pe:masterDetailLevel>
+                    </pe:masterDetail>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

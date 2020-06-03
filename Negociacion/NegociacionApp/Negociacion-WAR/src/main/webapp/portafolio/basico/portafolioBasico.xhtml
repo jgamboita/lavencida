@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<ui:composition template="/template/inner.xhtml">
+       	<ui:define name="title">
+        	<h:outputLabel value="#{i18n.liq_upc_title}" />
+        </ui:define>
+        <ui:define name="content">
+			<h:form id="datosNorma">
+				<p:panel id="panelDatosNorma">
+					<div class="datosNorma">
+			        	<!-- Primera Fila -->
+						<div class="row">
+							
+							<div class="col-lg-3">
+								<p:outputLabel for="zona" value="#{i18n.liq_upc_lbl_zona}" />
+								<p:selectOneMenu id="zona"
+									effect="fold"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									styleClass="anchoInput">
+								<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+			                    </p:selectOneMenu>
+			                    <p:message for="zona" />
+							</div>
+							<div class="col-lg-offset-1  col-lg-3">
+								<p:outputLabel for="vlr_promedio"
+									value="#{i18n.liq_upc_lbl_valor_prm_gral}" />
+								<p:inputText id="vlr_promedio" value="5500" disabled="true"
+									required="true" requiredMessage="#{i18n.form_label_required}"
+									maxlength="4" styleClass="form-control input-sm">
+									<f:validateRegex
+										pattern="#{i18n.form_label_validar_caracteres}" />
+								</p:inputText>
+								<p:message for="vlr_promedio" />
+							</div>
+						</div>
+					</div>
+				</p:panel>
+
+				<p:panel id="panelTblDatosNorma">
+					<div class="datosTablaNorma">
+						<p:dataTable id="tblCargueNorma" var="cargueNorma"
+							value="#{liquidacionUPCController.lsDatosDepartamento}"
+							widgetVar="negociacionesTable" style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="25"
+							paginator="false" paginatorPosition="bottom"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15">
+
+							<p:columnGroup type="header">
+					            <p:row>
+					                <p:column rowspan="2" headerText="#{i18n.liq_upc_tbl_municipios}" />
+					                <p:column colspan="2" headerText="#{i18n.liq_upc_tbl_grupo}" />
+					                <p:column rowspan="2" headerText="#{i18n.liq_upc_tbl_valor_UPC}" />
+					            </p:row>
+					            <p:row>
+					                <ui:repeat value="#{liquidacionUPCController.lsGrupoNorma}" var="gNorma">
+					                    <p:column headerText="#{gNorma.nombreGrupo}" />
+					                </ui:repeat>
+					            </p:row>
+					        </p:columnGroup>
+
+							<p:column headerText="#{i18n.cargue_norma_col_grupos}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.nombreGrupo}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_anio}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorAño}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_mensual}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorMensual}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_porc_prima}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.porcPrima}" />
+							</p:column>
+
+							<f:facet name="footer">
+					            Valor Total UPC: $15.806
+					        </f:facet>
+
+						</p:dataTable>
+
+						<h:panelGroup id="botonera">
+                            <p:commandButton id="btnGuardar"
+							value="#{i18n.form_label_button_guardar}"
+							icon="fa fa-floppy-o" styleClass="btn btn-sm btn-info"/>
+                    	</h:panelGroup>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>		
+	</ui:composition>
+</f:view>

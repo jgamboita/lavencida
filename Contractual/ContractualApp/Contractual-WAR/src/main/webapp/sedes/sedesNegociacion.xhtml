@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui">
+    
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoNegociacionEnum" />
+
+	<h:form id="sedesNegociacionForm">
+		<!-- Inicio Título-->
+		<div class="widget-header">
+			<span class="widget-caption">#{i18n.sede_neg_title_dialog}:
+				#{generarContratoUrgenciasController.prestadorSeleccionado.nombre}</span>
+		</div>
+		
+		<!-- Fin Título-->
+		<p:panel id="panelSedesNegociacion">
+			<div class="form-group">
+				<p:dataTable id="sedesNegociacion" var="sedeNegociacion"
+					value="#{generarContratoUrgenciasController.sedesPrestador}"
+					selection="#{generarContratoUrgenciasController.contratoUrgenciasDto.listSedesPrestadorSeleccionadas}"
+					rowKey="#{sedeNegociacion.id}"
+					widgetVar="sedeNegociacionTable" style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					paginator="true" paginatorPosition="bottom"
+					disabledSelection = "#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZADA}"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15">
+
+					<p:column headerText="#{i18n.sede_neg_tbl_nombre_sede}"
+						styleClass="text-center col-lg-3"
+						filterBy="#{sedeNegociacion.nombreSede}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{sedeNegociacion.nombreSede}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.form_label_departamento}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{sedeNegociacion.municipio.departamento}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{sedeNegociacion.municipio.departamento}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.sede_neg_tbl_municipio}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{sedeNegociacion.municipio.descripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{sedeNegociacion.municipio.descripcion}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.form_label_zona}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{sedeNegociacion.zonaDescripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{sedeNegociacion.zonaDescripcion}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.form_label_direccion}"
+						styleClass="text-center col-lg-3"
+						filterBy="#{sedeNegociacion.direccion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{sedeNegociacion.direccion}" />
+					</p:column>
+					
+			
+			<p:column class="text-center" selectionMode="multiple"  
+					headerText="#{i18n.form_label_seleccionado}" />
+					
+				</p:dataTable>
+			</div>
+		</p:panel>
+	</h:form>
+</f:view>

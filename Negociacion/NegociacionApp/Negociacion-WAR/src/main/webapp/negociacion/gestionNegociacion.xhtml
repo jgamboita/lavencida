@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:c="http://java.sun.com/jsp/jstl/core"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        xmlns:of="http://omnifaces.org/ui">
+    <of:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" />
+    <of:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" />
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            <h:outputLabel value="#{i18n.gestion_negociacion_titulo}" />
+
+        </ui:define>
+
+        <ui:define name="content">
+            <p:dialog header="#{i18n.negociacion_btn_alt_sedes_neg}" id="sedeNegociacionDialog"
+                      widgetVar="sedesNegociadasDialog" modal="true" width="90%" height="500px"
+                      closeOnEscape="true">
+                <ui:include src="./sedes/sedesNegociacion.xhtml"></ui:include>
+                <p:ajax event="close" update="tblNegociacionesPrestadorForm" listener="#{gestionNegociacionController.consultarNegociacionesPrestador(gestionNegociacionController.prestadorSeleccionado.id, gestionNegociacionController.dtoNeg)}" />
+            </p:dialog>
+
+            <!-- Pop-up de Áreas de Cobertura -->
+            <p:dialog header="#{i18n.area_cobertura_title_dialog}"
+                      widgetVar="areaCoberturaDlg" width="100%" >
+                <ui:include src="./sedes/areaCoberturaContent.xhtml"></ui:include>
+            </p:dialog>
+
+            <!-- Pop-up de Invitación a Negociar -->
+            <p:dialog header="#{i18n.invitacion_neg_title_dialog}" modal="true"
+                      widgetVar="invitacionNegociacionDlg" width="85%" height="45%">
+                <ui:include src="./invitacion/invitacionNegociacion.xhtml"></ui:include>
+            </p:dialog>
+
+            <!-- Pop-up para crear Otro si -->
+            <p:dialog id="OtroSiDlg"
+                      header="#{i18n.negociacion_otrosi_title_dialog}" modal="true"
+                      widgetVar="OtroSiDlg" width="60%" height="45%">
+                <ui:include src="./otrosi/gestionOtroSi.xhtml"></ui:include>
+            </p:dialog>
+
+            <p:dialog id="anexoDialog"
+                      header="#{i18n.anexo_tarifario_title_dialog}" modal="true"
+                      widgetVar="anexoTarifarioDlg" width="40%" height="45%">
+                <ui:include src="./anexo/descargarAnexo.xhtml"></ui:include>
+            </p:dialog>
+
+            <!-- Sección datos del prestador -->
+            <h:form>
+                <p:panel id="panelDatosPrestador">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel
+                                value="#{i18n.negociacion_prestador_label_datos_generales}:
+                                #{gestionNegociacionController.prestadorSeleccionado.nombre}
+                                #{gestionNegociacionController.prestadorSeleccionado.numeroDocumento}"
+                                styleClass="titulo-bold">
+                            </p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid><br/>
+                    <!-- Fin Título-->
+
+                    <div class="form-group">
+                        <!-- Primera Columna -->
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p:outputLabel
+                                    value="#{i18n.negociacion_prestador_label_naturaleza_juridica}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{gestionNegociacionController.prestadorSeleccionado.naturalezaJuridica}" />
+                            </div>
+                            <br />
+
+                            <div class="row">
+                                <p:outputLabel value="#{i18n.form_label_correo}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{gestionNegociacionController.prestadorSeleccionado.correoElectronico}" />
+                            </div>
+                            <br />
+                        </div>
+
+
+                        <!-- Segunda Columna -->
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p:outputLabel value="#{i18n.negociacion_prestador_label_clase}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{gestionNegociacionController.prestadorSeleccionado.clasePrestador}" />
+                            </div>
+                            <br />
+
+                            <div class="row">
+                                <p:outputLabel value="#{i18n.negociacion_prestador_label_ese}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{gestionNegociacionController.prestadorSeleccionado.ese}" />
+                            </div>
+                            <br />
+                        </div>
+
+                        <!-- Tercera Columna -->
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <p:outputLabel
+                                    value="#{i18n.negociacion_prestador_label_nivel_atencion}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText
+                                    value="#{gestionNegociacionController.prestadorSeleccionado.nivelAtencion}" />
+                            </div>
+                            <br />
+
+                            <div class="row">
+                                <p:outputLabel value="#{i18n.form_label_persona_contacto}" />
+                            </div>
+                            <div class="row">
+                                <h:outputText style="text-transform: capitalize;"
+                                              value="#{gestionNegociacionController.prestadorSeleccionado.contactoNegociacion}" />
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12  text-right">
+                                <div class="col-lg-12">
+                                    <h:form>
+                                        <p:commandButton value="#{i18n.negociacion_crear_portafolio_capita}"
+                                                         styleClass="btn btn-sm btn-warning" icon="fa fa-cogs" title="#{i18n.negociacion_crear_portafolio_capita_mensaje}"
+                                                         iconPos="left" actionListener="#{gestionNegociacionController.crearPortafolioCapita()}"
+                                                         rendered="#{gestionNegociacionController.crearPortafolioCapita}"
+                                                         onsuccess="javascript:location.reload();">
+                                            <p:confirm header="#{i18n.negociacion_crear_portafolio_confirmar_header}"
+                                                       message="#{i18n.negociacion_crear_portafolio_confirmar_mensaje}"
+                                                       icon="fa fa-exclamation-triangle"/>
+                                        </p:commandButton>
+                                        <p:commandButton
+                                            value="#{i18n.bandeja_prestador_label_ver_portafolio}"
+                                            styleClass="btn btn-sm btn-info" icon="fa fa-suitcase"
+                                            iconPos="left" process="@this" actionListener="#{redirecccionDetallePortafolio}"
+                                            ajax="false" onclick="form.target = '_blank'"/>
+                                        <p:commandButton value="#{i18n.negociacion_label_crear}"
+                                                         styleClass="btn btn-sm btn-warning" icon="fa fa-file"
+                                                         iconPos="left" actionListener="#{gestionNegociacionController.crearNegociacion()}"
+                                                         rendered="#{gestionNegociacionController.prestadorSeleccionado.estadoPortafolio != 'REVISION_TARIFAS' }" />
+
+
+
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+            </h:form>
+
+            <!-- Sección tabla de negociaciones -->
+            <h:form id="tblNegociacionesPrestadorForm">
+                <p:panel id="panelDatosNegociaciones">
+                    <!-- Inicio Título-->
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                          <p:outputLabel
+                          value="#{!gestionNegociacionController.gestionarOtroSi ? i18n.negociacion_prestador_tit_neg_prestador: i18n.negociacion_otrosi_title_table_negociaciones}"
+                          styleClass="titulo-bold">
+                      </p:outputLabel>
+                  <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid><br/>
+                    <!-- Fin Título-->
+                    <div >
+
+                        <p:toolbar>
+                            <p:toolbarGroup align="left">
+                                <p:commandButton id="toggler" widgetVar="toggler" type="button"
+                                                 value="#{i18n.form_label_seleccionar_columnas}"
+                                                 icon="ui-icon-calculator"
+                                                 onclick="$('label').each(function (index) {
+                                                             if ($(this).text().indexOf('--&#x3E;&#x3C;=') != -1)
+                                                                 $(this).text($(this).text().substring(0, $(this).text().indexOf('--&#x3E;&#x3C;=')));
+                                                         });" />
+                                <p:columnToggler id="toogleNeg"
+                                                 datasource="tblNegociacionesPrestadorForm:negociacionesPrestador"
+                                                 trigger="toggler" >
+                                    <p:ajax event="toggle"
+                                            listener="#{gestionNegociacionController.onToggle}"
+                                            update="tblNegociacionesPrestadorForm:negociacionesPrestador" />
+                                </p:columnToggler>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+
+                            <p:dataTable id="negociacionesPrestador" 
+                                         var="negociacion"
+                                         value="#{gestionNegociacionController.negociaciones}"
+                                         rowKey="#{negociacion.id}"
+                                         widgetVar="negociacionesTable"
+                                         emptyMessage="#{i18n.form_label_datatable_noregistros}" 
+                                         rows="15" 
+                                         paginator="true" 
+                                         paginatorPosition="bottom"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         scrollable="true"
+                                         rowsPerPageTemplate="5,10,15">
+                                <f:facet name="header">
+                                    Bandeja Negociaciones
+                                </f:facet>
+                                <p:ajax event="page" update="@this" />
+                                <p:ajax event="sort" update="@this" />
+                                <p:ajax event="rowSelectCheckbox" update="@this" />
+                                <p:ajax event="rowUnselectCheckbox" update="@this" />
+                                <p:ajax event="toggleSelect" update="@this" />
+                                <p:ajax event="filter" update="@this" />
+
+                                <c:if test="#{!gestionNegociacionController.gestionarOtroSi}">
+                                    <p:column headerText="#{i18n.negociacion_prestador_tbl_neg_id}"
+                                              width="100"
+                                              filterBy="#{negociacion.id}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              visible="#{gestionNegociacionController.lstToogle[0]}"
+                                              >
+                                        <h:outputText value="#{negociacion.id}" />
+                                    </p:column>
+                                </c:if>
+                                <c:if test="#{gestionNegociacionController.gestionarOtroSi}">
+                                    <p:column headerText="#{i18n.negociacion_prestador_tbl_neg_id}"
+                                              width="100"
+                                              filterBy="#{negociacion.negociacionOrigen.id}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              visible="#{gestionNegociacionController.lstToogle[0]}"
+                                              >
+                                        <h:outputText value="#{negociacion.negociacionOrigen.id}" />
+                                    </p:column>
+                                </c:if>
+                                <p:column headerText= "#{i18n.negociacion_prestador_tbl_num_contrato}" 
+                                          width="100"
+                                          filterBy="#{negociacion.contrato.numeroContrato}"
+                                          filterMatchMode="contains" filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[1]}"
+                                          >
+                                    <h:outputText value="#{negociacion.contrato.numeroContrato}" />
+                                </p:column>
+
+                                <c:if test="#{gestionNegociacionController.gestionarOtroSi}">
+                                    <!--No otro si-->
+                                    <p:column headerText= "#{i18n.negociacion_otro_si_tbl_num_otro_si}" style="width:100px;"
+                                              styleClass="text-center col-lg-2" filterBy="#{negociacion.numeroOtroSi}"
+                                            filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{negociacion.numeroOtroSi}" />
+                                    </p:column>
+
+                                    <!--Razón social-->
+                                    <p:column headerText= "#{i18n.negociacion_otro_si_tbl_razon_social}" style="width:100px;"
+                                              styleClass="text-center col-lg-2" filterBy="#{negociacion.prestador.nombre}"
+                                            filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{negociacion.prestador.nombre}" />
+                                    </p:column>
+
+                                    <!--Nit-->
+                                    <p:column headerText= "#{i18n.negociacion_otro_si_tbl_nit}" style="width:100px;"
+                                              styleClass="text-center col-lg-2" filterBy="#{negociacion.prestador.numeroDocumento}"
+                                            filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{negociacion.prestador.numeroDocumento}" />
+                                    </p:column>
+                                </c:if>
+                                
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_tipo_contrato}" 
+                                          width="100"
+                                          filterBy="#{negociacion.contrato.tipoContratoEnum}"
+                                          filterMatchMode="contains" filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[2]}"
+                                          >
+                                    <h:outputText value="#{negociacion.contrato.tipoContratoEnum}"/>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_regional}" 
+                                          width="100"
+                                          filterBy="#{negociacion.regionalDto.descripcion}"
+                                          filterMatchMode="contains" filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[3]}"
+                                          >
+                                    <h:outputText value="#{negociacion.regionalDto.descripcion}"/>
+                                </p:column>
+
+                                <p:column
+                                    headerText="#{i18n.negociacion_prestador_tbl_modalidad}"
+                                    width="100"
+                                    filterBy="#{negociacion.tipoModalidadNegociacion}"
+                                    filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    visible="#{gestionNegociacionController.lstToogle[4]}"
+                                    >
+                                    <h:outputText value="#{fn:toUpperCase(i18n[cnx:enum_key(negociacion.tipoModalidadNegociacion)])}" />
+                                </p:column>
+
+                                <p:column headerText="#{i18n.negociacion_prestador_tbl_regimen}"
+                                          width="100"
+                                          filterBy="#{negociacion.regimen}" filterMatchMode="contains"
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[5]}"
+                                          >
+                                    <h:outputText value="#{negociacion.regimen}" />
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_tipo_subsidio}"
+                                          width="100"
+                                          filterBy="#{negociacion.contrato.tipoSubsidiado}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[6]}"
+                                          >
+                                    <h:outputText value="#{negociacion.contrato.tipoSubsidiado}"/>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_fecha_inicio}"
+                                          width="100"
+                                          filterBy="#{negociacion.contrato.fechaInicioVigencia}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[7]}"
+                                          >
+                                    <h:outputText value="#{negociacion.contrato.fechaInicioVigencia}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_fecha_fin}"
+                                          width="100"
+                                          filterBy="#{negociacion.contrato.fechaFinVigencia}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[8]}"
+                                          >
+                                    <h:outputText value="#{negociacion.contrato.fechaFinVigencia}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_nivel_contrato}"
+                                          width="100"
+                                          filterBy="#{negociacion.contrato.nivelContrato}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[9]}"
+                                          >
+                                    <h:outputText value="#{negociacion.contrato.nivelContrato}"/>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_minuta}"
+                                          width="100"
+                                          filterBy="#{negociacion.minuta.descripcion}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[10]}"
+                                          >
+                                    <h:outputText value="#{negociacion.minuta.descripcion}"/>
+                                </p:column>
+
+                                <p:column
+                                    headerText="#{i18n.negociacion_prestador_tbl_poblacion}"
+                                    width="100"
+                                    filterBy="#{negociacion.poblacion}" filterMatchMode="contains" 
+                                    filterStyleClass="anchoInput"
+                                    visible="#{gestionNegociacionController.lstToogle[11]}"
+                                    >
+                                    <h:outputText value="#{negociacion.poblacion}" />
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_responsable}"
+                                          width="100"
+                                          filterBy="#{negociacion.responsableCreacion}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[12]}"
+                                          >
+                                    <h:outputText value="#{negociacion.responsableCreacion}"/>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_estado_legalizacion}"
+                                          width="100"
+                                          filterBy="#{negociacion.estadoLegalizacion}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[13]}"
+                                          >
+                                    <h:outputText value="#{negociacion.descripcionEstadoLegalizacion}"/>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_fecha_legalizacion}"
+                                          width="100"
+                                          filterBy="#{negociacion.fechaLegalizacion}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[14]}"
+                                          >
+                                    <h:outputText value="#{negociacion.fechaLegalizacion}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText = "#{i18n.negociacion_prestador_tbl_estado_contrato}"
+                                          width="100"
+                                          filterBy="#{negociacion.contrato.estadoContrato}"
+                                          filterMatchMode="contains" 
+                                          filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[15]}"
+                                          >
+                                    <h:outputText value="#{negociacion.contrato.estadoContrato}"/>
+                                </p:column>
+
+                                <p:column
+                                    headerText="#{i18n.negociacion_prestador_tbl_fecha_neg}"
+                                    width="100"
+                                    filterBy="#{negociacion.fechaCreacion}"
+                                    filterMatchMode="contains" filterStyleClass="anchoInput"
+                                    visible="#{gestionNegociacionController.lstToogle[16]}"
+                                    >
+                                    <h:outputText value="#{negociacion.fechaCreacion}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="#{i18n.negociacion_prestador_tbl_estado}"
+                                          width="100"
+                                          filterBy="#{negociacion.estadoNegociacion}"
+                                          filterMatchMode="contains"
+                                          visible="#{gestionNegociacionController.lstToogle[17]}"
+                                          >
+                                    <h:outputText
+                                        value="#{fn:toUpperCase(i18n[cnx:enum_key(negociacion.estadoNegociacion)])}" />
+                                </p:column>
+
+                                <p:column headerText="#{i18n.negociacion_prestador_tbl_sedes}"
+                                          width="100"
+                                          filterBy="#{negociacion.nroSedes}" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                          visible="#{gestionNegociacionController.lstToogle[18]}"
+                                          >
+                                    <h:outputText value="#{negociacion.nroSedes}" />
+                                </p:column>
+
+                                <p:column headerText="#{i18n.form_label_acciones}" 
+                                          width="100"
+                                          visible="#{gestionNegociacionController.lstToogle[19]}"
+                                          >
+
+                                    <p:commandButton id="btnVerNegociacion"
+                                                     actionListener="#{gestionNegociacionController.verNegociacion(negociacion)}"
+                                                     alt="#{negociacion.enCreacion ? 'En proceso de creación' :i18n.negociacion_btn_alt_ver_neg}"
+                                                     title="#{negociacion.enCreacion ? 'En proceso de creación' :i18n.negociacion_btn_alt_ver_neg}" ajax="true"
+                                                     icon="ui-icon-search" disabled="#{negociacion.enCreacion}"/>
+
+                                    <p:commandButton id="btnSedesNegociadas"
+                                                     update="sedesNegociacionForm"
+                                                     alt="#{i18n.negociacion_btn_alt_sedes_neg}"
+                                                     title="#{i18n.negociacion_btn_alt_sedes_neg}"
+                                                     icon="fa fa-hospital-o" disabled="#{negociacion.nroSedes == 0}"
+                                                     actionListener="#{gestionNegociacionController.verSedesNegociadas(negociacion)}"
+                                                     process="@this" />
+
+                                    <p:commandButton id="btnInvitar"
+                                                     rendered="#{i18n[cnx:enum_key(negociacion.estadoNegociacion)] == i18n.enum_estadonegociacionenum_en_tramite}"
+                                                     alt="#{i18n.negociacion_btn_alt_inv_neg}"
+                                                     title="#{i18n.negociacion_btn_alt_inv_neg}"
+                                                     actionListener="#{gestionNegociacionController.verInvitacionNegociacion(negociacion.id, negociacion.estadoNegociacion)}"
+                                                     update="invitacionNegociacionForm"
+                                                     process="@this"
+                                                     icon="fa fa-envelope" />
+
+                                    <p:commandButton id="btnRechazar"
+                                                     rendered="#{i18n[cnx:enum_key(negociacion.estadoNegociacion)] == i18n.enum_estadonegociacionenum_en_tramite}"
+                                                     update="deleteNeg"
+                                                     action="#{gestionNegociacionController.seleccionarSedeEliminar(negociacion.id,negociacion.negociacionPadre.id)}"
+                                                     ajax="true"
+                                                     alt="#{i18n.negociacion_btn_alt_eliminar}"
+                                                     title="#{i18n.negociacion_btn_alt_eliminar}"
+                                                     icon="fa fa-ban"
+                                                     oncomplete="PF('cdDeleteNeg').show();"/>
+
+                                    <p:commandButton id="btnDescargarAnexoCapita"
+                                                     rendered="#{(negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA
+                                                                 or negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO)
+                                                                 and ((i18n[cnx:enum_key(negociacion.estadoNegociacion)] == i18n.enum_estadonegociacionenum_finalizada)
+                                                                 or (negociacion.estadoLegalizacion eq EstadoLegalizacionEnum.PEND_LEGALIZACION
+                                                                 or negociacion.estadoLegalizacion eq EstadoLegalizacionEnum.LEGALIZACION_PRELIMINAR ))}"
+                                                     alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                     title="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                     ajax="false"
+                                                     icon="fa fa-download"
+                                                     actionListener="#{gestionNegociacionController.descargarAnexoTarifario(negociacion)}"/>
+
+                                    <p:commandButton id="btnDescargarAnexoEvento"
+                                                     rendered="#{(negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO ||
+                                                                 negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO ||
+                                                                 negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA )
+                                                                 and ((i18n[cnx:enum_key(negociacion.estadoNegociacion)] == i18n.enum_estadonegociacionenum_finalizada)
+                                                                 or (negociacion.estadoLegalizacion eq EstadoLegalizacionEnum.PEND_LEGALIZACION
+                                                                 or negociacion.estadoLegalizacion eq EstadoLegalizacionEnum.LEGALIZACION_PRELIMINAR ))}"
+                                                     alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                     title="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                     ajax="true"
+                                                     icon="fa fa-download"
+                                                     process="@this"
+                                                     update="anexoDialog"
+                                                     actionListener="#{gestionNegociacionController.descargarAnexoTarifario(negociacion)}"/>
+
+                                    <p:commandButton id="btnOtroSi"
+                                                     rendered="#{negociacion.todasLegalizadas and
+                                                 				negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO
+                                                 				            and gestionOtroSiController.validateContractDescriptionState(negociacion.contrato.estadoContrato)
+																and ((!negociacion.esOtroSi and !negociacion.tieneOtroSi) or (negociacion.esOtroSi and negociacion.ultimoOtroSi))}"
+                                                     update="OtroSiDlg, gestionOtroSiForm,gestionOtroSiForm:panelOtroSi" styleClass="btn btn-sm btn-info"
+                                                     action="#{gestionOtroSiController.seleccionarNegociacionOtroSi(negociacion)}"
+                                                     ajax="true" alt="#{i18n.negociacion_btn_alt_otro_si}"
+                                                     title="#{i18n.negociacion_btn_alt_otro_si}" icon="fa fa-paste"
+                                                     onclick="resetOtroSi();"
+                                                     oncomplete="PF('OtroSiDlg').show();" />
+
+                                    <p:commandButton id="btnVerNegociacionesOtroSi"
+                                                     rendered="#{negociacion.tieneOtroSi and gestionNegociacionController.validaOtroSi}"
+                                                     title="#{i18n.negociacion_btn_alt_ver_otro_si}"
+                                                     styleClass="btn btn-sm btn-success" icon="fa fa-eye"
+                                                     update="negociacionesPrestador"
+                                                     action="#{gestionNegociacionController.consultarNegociacionesOtroSi(negociacion)}"/>
+
+                                    <p:outputPanel id="deleteNeg" layout="block">
+                                        <p:confirmDialog widgetVar="cdDeleteNeg"  showEffect="fade"
+                                                         header="Confirmar Eliminar Negociación"
+                                                         icon="fa fa-warning" >
+
+                                            <f:facet name="message">
+                                                <p:outputPanel>
+                                                    <h:outputFormat value="#{i18n.negociacion_mensaje_confirm_eliminar}" escape="false">
+                                                        <f:param value="#{gestionNegociacionController.negSelDelete}" />
+                                                    </h:outputFormat>
+                                                </p:outputPanel>
+                                            </f:facet>
+
+                                            <p:commandButton value="#{i18n.form_label_button_aceptar}"
+                                                             actionListener="#{gestionNegociacionController.eliminarNegociacion()}"
+                                                             update="negociacionesPrestador"
+                                                             styleClass="btn btn-sm btn-info"
+                                                             icon="fa fa-check-circle-o"
+                                                             onclick="PF('cdDeleteNeg').hide()"
+                                                             disabled="#{negociacion.enCreacion}"/>
+
+                                            <p:commandButton value="#{i18n.form_label_button_cancelar}" type="button"
+                                                             styleClass="btn btn-sm btn-warning" icon="fa fa-close"
+                                                             onclick="PF('cdDeleteNeg').hide()" />
+                                        </p:confirmDialog>
+                                    </p:outputPanel>
+                                </p:column>
+                            </p:dataTable>
+                        <br />
+                        <div class="ui-grid ui-grid-responsive">
+                            <div class="ui-grid-row">
+                                <div class="ui-grid-col-12  text-right">
+                                    <div class="col-lg-12">
+                                        <p:commandButton
+                                            styleClass="btn btn-sm btn-warning"
+                                            icon="fa fa-angle-left" iconPos="left"
+                                            value="#{i18n.form_label_button_regresar}"
+                                            action="#{gestionNegociacionController.regresar()}"
+                                            />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>Contratacion</artifactId>
+		<groupId>com.conexia.emssanar</groupId>
+		<version>1.1.8.3-SNAPSHOT</version>
+	</parent>
+	<artifactId>Portafolio</artifactId>
+	
+	<packaging>pom</packaging>
+	<name>Portafolio</name>
+    
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <properties>
+                <redirect.server>/wap/portafolio</redirect.server>
+            </properties>
+        </profile>
+    </profiles>
+
+	<modules>
+		<module>PortafolioDef</module>
+		<module>PortafolioApp</module>
+	</modules>
+</project>

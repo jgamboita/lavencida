@@ -1,0 +1,7 @@
+<xls>
+	<area ref="Template!A1:K5">
+		<each items="afiliados" var="row" ref="Template!A3:K3">
+            <area ref="Template!A3:K3"/>
+        </each>
+	</area>
+</xls>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        >
+    <ui:composition template="/template/inner.xhtml">
+    	<ui:define name="title">
+    		Parametrizacion de Tecnologias
+		</ui:define>
+
+        <ui:define name="content">
+        	<p:panel id = "panelDatosGuia">
+        		<div class="row">
+        			<div class="col-lg-12">
+        				<h:outputLabel value="Sede Prestador: #{parametrizarTecnologiasController.sedeSession.codigoPrestador}-#{parametrizarTecnologiasController.sedeSession.codigoSede}
+        				#{parametrizarTecnologiasController.sedeSession.nombreSede}" styleClass="titulo-bold"/>
+        			</div>
+        			<h:outputLabel value="Negociacion: #{parametrizarTecnologiasController.negociacionId}" styleClass="titulo-bold col-lg-7"/>
+        		</div>
+
+        	</p:panel>
+            <p:panel id="panelDetalle">
+                <p:tabView id="tabTecnologias">
+                    <p:tab title="Procedimientos" rendered="#{parametrizarServicioController.contarServiciosPorParametrizar() > 0}">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <ui:include src="parametrizarServicios.xhtml"></ui:include>
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Medicamentos"
+                           rendered ="#{parametrizarMedicamentoController.contarGrupoMedicamentoPorParametrizar() > 0}"
+                           id="tabMedicamentos">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <ui:include src="parametrizarMedicamento.xhtml"></ui:include>
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Paquetes"
+                           rendered ="#{parametrizarPaqueteController.contarPaquetesPorParametrizar() > 0}">
+                        <h:panelGrid columns="2" cellpadding="10">
+                            <ui:include src="parametrizarPaquetes.xhtml"></ui:include>
+                        </h:panelGrid>
+                    </p:tab>
+                </p:tabView>
+                <br />
+
+                <div class="col-lg-12 text-right">
+                    <h:form>
+                        <p:commandButton value="Regresar" styleClass="btn btn-sm btn-warning"
+                                         icon="fa fa-chevron-left" iconPos="left"
+                                         action="#{parametrizarTecnologiasController.goToSolicitud()}"
+                                         alt="Volver a listado de sedes."/>
+                    </h:form>
+                </div>
+                <br />
+            </p:panel>
+
+        </ui:define>
+    </ui:composition>
+</f:view>

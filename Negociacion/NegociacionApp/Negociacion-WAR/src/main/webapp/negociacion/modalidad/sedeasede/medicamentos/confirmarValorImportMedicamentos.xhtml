@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id = "confirmarValorMedicamentosForm">
+			<p:outputLabel value="#{i18n.negociacion_importar_medicamentos_regulados}"/>
+			<h:panelGroup id="opcionesImportarReguladoGrid" layout="block"
+                          styleClass="radioButtonSpaceLeft" border="0">
+                <p:selectOneRadio id="opcionesImportarRegulado" layout="custom" columns="1"
+                                  value="#{negociacionMedicamentoSSController.tipoAsignacionImportar}">
+                    <p:ajax update="@this"/>
+                    <f:selectItems
+                        value="#{negociacionMedicamentoSSController.tipoAsignacionTarifaMedReguladoEnum}"
+                        var="tipoAsignacion" itemValue="#{tipoAsignacion}"
+                        itemLabel="#{i18n[cnx:enum_key(tipoAsignacion)]}" />
+                </p:selectOneRadio>
+
+				<h:panelGrid columns="3" cellpadding="5" id="panelGridImportarMx">
+                    <p:radioButton id="optReg1" for="opcionesImportarRegulado" itemIndex="0" />
+                    <h:outputLabel for="optReg1"
+                                   value="#{i18n.enum_tipoasignaciontarifamedenum_regulado_valor_maximo}" />
+                    <h:outputLabel />
+
+                    <p:radioButton id="optReg2" for="opcionesImportarRegulado" itemIndex="1" />
+                    <h:outputLabel for="optReg2"
+                                   value="#{i18n.enum_tipoasignaciontarifamedenum_regulado_valor_minimo}" />
+                    <h:outputLabel />
+
+                    <div class="ui-grid-col-12  text-right">
+
+                	</div>
+                </h:panelGrid>
+         	</h:panelGroup>
+	</h:form>
+</f:view>

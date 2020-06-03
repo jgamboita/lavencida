@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputText value="Portafolio / Información del prestador" />
+		</ui:define>
+		<ui:define name="content">
+			<h:form id="datosNorma">
+				<p:panel id="panelDatos">
+					<h:panelGrid columns="1" style="width: 100%;">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.pb_st_datos}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+
+					<br />
+					<div class="form-group">
+						<!-- Primera Fila -->
+						<div class="row">
+
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_tipo_documento}" />
+								<p:selectOneMenu id="tipDocumento" effect="fold"
+									styleClass="anchoInput" value="#{informacionPrestador.prestador.tipoIdentificacion}">
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItems value="#{listaTiposDocumento}"
+										var="tipoIdentificacion" itemValue="#{tipoIdentificacion}"
+										itemLabel="#{tipoIdentificacion.descripcion}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-lg-offset-3  col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_numero_documento}" />
+								<h:inputText id="tx_numDocumento"
+									styleClass="form-control input-sm" disabled="true"
+									value="1026888302" />
+							</div>
+						</div>
+						<div class="row">
+
+							<div class="col-lg-11">
+								<p:outputLabel value="#{i18n.pb_lb_nombre_prestador}" />
+								<h:inputText id="tx_nombrePres"
+									styleClass="form-control input-sm" disabled="true"
+									value="ORLANDO ANTONIO VILLOTA PAREDES" />
+							</div>
+
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_caracter_territorial}" />
+								<p:selectOneMenu id="sm_caracTerritorial" effect="fold"
+									styleClass="anchoInput" disabled="true">
+									<f:selectItem itemLabel="NACIONAL" itemValue="NACIONAL" />
+									<f:selectItem itemLabel="DEPARTAMENTAL"
+										itemValue="DEPARTAMENTAL" />
+									<f:selectItem itemLabel="DISTRITAL" itemValue="DISTRITAL" />
+									<f:selectItem itemLabel="MUNICIPAL" itemValue="MUNICIPAL" />
+									<f:selectItem itemLabel="INDIGENA" itemValue="INDIGENA" />
+								</p:selectOneMenu>
+							</div>
+							<div class="col-lg-offset-3 col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_nivel_atencion}" />
+								<p:selectOneMenu id="sm_nivelAten" effect="fold"
+									styleClass="anchoInput">
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItem itemLabel="NO ESPECIFICADA"
+										itemValue="NO ESPECIFICADA" />
+									<f:selectItem itemLabel="BAJA" itemValue="BAJA" />
+									<f:selectItem itemLabel="MEDIA" itemValue="MEDIA" />
+									<f:selectItem itemLabel="ALTA" itemValue="ALTA" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+						<br />
+						<div class="row">
+
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_email}" />
+								<p:inputText id="tx_correoPrestador"
+									style="width:100%;border:1px solid #ccc"
+									styleClass="form-control input-sm" required="true"
+									requiredMessage="#{i18n.invitacion_neg_correo_required}"
+									validatorMessage="#{i18n.form_validar_correo_mensaje}"
+									maxlength="50" value="ANACRIS706@HOTMAIL.COM">
+									<f:validateRegex pattern="#{i18n.form_validar_correo}" />
+								</p:inputText>
+							</div>
+
+							<div class="col-lg-offset-3 col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_sitio_web}" />
+								<p:inputText id="tx_sitioWeb" styleClass="form-control input-sm" />
+							</div>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_clase_prestador}" />
+								<p:selectOneMenu id="sm_clasPrestador" effect="fold"
+									styleClass="anchoInput" disabled="true">
+									<f:selectItem itemLabel="PROFESIONAL INDEPENDIENTE"
+										itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-lg-offset-3 col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_categ_prestador}" />
+								<p:selectOneMenu id="sm_categPrestador" effect="fold"
+									styleClass="anchoInput">
+									<f:selectItem itemLabel="PROFESIONAL INDEPENDIENTE"
+										itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_tipo_persona}" />
+								<p:selectOneMenu id="sm_tipoPersona" effect="fold"
+									styleClass="anchoInput">
+									<f:selectItem itemLabel="PERSONA NATURAL"
+										itemValue="PERSONA NATURAL" />
+									<f:selectItem itemLabel="PERSONA JURIDICA"
+										itemValue="PERSONA JURIDICA" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-lg-offset-3  col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_empresa_social}" />
+								<p:selectOneMenu id="sm_empresaSocial" effect="fold"
+									styleClass="anchoInput" disabled="true">
+									<f:selectItem itemLabel="NO" itemValue="NO" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+						<br />
+						<div class="row">
+
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_acreditado}" />
+								<p:selectOneMenu id="sm_acreditadol" effect="fold"
+									styleClass="anchoInput">
+									<f:selectItem itemLabel="NO" itemValue="NO" />
+									<f:selectItem itemLabel="SI" itemValue="SI" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.pb_lb_title_representate_legal}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+
+					<!--Representante legal-->
+
+					<div class="form-group">
+
+						<div class="row">
+
+							<div class="col-lg-11">
+								<p:outputLabel value="#{i18n.pb_lb_nombre}" />
+								<h:inputText id="tx_nombreRepresentante" disabled="true"
+									styleClass="form-control input-sm"
+									value="ORLANDO ANTONIO VILLOTA PAREDES" />
+							</div>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_tipo_documento}" />
+								<p:selectOneMenu id="sm_tipDocumento" effect="fold"
+									styleClass="anchoInput">
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItems value="#{listaTiposDocumento}"
+										var="tipoIdentificacion" itemValue="#{tipoIdentificacion}"
+										itemLabel="#{tipoIdentificacion.descripcion}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="col-lg-offset-3 col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_numero_documento}" />
+								<h:inputText id="tx_rlnumeroDoc"
+									styleClass="form-control input-sm" value="1026888302" />
+							</div>
+						</div>
+					</div>
+
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.pb_lb_title_contacto_admin}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+
+					<!--Contacto administrativo-->
+					<div class="form-group">
+						<div class="row">
+
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_nombre}" />
+								<h:inputText value="CLAUDIA MARITZA MUNOZ CAMPO"
+									styleClass="form-control input-sm" />
+							</div>
+							<div class="col-lg-offset-3  col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_correo_electronico}" />
+								<h:inputText value="CENTROPEDIATRICOC@HOTMAIL.COM"
+									styleClass="form-control input-sm" />
+							</div>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_celular}" />
+								<h:inputText value="3136216303"
+									styleClass="form-control input-sm" />
+							</div>
+							<div class="col-lg-offset-3  col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_telefono_fijo}" />
+								<h:inputText value="8239797" styleClass="form-control input-sm" />
+							</div>
+						</div>
+
+					</div>
+
+					<!--Persona contacto negociación-->
+
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.pb_lb_title_contacto_negocio}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+
+					<div class="form-group">
+						<div class="row">
+
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_nombre}" />
+								<h:inputText value="CLAUDIA MARITZA MUNOZ CAMPO"
+									styleClass="form-control input-sm" />
+							</div>
+							<div class="col-lg-offset-3  col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_correo_electronico}" />
+								<h:inputText value="CENTROPEDIATRICOC@HOTMAIL.COM"
+									styleClass="form-control input-sm" />
+							</div>
+						</div>
+						<br />
+						<div class="row">
+							<div class="col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_celular}" />
+								<h:inputText value="3136216303"
+									styleClass="form-control input-sm" />
+							</div>
+							<div class="col-lg-offset-3  col-lg-4">
+								<p:outputLabel value="#{i18n.pb_lb_telefono_fijo}" />
+								<h:inputText value="8239797" styleClass="form-control input-sm" />
+							</div>
+						</div>
+
+					</div>
+
+					<br />
+
+					<div class="form-group">
+						<div class="row  text-right">
+							<div class="col-lg-12">
+								<p:commandButton id="btnGuardarDts"
+									value="#{i18n.form_label_button_guardar}"
+									styleClass="btn btn-sm btn-success">
+								</p:commandButton>
+
+								<p:menuButton value="#{i18n.pb_lb_btn_crear_propuesta}"
+									class="btn btn-sm">
+									<p:menuitem id="crearCapita"
+										value="#{i18n.pb_lb_crear_capital}"
+										action="/basico/listadoSedesPrestador" icon="fa fa-file" />
+										
+									<p:menuitem id="crearEvento" value="#{i18n.pb_lb_crear_evento}"
+										icon="fa fa-file"/>
+								</p:menuButton>
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>Contratacion-Commons</artifactId>
+		<groupId>com.conexia.emssanar</groupId>
+		<version>1.1.8.3-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>Contractual-Utils</artifactId>
+
+    <dependencies>
+		<dependency>
+			<groupId>com.conexia</groupId>
+			<artifactId>CdiFactory</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.conexia.emssanar</groupId>
+			<artifactId>Seguridad-Jar-Defs</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.conexia.emssanar</groupId>
+			<artifactId>Seguridad-Dto-Defs</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.conexia.emssanar</groupId>
+			<artifactId>SeguridadUtils</artifactId>
+			<version>${one.seguridadutils}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.conexia</groupId>
+			<artifactId>exceptions</artifactId>
+			<version>${one.exceptions}</version>
+		</dependency>
+        <!-- Retrofit | A type-safe REST client -->
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-simplexml</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+
+		<!-- Repositorio de archivos -->
+		<dependency>
+			<groupId>com.conexia</groupId>
+			<artifactId>file-repository-access</artifactId>
+			<version>1.1</version>
+		</dependency>
+        <dependency>
+            <groupId>com.conexia.contratacion.commons</groupId>
+            <artifactId>contrataciones-commons</artifactId>
+            <version>${contrataciones-commons.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.conexia.contratacion.rest</groupId>
+            <artifactId>rest-client-lib</artifactId>
+            <version>${rest.client.lib.version}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+</project>

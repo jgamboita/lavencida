@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoAsignacionTarifaServicioEnum" var="TipoAsignacionTarifaServicioEnum" />
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" />
+
+	<script type="text/javascript">
+        function  ValidarPunto(text)
+        {
+            if (text.value.match('[,]'))
+            {
+                text.value = '';
+            }
+        }
+    </script>
+     <style type="text/css">
+		.ui-fileupload-buttonbar {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    border: none;
+		}
+		.ui-fileupload {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    display: inline-block;
+		    border: none;
+		}
+		.ui-fileupload-content {
+		    border: none;
+		}
+		.ui-fileupload-choose {
+        	background-color: #fda63e !important;
+        	color: #ffffff !important;
+		    font-family: 'PT Sans', arial, verdana, sans-serif;
+    		font-size: 1em;
+		    font-weight: normal;
+		}
+		span.ui-fileupload-choose > span.ui-icon-plusthick{
+		    display: none !important;
+		}
+		span.ui-fileupload-choose > span.ui-button-text{
+		    padding-left: 1em !important;
+		}
+	</style>
+
+
+	<!-- Pop-up para mostrar procedimientos no procesados en importación -->
+	<p:dialog header="Procedimientos no procesados" widgetVar="dlgProcedimientosNoProcesadosW" modal="true" height="500" width="1000"
+		position="center" appendTo="@(body)" id="dialogoErroresProcedimientos">
+
+		<h:commandLink title="#{i18n.form_label_file_excel}">
+			<h:outputText class="fa fa-file-excel-o fa-2x success" />
+
+			<p:dataExporter type="xlsx" target="erroresProcedimientosTabla"
+			fileName="Listado_de_Errores_Procedimientos_PGP" />
+		</h:commandLink>
+
+		<p:dataTable id="erroresProcedimientosTabla" var="registro"
+			paginatorAlwaysVisible="false"
+			value="#{negociacionServiciosPgpSSController.listadoErrores}" rows="10"
+			dynamic="true" styleClass="paginated" paginator="true"
+			paginatorPosition="bottom" widgetVar="erroresProcedimientosTablaW"
+			rowsPerPageTemplate="5,10,20"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+			emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+			<p:column headerText="Código único procedimiento">
+				<h:outputText value="#{registro.codigoTecnologiaUnicaEmssanar}" />
+			</p:column>
+			<p:column headerText="Descripción única procedimiento">
+				<h:outputText value="#{registro.descripcionCodigoTecnologiaUnicaEmssanar}" />
+			</p:column>
+			<p:column headerText="#{i18n.form_eliminar}">
+				<h:outputText value="#{registro.eliminarProcedimiento}" />
+			</p:column>
+			<p:column headerText="#{i18n.form_label_error}">
+				<h:outputText value="#{registro.codigo} - #{registro.mensaje}" />
+			</p:column>
+			<p:column headerText="#{i18n.form_label_linea}">
+				<h:outputText value="#{registro.linea}" />
+			</p:column>
+
+		</p:dataTable>
+	</p:dialog>
+
+	<p:panel id="panelServicioSS">
+		<p:accordionPanel id="acordionPanelServicioSS">
+			<p:tab title="#{i18n.negociacion_asignacion_masiva_titulo}">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-lg-6" style="border: 1px solid #E5E5E5;">
+
+							<!-- Panel Grip de PGP -->
+							<h:panelGroup id="opcionesMasivoGridPGP" layout="block"
+									styleClass="radioButtonSpaceLeft" border="0">
+								<p:selectOneRadio id="opcionesMasivoPGP" layout="custom"
+										columns="1" converter="omnifaces.SelectItemsConverter"
+										value="#{negociacionServiciosPgpSSController.tipoAsignacionSeleccionado}">
+										<f:selectItems
+											value="#{negociacionServiciosPgpSSController.tipoAsignacionTarifaServicioEnum}"
+											var="tipoAsignacionServicio" itemValue="#{tipoAsignacionServicio}"
+											itemLabel="#{i18n[cnx:enum_key(tipoAsignacionServicio)]}" />
+								</p:selectOneRadio>
+
+								<h:panelGrid style="margin-top:10px">
+
+									<p:row>
+										<p:radioButton id="optServ1" for="opcionesMasivoPGP"
+										itemIndex="0" />
+										<h:outputLabel for="optServ1"
+											value="#{i18n.negociacion_capitulos_asigna_referente}" />
+										<h:outputLabel />
+									</p:row>
+
+									<p:row>
+										<p:radioButton id="optServ2" for="opcionesMasivoPGP"
+										itemIndex="1" />
+										<h:outputLabel for="optServ2"
+											value="#{i18n.negociacion_capitulos_asigna_franja_riesgo}" />
+										<h:outputLabel />
+									</p:row>
+
+									<p:row>
+										<h:outputLabel for="optServ2"
+											value="#{i18n.negociacion_masivo_franja_inicio}" />
+										<h:outputLabel />
+										<pe:inputNumber
+										id="inputFranjaInicio"
+										value="#{negociacionServiciosPgpSSController.franjaInicio}"
+										decimalSeparator=","
+										thousandSeparator="."
+										decimalPlaces="2"
+										validatorMessage="#{i18n.negociacion_pgp_valor_franja}"
+										placeholder="0">
+										<f:validateDoubleRange minimum="0" maximum="1000" />
+										</pe:inputNumber>
+
+										<h:outputLabel for="optServ2"
+											value="#{i18n.negociacion_masivo_franja_fin}" />
+										<h:outputLabel />
+										<pe:inputNumber
+											id="inputFranjaFin"
+											value="#{negociacionServiciosPgpSSController.franjaFin}"
+											decimalSeparator=","
+											thousandSeparator="."
+											decimalPlaces="2"
+											validatorMessage="#{i18n.negociacion_pgp_valor_franja}"
+											placeholder="1000">
+											<f:validateDoubleRange minimum="0" maximum="1000" />
+										</pe:inputNumber>
+									</p:row>
+
+
+								</h:panelGrid>
+											<br></br>
+											<div class="row">
+												<div class="col-lg-12">
+													<p:commandButton id="btnAsignacionTarifasServicio"
+														value="#{i18n.form_label_button_aceptar}"
+														styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+														rendered="#{negociacionServiciosPgpSSController.tecnologiasController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+														update="@([id$=negociacionServiciosSS]),@([id$=totalNegociacion]),
+															@([id$=inputFranjaInicio]), @([id$=inputFranjaFin]), @([id$=opcionesMasivoPGP])"
+														process="acordionPanelServicioSS"
+														actionListener="#{negociacionServiciosPgpSSController.asignarTarifasServicios()}"
+														oncomplete="PF('negociacionServiciosSS').unselectAllRows();" />
+												</div>
+											</div>
+								<p:spacer></p:spacer>
+							</h:panelGroup>
+
+						</div>
+						<div class="col-lg-6" style="border: 1px solid #E5E5E5;">
+							<p:panelGrid style="margin-top:10px">
+
+							    <f:facet name="header">
+							        <p:row>
+							            <p:column style="width:600px;">
+							            	<h:outputLabel value="Importar procedimientos" />
+							            </p:column>
+							        </p:row>
+							    </f:facet>
+
+							    <br></br>
+
+							    <h:panelGrid id="panelExportarPlantillaPro" columns="2" style="margin-bottom:10px" cellpadding="20">
+									<p:outputLabel value="#{i18n.form_label_generar_plantilla}" style="width:150px"/>
+
+									<p:commandButton id="btn-generar-plantilla-procedimientos"
+											style="width:90px"
+											styleClass="btn btn-sm btn-info"
+											icon="fa fa-download" value="Descargar"
+											immediate="true"
+											process="@this"
+											actionListener="#{negociacionServiciosPgpSSController.descargarFormatoTecnologiasPGP()}"
+											ajax="false"
+											onsuccess="PrimeFaces.monitorDownload(start, stop);">
+											<p:fileDownload value="#{negociacionServiciosPgpSSController.formatoDownload}" />
+									</p:commandButton>
+
+
+
+								</h:panelGrid>
+
+								<h:panelGrid columns="5" style="margin-bottom:10px" cellpadding="20">
+									<p:outputLabel value="Importar procedimientos" style="width:150px"/>
+
+									<p:spacer></p:spacer>
+
+									<p:fileUpload id="btnImportarProcedimientosPgp"
+														styleClass="btn btn-warning btn-sm"
+														icon="fa fa-upload"
+														auto="true" multiple="true"
+														allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+														accept="xls|xlsx|XLS|XLSX"
+														mode="advanced"
+														rendered="#{negociacionServiciosPgpSSController.tecnologiasController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+														update="@([id$=dialogoErroresProcedimientos]), @([id$=negociacionServiciosSS]), @([id$=totalNegociacion])"
+														cancelLabel="#{i18n.form_label_button_cancelar}"
+														uploadLabel="#{i18n.form_label_importar}"
+														label="#{i18n.form_label_importar}" sizeLimit="5242880"
+														invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+														invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+														fileUploadListener="#{negociacionServiciosPgpSSController.importFiles}"
+														onstart="PF('statusDialog').show();"
+														oncomplete="PF('statusDialog').hide();">
+														<f:attribute name="foo" value="#{ArchivosNegociacionEnum.PROCEDURE_PGP_FILE}"/>
+									</p:fileUpload>
+
+									<p:spacer></p:spacer>
+
+									<p:commandButton styleClass="btn btn-warning btn-sm"
+													id="btnMostrarNoProcesadosProcedimientos"
+													rendered="#{not empty negociacionServiciosPgpSSController.listadoErrores}"
+													onclick="PF('dlgProcedimientosNoProcesadosW').show();"
+													value="#{i18n.form_label_button_no_procesados_asociar_poblacion}"
+													process="@this"
+													ajax="false">
+									</p:commandButton>
+
+								</h:panelGrid>
+								<p:spacer style="height:20px;"></p:spacer>
+							</p:panelGrid>
+						</div>
+					</div>
+				</div>
+			</p:tab>
+		</p:accordionPanel>
+		<div class="form-group">
+			<p:toolbar>
+				<p:toolbarGroup align="right">
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right" for="gestionServicios"
+							value="#{i18n.negociacion_capitulos_gestionar_capitulos}" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionServicios"
+								value="#{negociacionServiciosPgpSSController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+									itemValue="" noSelectionOption="true" />
+								<f:selectItems
+									value="#{negociacionServiciosPgpSSController.gestionTecnologiasNegociacion}"
+									var="tipoGestionServ" itemValue="#{tipoGestionServ}"
+									itemLabel="#{i18n[cnx:enum_key(tipoGestionServ)]}" />
+								<p:ajax
+									listener="#{negociacionServiciosPgpSSController.gestionarCapitulos('negociacionServiciosSS','tecnologiasSSForm:tabsTecnologias:gestionServicios')}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deleteServ" layout="block">
+				<p:confirmDialog widgetVar="cdDeleteServ" showEffect="fade"
+					header="#{i18n.negociacion_servicios_confir_borrar_servicios}"
+					icon="fa fa-warning">
+
+					<f:facet name="message">
+						<p:outputPanel>
+							<h:outputFormat
+								value="#{i18n.negociacion_capitulos_mensaje_eliminar}" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{negociacionServiciosPgpSSController.eliminarServiciosMasivo()}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+						onclick="PF('cdDeleteServ').hide()" immediate="true"
+						update="@([id$=tabsTecnologias])" />
+
+					<p:commandButton value="#{i18n.form_label_button_cancelar}"
+						type="button" styleClass="btn btn-sm btn-warning"
+						icon="fa fa-close" onclick="PF('cdDeleteServ').hide()" />
+				</p:confirmDialog>
+			</p:outputPanel>
+
+			<p:dataTable id="negociacionServiciosSS"
+				binding="#{negociacionServiciosSS}" var="capituloNegociacion"
+				value="#{negociacionServiciosPgpSSController.capitulosNegociacion}"
+				rowKey="#{capituloNegociacion.capituloProcedimiento.id}"
+				selection="#{negociacionServiciosPgpSSController.capitulosNegociacionSeleccionados}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+				widgetVar="negociacionServiciosSS" paginator="true"
+				paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+				rowStyleClass="#{capituloNegociacion.negociado ? null : 'noNegociado'}">
+
+				<p:ajax event="page" update="@this" />
+				<p:ajax event="sort" update="@this" />
+				<p:ajax event="rowSelectCheckbox" update="@this" />
+				<p:ajax event="rowUnselectCheckbox" update="@this" />
+				<p:ajax event="toggleSelect" update="@this" />
+				<p:ajax event="filter" update="@this" />
+
+				<p:columnGroup type="header">
+					<p:row>
+						<p:column colspan="1" headerText="" />
+						<p:column colspan="3" headerText="#{i18n.referente_pgp_title}" />
+						<p:column colspan="#{(negociacionServiciosPgpSSController.showPoblacion) ? 9 : 8}"
+								headerText="#{i18n.negociacion_emmsanar_header}"
+								style="min-width:35%"/>
+					</p:row>
+					<p:row>
+						<p:column
+							filterBy="#{capituloNegociacion.capituloProcedimiento.id}-#{capituloNegociacion.capituloProcedimiento.descripcion}"
+							filterMatchMode="contains"
+							headerText="#{i18n.servicio_label_capitulos}"
+							filterStyleClass="anchoInput">
+							<p:spinner onchange="PF('negociacionServiciosSS').filter()" styleClass="year-spinner"/>
+			                <h:outputText value="#{capituloNegociacion.capituloProcedimiento.id}-#{capituloNegociacion.capituloProcedimiento.descripcion}" />
+						</p:column>
+						<p:column filterBy="#{capituloNegociacion.frecuencia}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_frecuencia}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{capituloNegociacion.costoMedioUsuarioReferente}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_costo_medio_usuario}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{capituloNegociacion.valorReferente}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_valor_referente}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{capituloNegociacion.franjaInicio}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_franja_inicio}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{capituloNegociacion.franjaFin}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_franja_fin}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{capituloNegociacion.frecuenciaNegociado}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_frecuencia}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{capituloNegociacion.costoMedioUsuarioNegociado}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_costo_medio_usuario}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{capituloNegociacion.valorNegociado}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_valor_negociado}"
+							filterStyleClass="anchoInput" />
+
+						<p:column
+							headerText="#{i18n.form_label_button_verdetalle}"
+							filterStyleClass="anchoInput" />
+
+
+						<p:column headerText="Poblacion"
+							visible="#{negociacionServiciosPgpSSController.showPoblacion}">
+						</p:column>
+
+						<p:column headerText="#{i18n.form_label_negociado}" />
+
+						<p:column headerText="#{i18n.form_label_seleccionado}"
+							selectionMode="multiple" />
+					</p:row>
+				</p:columnGroup>
+
+				<!-- Capitulo habilitacion -->
+				<p:column filterBy="#{capituloNegociacion.capituloProcedimiento.id}-#{capituloNegociacion.capituloProcedimiento.descripcion}"
+					filterMatchMode="contains" width="100"
+					headerText="#{i18n.servicio_label_servicio_habilitacion}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{capituloNegociacion.capituloProcedimiento.id}-#{capituloNegociacion.capituloProcedimiento.descripcion}" />
+				</p:column>
+
+				<!-- Frecuencia referente -->
+				<p:column
+					filterBy="#{capituloNegociacion.frecuenciaReferente}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{capituloNegociacion.frecuenciaReferente}" >
+						<f:convertNumber pattern="###,###.##########" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Costo medio usuario referente-->
+				<p:column
+					filterBy="#{capituloNegociacion.costoMedioUsuarioReferente}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{capituloNegociacion.costoMedioUsuarioReferente}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+
+				<!-- valor referente-->
+				<p:column
+					filterBy="#{capituloNegociacion.valorReferente}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{capituloNegociacion.valorReferente}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Franja inicio-->
+				<p:column
+					filterBy="#{capituloNegociacion.franjaInicio}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{capituloNegociacion.franjaInicio}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Franja fin-->
+				<p:column
+					filterBy="#{capituloNegociacion.franjaFin}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{capituloNegociacion.franjaFin}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Frecuencia negociado-->
+				<p:column
+					filterBy="#{capituloNegociacion.frecuenciaNegociado}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{capituloNegociacion.frecuenciaNegociado}" >
+						<f:convertNumber pattern="###,###.##########" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Costo medio usuario negociado -->
+				<p:column filterBy="#{capituloNegociacion.costoMedioUsuarioNegociado}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText id="col11" value="#{capituloNegociacion.costoMedioUsuarioNegociado}">
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Valor Negociado -->
+				<p:column filterBy="#{capituloNegociacion.valorNegociado}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText id="col12" value="#{capituloNegociacion.valorNegociado}">
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Detalle negociado-->
+				<p:column  class="text-center"
+					headerText="#{i18n.form_label_button_verdetalle}"
+					filterStyleClass="anchoInput">
+					<p:commandButton id="btnVerDetalleProcedimientosNegociado"
+						style="background-color: transparent; border: none;"
+						alt="#{i18n.negociacion_servicio_dt_negociacion}"
+						title="#{i18n.negociacion_servicio_dt_negociacion}"
+						icon="fa fa-search"
+						actionListener="#{negociacionServiciosPgpSSController.verProcedimientosNegociados(capituloNegociacion)}"
+						process="@this" />
+				</p:column>
+
+				<p:column headerText="Poblacion"
+					visible="#{negociacionServiciosPgpSSController.showPoblacion}">
+
+					<p:inputText maxlength="6" size="4"
+						value="#{capituloNegociacion.poblacion}"
+						converter="javax.faces.Integer"
+						validatorMessage="La poblacion debe se un número positivo"
+						converterMessage="La población debe consistir en un número de uno o mas digitos">
+						<f:validateLongRange minimum="1" />
+						<p:ajax event="blur" update="@this,@([id$=totalNegociacion])"
+							listener="#{negociacionServiciosPgpSSController.asignarPoblacionPorServicio(capituloNegociacion)}" />
+					</p:inputText>
+				</p:column>
+
+				<!-- check negociado-->
+				<p:column id="colNeg" headerText="#{i18n.form_label_negociado}"
+					styleClass="text-center">
+					<p:selectBooleanCheckbox value="#{capituloNegociacion.negociado}">
+					</p:selectBooleanCheckbox>
+				</p:column>
+
+				<!-- check seleccion -->
+				<p:column class="text-center" selectionMode="multiple"
+					headerText="#{i18n.form_label_seleccionado}" />
+
+			</p:dataTable>
+			<!--Fecha Concertacion Procedimientos PGP-->
+			<p:panel 
+			    header="#{i18n.form_label_fecha_concertacion_px}"
+				id="panelFechaConcertacionPx" 
+				style="height:90px;"
+				rendered="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+				<p:calendar 
+				    id="fechaConcertacionPx" 
+				    showOn="button" 
+				    size="20"
+					converterMessage="La fecha de elaboración debe tener formato Día Mes Año"
+					pattern="dd/MM/yyyy" 
+					required="true"
+					requiredMessage="Ingrese la fecha de concertacion"
+					value="#{tecnologiasSSController.negociacion.fechaConcertacionPx}"
+					locale="es">
+				</p:calendar>
+				<p:spacer style="width:50px"></p:spacer>
+				<p:commandButton 
+				    styleClass="btn btn-sm btn-info"
+					value="#{i18n.form_label_button_actualizar}"
+					process="panelFechaConcertacionPx"
+					actionListener="#{tecnologiasSSController.actualizarFechaConcertacion('procedimientos')}"
+					ajax="true">
+				</p:commandButton>
+			</p:panel>
+			<!---->
+		</div>
+	</p:panel>
+
+</f:view>

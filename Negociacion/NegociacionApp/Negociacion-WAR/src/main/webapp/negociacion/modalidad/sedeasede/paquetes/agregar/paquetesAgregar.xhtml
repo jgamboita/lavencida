@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form id="paquetesAgregarForm">
+		<div class="form-group">
+			<div class="row">
+				<div class="col-lg-12">
+					<h:panelGroup id="panelSedesPrestador">
+						<div class="col-lg-1">
+							<h:outputLabel for="selectSedesPrestador" value="Sedes prestador:" styleClass="col-lg-12" />
+						</div>
+						<div class="col-lg-4">
+							<p:selectCheckboxMenu id="selectSedesPrestador"
+								value="#{negociacionPaqueteSSController.sedesPrestadorSeleccionadasAgregar}"
+								label="Sedes" filter="true" filterMatchMode="contains"
+								styleClass="anchoInput"
+								required="true"
+								requiredMessage="#{i18n.form_label_required}"
+								converter="omnifaces.SelectItemsConverter">
+								<p:ajax update="" />
+								<p:ajax event="toggleSelect" update="" />
+								<f:selectItems value="#{negociacionPaqueteSSController.sedesPrestadorAgregar}"
+									var="sede" itemLabel="#{sede.nombreSede}" itemValue="#{sede}" />
+							</p:selectCheckboxMenu>
+							<h:message for="selectSedesPrestador"/>
+						</div>
+						<div class="col-lg-7">
+							<div class="ui-message-warn">
+								<span class="ui-message-warn-icon" /> <span
+									class="ui-message-warn-detail">Para agregar paquetes
+									debe seleccionar la sede a la cual se va a agregar</span>
+							</div>
+						</div>
+					</h:panelGroup>
+				</div>
+			</div>
+			<p:spacer/>
+			<div class="row">
+				<div class="col-lg-12">
+					<h:panelGroup id="paquetesAgregarPanel">
+						<p:dataTable id="paquetesAgregarTable" var="paquete"
+							value="#{negociacionPaqueteSSController.paquetesAgregar}"
+							rowKey="#{paquete.portafolio.id}"
+							selection="#{negociacionPaqueteSSController.paquetesAgregarSeleccionados}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+							paginator="true" paginatorPosition="bottom" editable="true"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+							widgetVar="paquetesAgregarTableWV"
+							scrollable="true" >
+
+
+							<p:ajax update="@this" event="toggleSelect" />
+							<p:ajax update="@this" event="rowSelectCheckbox" />
+							<p:ajax update="@this" event="rowUnselectCheckbox" />
+
+							<p:column filterBy="#{paquete.codigoPortafolio}"
+								headerText="Código portafolio" filterMatchMode="contains">
+								<h:outputText value="#{paquete.codigoPortafolio}" />
+							</p:column>
+
+							<p:column filterBy="#{paquete.codigoSedePrestador}"
+								headerText="Código Ips" filterMatchMode="contains">
+								<h:outputText value="#{paquete.codigoSedePrestador}" />
+							</p:column>
+
+							<p:column filterBy="#{paquete.descripcion}"
+								headerText="Descripción" filterMatchMode="contains">
+								<h:outputText value="#{paquete.descripcion}" />
+							</p:column>
+
+<!--							<p:column filterBy="#{paquete.complejidad}"-->
+<!--								headerText="Complejidad" filterMatchMode="contains">-->
+<!--								<h:outputText value="#{paquete.complejidad}" />-->
+<!--							</p:column>-->
+
+							<p:column filterBy="#{paquete.descripcionPaqueteBasico}"
+								headerText="Paquete basico" filterMatchMode="contains">
+								<h:outputText value="#{paquete.descripcionPaqueteBasico}" />
+							</p:column>
+
+							<p:column filterBy="#{paquete.nombreSede}"
+								headerText="Sede" filterMatchMode="contains">
+								<h:outputText value="#{paquete.nombreSede}" />
+							</p:column>
+
+							<p:column class="text-center" selectionMode="multiple" width="5%" />
+
+						</p:dataTable>
+					</h:panelGroup>
+				</div>
+			</div>
+			<p:spacer/>
+			<div class="row">
+				<div class="col-lg-2 col-lg-offset-10">
+					<p:commandButton id="btnAgregarTecnologia"
+						value="#{i18n.form_label_agregar}" 
+						process="@form" 
+                                                styleClass="btn btn-sm btn-primary" 
+                                                actionListener="#{negociacionPaqueteSSController.agregarPaquetesNegociacion(negociacionPaqueteSSController.paquetesAgregarSeleccionados)}"
+                                                onclick="PF('paquetesAgregarDlg').hide()" immediate="true"
+                                                update="@([id$=paquetesAgregarForm]), @([id$=paquetesAgregarPanel]), @([id$=negociacionPaquetesSS]), @([id$=panelSedesPrestador]), @([id$=selectSedesPrestador]),
+                                                        paquetesAgregarForm:paquetesAgregarPanel, paquetesAgregarForm:panelSedesPrestador,tecnologiasSSForm:tabsTecnologias:panelPaqueteSS, @([id$=paquetesNoCruzados] "
+                                                onsuccess="PF('paquetesAgregarTableWV').clearFilters();PF('paquetesAgregarTableWV').filter(); 
+                                                           PF('negociacionPaquetesSS').clearFilters();PF('negociacionPaquetesSS').filter();" />
+				</div>
+			</div>                        
+		</div>            
+	</h:form>
+        
+</f:view>

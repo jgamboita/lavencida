@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="formMensajesTecnologiasNegociar">
+        <p:outputPanel id="consultarTecnologiasId" rendered="#{negociacionController.mostrarSedesTipoCobertura or negociacionController.mostrarSedesZonasCobertura}">
+            <div class="col-lg-offset-7">
+                <div class="ui-message-info">
+                    <span class="ui-message-info-icon"/>
+                    <span class="ui-message-info-detail">
+				<p:commandLink value="#{i18n.negociacion_mensaje_tecnologias_puede_negociar}"
+                               update="tecnologiasNegociacionForm" oncomplete="PF('tecnologiasNegociarDlg').show()"
+                               actionListener="#{negociacionController.consultarTecnologiasNoNegociadas()}"
+                               process="@this"/>
+				</span>
+                </div>
+            </div>
+        </p:outputPanel>
+    </h:form>
+</f:view>

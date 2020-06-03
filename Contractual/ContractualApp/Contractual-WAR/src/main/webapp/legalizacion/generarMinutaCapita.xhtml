@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+            Generar Minuta
+        </ui:define>
+		<ui:define name="content">
+			<f:event listener="#{generarMinutaCapitaController.loadIni()}"
+				type="preRenderView" />
+			<p:panel id="pnlGenerarMinuta">
+				<h:form id="formGenerarMinuta">
+                                    <ui:include src="../comun/detallePrestador.xhtml">
+                                        <ui:param name="readonly" value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}" />
+                                    </ui:include>
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel 
+								value="Datos Contrato - Negociación #{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.numeroNegociacion}" styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Modalidad:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<h:outputText 
+									value="Cápita" />
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Regimen:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<h:outputText
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.regimenNegociacion.descripcion}" />
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Población:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<h:outputText
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.poblacion}" />
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Regional:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<p:selectOneMenu id="regional" class="anchoInput"
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.regionalDto}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor seleccione la regional.">
+									<p:ajax update="responsableFirmaContrato responsableVoBo departamentoFirma"
+										listener="#{generarMinutaCapitaController.buscarResponsables()}" />
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems value="#{generarMinutaCapitaController.regionales}"
+										var="regional" itemLabel="#{regional.descripcion}"
+										itemValue="#{regional}" />
+								</p:selectOneMenu>
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Tipo Subsidiado" />
+							</div>
+							<div class="ui-grid-col-2">
+								<h:outputText
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.tipoSubsidiado.descripcion}" />
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Tipo Contrato:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<h:outputText
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.tipoContratoEnum.descripcion}" />
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Vigencia del Contrato" />
+							</div>
+							<div class="ui-grid-col-3">
+								<p:calendar id="inicioVigencia" showOn="button" size="10"
+                                                                            readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									converterMessage="La fecha de inicio debe tener formato Día Mes Año"
+									pattern="dd/MM/yyyy" 
+									mindate="#{generarMinutaCapitaController.today}"
+                                                                        maxdate="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.fechaFinVigencia}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.fechaInicioVigencia}"
+									locale="es">
+									<p:ajax event="dateSelect"
+										update="finVigencia,duracionContrato"
+										listener="#{generarMinutaCapitaController.calculaDuracionContrato()}" />
+								</p:calendar>
+								-
+								<p:calendar id="finVigencia" showOn="button" size="10"
+                                                                            readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									converterMessage="La fecha fin debe tener formato Día Mes Año"
+									pattern="dd/MM/yyyy"
+									mindate="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.fechaInicioVigencia}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.fechaFinVigencia}"
+									locale="es"
+									disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.fechaInicioVigencia == null}">
+									<p:ajax event="dateSelect" update="inicioVigencia, duracionContrato"
+										listener="#{generarMinutaCapitaController.calculaDuracionContrato()}" />
+								</p:calendar>
+							</div>
+							<div class="ui-grid-col-1 text-right">
+								<h:outputLabel value="Duracion:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<h:outputText id="duracionContrato"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.duracionContrato}" />
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Nivel Atención:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<p:selectOneMenu id="nivelContrato" class="anchoInput"
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.nivelContrato}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor seleccione el nivel de contrato.">
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems
+										value="#{generarMinutaCapitaController.nivelesContrato}" var="nivel"
+										itemLabel="#{nivel.descripcion}" itemValue="#{nivel}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Formato Minuta:" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:selectOneMenu id="formatoMinuta" style="width:100%"
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.minuta}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor Seleccione un formato de minuta.">
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems value="#{generarMinutaCapitaController.minutas}"
+                                                                                       var="minuta" itemLabel="#{minuta.nombre}"
+										itemValue="#{minuta}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Objeto:" />
+							</div>
+							<div class="ui-grid-col-10">
+								<p:selectOneMenu id="objetoContrato" style="width:100%"
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.tipoObjetoContrato}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor Seleccione objeto del contrato.">
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems value="#{generarMinutaCapitaController.tiposContrato}"
+										var="tipo" itemLabel="#{tipo.descripcion}" itemValue="#{tipo}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Valor Fiscal:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<p:inputText id="valorFiscal"
+                                                                             readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.valorFiscal}"
+									styleClass="included"
+                                                                        disabled="true"
+									validatorMessage="El valor fiscal debe ser un número mayor a 1"
+                                                                        converterMessage="El valor fiscal debe ser un número">
+									<f:validateLongRange minimum="1" />
+								</p:inputText>
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Valor Poliza:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<p:inputText id="valorPoliza"
+                                                                             readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.valorPoliza}"
+									styleClass="included"
+									converterMessage="El valor poliza debe ser un número"
+                                                                        validatorMessage="El valor poliza debe ser un número mayor o igual 1">
+									<f:validateLongRange minimum="1" />
+								</p:inputText>
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Días Plazo:" />
+							</div>
+							<div class="ui-grid-col-2">
+								<p:inputText id="diasPlazo"
+                                                                             readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.diasPlazo}"
+									styleClass="included"
+                                                                        validatorMessage="Los dias plazo deben ser un número mayor a 1"
+									converterMessage="Los dias plazo deben ser un número">
+									<f:validateLongRange minimum="1" />
+								</p:inputText>
+							</div>
+						</div>
+                                            
+                                                <div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+                                                            <p:selectBooleanCheckbox disabled="true" value="true" />
+							</div>
+                                                        <div class="ui-grid-col-2 text-left">
+								<h:outputLabel value="Efectivamente Recaudado" />
+							</div>
+						</div>
+                                            
+                                                <div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+                                                            <p:selectBooleanCheckbox disabled="true" value="false" />
+							</div>
+                                                        <div class="ui-grid-col-2 text-left">
+								<h:outputLabel value="% Facturación:" />
+							</div>
+                                                        <div class="ui-grid-col-2 text-right">
+                                                            <p:inputText id="porcFacturacion"
+									value="0"
+									styleClass="included"
+                                                                        disabled="true"/>
+									
+							</div>
+                                                        <div class="ui-grid-col-2 text-left">
+								<h:outputLabel value="%" />
+							</div>
+						</div>
+                                            
+                                                <div class="ui-grid-row">
+                                                        <div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="% UPC PyP:" />
+							</div>
+                                                        <div class="ui-grid-col-2">
+                                                            <p:inputText id="porcUpcPyp"
+									value="0"
+									styleClass="included"/>
+									
+							</div>
+                                                        <div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Valor Total UPC PyP:" />
+							</div>
+                                                        <div class="ui-grid-col-2">
+                                                            <p:inputText id="ValorTotalPyp"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.porcentajeUpcPyp}"
+									styleClass="included"/>
+							</div>
+                                                        <div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Valor Mensual UPC PyP:" />
+							</div>
+                                                        <div class="ui-grid-col-2">
+                                                            <p:inputText id="ValorMensualPyp"
+									value="0"
+									styleClass="included"/>
+							</div>
+						</div>
+                                            
+                                                <div class="ui-grid-row">
+                                                        <div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="% UPC Recuperación:" />
+							</div>
+                                                        <div class="ui-grid-col-2">
+                                                            <p:inputText id="porcUpcRecuperacion"
+									value="0"
+									styleClass="included"/>
+									
+							</div>
+                                                        <div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Valor Total UPC Recuperación:" />
+							</div>
+                                                        <div class="ui-grid-col-2">
+                                                            <p:inputText id="ValorTotalRecuperacion"
+									value="0"
+									styleClass="included"/>
+							</div>
+                                                        <div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Valor Mensual UPC Recuperación:" />
+							</div>
+                                                        <div class="ui-grid-col-2">
+                                                            <p:inputText id="ValorMensualRecuperacion"
+									value="0"
+									styleClass="included"/>
+							</div>
+						</div>
+                                            
+					</div>
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="Responsable" styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12">
+								<h:outputLabel
+									value="Este contrato se legaliza con las firmas de los representantes legales de las partes, en la ciudad :" />
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Departamento:" />
+							</div>
+							<div class="ui-grid-col-4">
+								<p:selectOneMenu id="departamentoFirma" class="anchoInput"
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.departamentoFirma}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor ingrese el departamento de la firma del contrato.">
+									<p:ajax update="municipioFirma"
+										listener="#{generarMinutaCapitaController.buscarMunicipios()}" />
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems
+										value="#{generarMinutaCapitaController.departamentosFirma}"
+										var="depar" itemLabel="#{depar.descripcion}"
+										itemValue="#{depar}" />
+								</p:selectOneMenu>
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Municipio:" />
+							</div>
+							<div class="ui-grid-col-4">
+								<p:selectOneMenu id="municipioFirma" class="anchoInput"
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.municipioFirma}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor ingrese el municipio de la firma del contrato.">
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems
+										value="#{generarMinutaCapitaController.municipiosFirma}" var="muni"
+										itemLabel="#{muni.descripcion}" itemValue="#{muni}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Fecha Firma Contrato:" />
+							</div>
+							<div class="ui-grid-col-4">
+								<p:calendar id="fechaFirma" showOn="button" size="20"
+									converterMessage="La fecha firma debe tener formato Día Mes Año"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.fechafirmaContrato}"
+									pattern="dd/MM/yyyy" locale="es">
+								</p:calendar>
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Responsable Firma Contrato:" />
+							</div>
+							<div class="ui-grid-col-4">
+								<p:selectOneMenu id="responsableFirmaContrato"
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									class="anchoInput"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.responsableFirmaContrato}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor ingrese el responsable de la firma del contrato.">
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems
+										value="#{generarMinutaCapitaController.responsablesContratoFirma}"
+										var="resp" itemLabel="#{resp.nombre}" itemValue="#{resp}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Fecha Vo. Bo.:" />
+							</div>
+							<div class="ui-grid-col-4">
+								<p:calendar id="fechaVo" showOn="button" size="20"
+									converterMessage="La fecha Vo debe tener formato Día Mes Año"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.fechaVoContrato}"
+									pattern="dd/MM/yyyy" locale="es">
+								</p:calendar>
+							</div>
+							<div class="ui-grid-col-2 text-right">
+								<h:outputLabel value="Responsable Vo. Bo.:" />
+							</div>
+							<div class="ui-grid-col-4">
+								<p:selectOneMenu id="responsableVoBo" class="anchoInput" 
+                                                                                 disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+									value="#{generarMinutaCapitaController.legalizacionContratoDto.responsableVoBo}"
+									converter="omnifaces.SelectItemsConverter" required="true"
+									requiredMessage="Por favor ingrese el responsable del Vo. Bo.">
+									<f:selectItem itemLabel="Seleccionar" itemValue="" />
+									<f:selectItems
+										value="#{generarMinutaCapitaController.responsablesContratoVoBo}"
+										var="resp" itemLabel="#{resp.nombre}" itemValue="#{resp}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="Descuentos " styleClass="titulo-bold"></p:outputLabel>
+							<p:selectBooleanCheckbox
+								value="#{generarMinutaCapitaController.legalizacionContratoDto.aplicaDecuento}">
+								<p:ajax update="panelDescuento"
+									listener="#{generarMinutaCapitaController.aplicarDescuento()}"></p:ajax>
+							</p:selectBooleanCheckbox>
+							<p:outputLabel value=" Aplican descuentos  al contrato?"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<p:panel widgetVar="panelDescuento" id="panelDescuento"
+						closable="true" toggleable="true" collapsed="true">
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-2 text-right">
+									<h:outputLabel value="Tipo Descuento:" />
+								</div>
+								<div class="ui-grid-col-4">
+									<p:selectOneMenu id="tipoDescuento" class="anchoInput"
+                                                                                         disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+										value="#{generarMinutaCapitaController.legalizacionContratoDto.descuento.tipoDescuento}"
+										converter="omnifaces.SelectItemsConverter">
+										<f:selectItem itemLabel="Seleccionar" itemValue="" />
+										<f:selectItems
+											value="#{generarMinutaCapitaController.tiposDescuento}"
+											var="tipoDescuento" itemLabel="#{tipoDescuento.descripcion}"
+											itemValue="#{tipoDescuento}" />
+									</p:selectOneMenu>
+								</div>
+							</div>
+						</div>
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-2 text-right">
+									<h:outputLabel value="Tipo Valor Condición:" />
+								</div>
+								<div class="ui-grid-col-4">
+									<p:inputText
+                                                                            readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+                                                                            converterMessage="El Valor Condición debe ser un número" 
+                                                                            value="#{generarMinutaCapitaController.legalizacionContratoDto.descuento.valorCondicion}" />
+								</div>
+								<div class="ui-grid-col-2 text-right">
+									<h:outputLabel value="Tipo Condición:" />
+								</div>
+								<div class="ui-grid-col-4">
+									<p:selectOneMenu id="tipoCondicion" class="anchoInput"
+                                                                                         disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+										value="#{generarMinutaCapitaController.legalizacionContratoDto.descuento.tipoCondicion}"
+										converter="omnifaces.SelectItemsConverter">
+										<f:selectItem itemLabel="Seleccionar" itemValue="" />
+										<f:selectItems
+											value="#{generarMinutaCapitaController.tiposCondicion}"
+											var="tipoCondicion" itemLabel="#{tipoCondicion.descripcion}"
+											itemValue="#{tipoCondicion}" />
+									</p:selectOneMenu>
+								</div>
+							</div>
+						</div>
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-2 text-right">
+									<h:outputLabel value="Tipo Valor Descuento:" />
+								</div>
+								<div class="ui-grid-col-4">
+									<p:inputText
+                                                                            readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+                                                                            converterMessage="El Valor Descuento debe ser un número"
+										value="#{generarMinutaCapitaController.legalizacionContratoDto.descuento.valorDescuento}" />
+								</div>
+								<div class="ui-grid-col-2 text-right">
+									<h:outputLabel value="Tipo:" />
+								</div>
+								<div class="ui-grid-col-4">
+									<p:selectOneMenu id="tipoValor" class="anchoInput"
+                                                                                         disabled="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+										value="#{generarMinutaCapitaController.legalizacionContratoDto.descuento.tipoValor}"
+										converter="omnifaces.SelectItemsConverter">
+										<f:selectItem itemLabel="Seleccionar" itemValue="" />
+										<f:selectItems value="#{generarMinutaCapitaController.tiposValor}"
+											var="tipoValor" itemLabel="#{tipoValor.descripcion}"
+											itemValue="#{tipoValor}" />
+									</p:selectOneMenu>
+								</div>
+							</div>
+						</div>
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-2 text-right">
+									<h:outputLabel value="Detalle:" />
+								</div>
+								<div class="ui-grid-col-10">
+									<p:inputText style="width: 100%"
+                                                                                     readonly="#{generarMinutaCapitaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.estadoLegalizacion.equals('Legalizada')}"
+										value="#{generarMinutaCapitaController.legalizacionContratoDto.descuento.detalle}" />
+								</div>
+							</div>
+						</div>
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-12 text-right">
+									<p:commandButton icon="fa fa-save fa-lg"
+										styleClass="btn btn-sm btn-success" value="Agregar Descuento"
+										action="#{generarMinutaCapitaController.agregarDescuento}"
+										ajax="true" update="panelDescuento" process="panelDescuento" />
+								</div>
+							</div>
+						</div>
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-12">
+									<p:dataTable var="descuento" id="tblDescuentos"
+										emptyMessage="Sin registros..."
+										value="#{generarMinutaCapitaController.legalizacionContratoDto.descuentos}">
+										<p:column headerText="Tipo Descuento">
+											<h:outputText value="#{descuento.tipoDescuento.descripcion}" />
+										</p:column>
+										<p:column headerText="Tipo Valor Condición">
+											<h:outputText value="#{descuento.valorCondicion}" />
+										</p:column>
+										<p:column headerText="Tipo Condición">
+											<h:outputText value="#{descuento.tipoCondicion.descripcion}" />
+										</p:column>
+										<p:column headerText="Tipo Valor Descuento">
+											<h:outputText value="#{descuento.valorDescuento}" />
+										</p:column>
+										<p:column headerText="Tipo Valor">
+											<h:outputText value="#{descuento.tipoValor.descripcion}" />
+										</p:column>
+										<p:column headerText="Detalle">
+											<h:outputText value="#{descuento.detalle}" />
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>
+						</div>
+					</p:panel>
+                                        <!-- Inicio Incentivos-->
+                                        <h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="Incentivos" styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<p:panel widgetVar="panelIncentivos" id="panelIncentivos"
+						closable="true" toggleable="true" collapsed="false">
+						
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-12">
+									<p:dataTable var="incentivo" id="tblIncentivos"
+										emptyMessage="Sin registros..."
+										value="#{generarMinutaCapitaController.incentivos}">
+										<p:column headerText="Concepto">
+											<h:outputText value="Vacunar menores de edad" />
+										</p:column>
+										<p:column headerText="Meta">
+											<h:outputText value="30" />
+										</p:column>
+									</p:dataTable>
+								</div>
+							</div>
+						</div>
+					</p:panel>
+                                        <!-- Fin Incentivos-->
+                                        <!-- Inicio Observación-->
+                                        <h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="Observaciones" styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<p:panel widgetVar="panelObservaciones" id="panelObservaciones"
+						closable="true" toggleable="true" collapsed="false">
+						
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-12">
+                                                                    <p:inputTextarea rows="5" cols="90" maxlength="10" autoResize="true" value="Ninguna observación" disabled="true" />
+								</div>
+							</div>
+						</div>
+					</p:panel>
+                                        <!-- Fin Observación-->
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-12  text-right">
+                                                                <p:commandButton value="Regresar"
+                                                                                 immediate="true"
+                                                                                 styleClass="btn btn-sm btn-warning"
+                                                                        icon="fa fa-chevron-left" iconPos="left" 
+                                                                        action="#{generarMinutaCapitaController.goTo('/legalizacion/consultaSolicitudesLegalizar.page')}"
+                                                                        alt="Volver a listado de sedes."/>
+								<p:commandButton id="guardarLegalizacion"
+									styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+									iconPos="left" value="Guardar"
+									actionListener="#{generarMinutaCapitaController.guardarLegalizacionContrato}"
+									ajax="true" update="@form"
+									rendered="#{generarMinutaCapitaController.legalizacionContratoDto.contenido == null}">
+								</p:commandButton>
+								<p:commandButton id="descargarMinuta"
+									styleClass="btn btn-sm btn-info" icon="fa fa-print"
+									iconPos="left" value="Descargar minuta"
+									onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+									actionListener="#{generarMinutaCapitaController.generarMinuta}"
+									ajax="false"
+									rendered="#{generarMinutaCapitaController.legalizacionContratoDto.contenido != null}">
+									<p:fileDownload value="#{generarMinutaCapitaController.pdfFile}">
+									</p:fileDownload>
+								</p:commandButton>
+								<p:commandButton id="limpiar" value="Limpiar"
+									styleClass="btn btn-sm btn-warning"
+									actionListener="#{generarMinutaCapitaController.limpiar()}"
+									update="@form" immediate="true" />
+							</div>
+						</div>
+					</div>
+					<p:dialog modal="true" id="statDialog" widgetVar="statDialog"
+						draggable="false" closable="false">
+						<p:graphicImage library="img" name="ajaxloadingbar.gif" />
+					</p:dialog>
+					<script type="text/javascript">
+                        function showStatus() {
+                            PF('statDialog').show();
+                        }
+
+                        function hideStatus() {
+                            PF('statDialog').hide();
+                        }
+                    </script>
+				</h:form>
+
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+</f:view>

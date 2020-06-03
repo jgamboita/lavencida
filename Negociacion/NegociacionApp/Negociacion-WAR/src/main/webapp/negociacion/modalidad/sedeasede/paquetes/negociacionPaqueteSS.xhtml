@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:p="http://primefaces.org/ui"
+		xmlns:cnx="http://conexia.com/utils"
+		locale="es-CO">
+
+	<p:panel id="panelPaqueteSS">
+		<p:accordionPanel id="accordionOpciones">
+			<p:tab id="tabOpcionesMasivoGrid"
+				title="#{i18n.negociacion_paquete_titulo}">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-lg-5" style="border: 1px solid #E5E5E5;">
+							<h:panelGroup id="opcionesPaquetesMasivoGrid" layout="block"
+								styleClass="radioButtonSpaceLeft" border="0">
+								<p:selectOneRadio id="opcionesPaquetesMasivo" layout="custom" columns="1"
+									value="#{negociacionPaqueteSSController.tipoAsignacionSeleccionado}">
+									<p:ajax update="@this" />
+									<f:selectItems
+										value="#{negociacionPaqueteSSController.tipoAsignacionTarifaPaqueteEnum}"
+										var="tipoAsignacionPaq" itemValue="#{tipoAsignacionPaq}"
+										itemLabel="#{i18n[cnx:enum_key(tipoAsignacionPaq)]}" />
+								</p:selectOneRadio>
+
+								<h:panelGrid columns="3" cellpadding="5">
+									<p:radioButton id="optPq1" for="opcionesPaquetesMasivo" itemIndex="0" />
+									<h:outputLabel for="optPq1" value="#{i18n.enum_tipoasignaciontarifapaqueteenum_contrato_anterior}" />
+									<h:outputLabel />
+									<p:radioButton id="optPq2" for="opcionesPaquetesMasivo" itemIndex="1" />
+									<h:outputLabel for="optPq2" value="#{i18n.enum_tipoasignaciontarifapaqueteenum_portafolio_propuesto}" />
+									<h:outputLabel />
+									<p:radioButton id="optPq3" for="opcionesPaquetesMasivo" itemIndex="2" />
+									<h:outputLabel for="optPq3" value="#{i18n.enum_tipoasignaciontarifapaqueteenum_tarifa_emssanar}" />
+									<h:outputLabel />
+									<p:radioButton id="optPq4" for="opcionesPaquetesMasivo" itemIndex="3" />
+									<h:outputLabel for="optPq4" value="#{i18n.enum_tipoasignaciontarifapaqueteenum_aplicar_porcentaje}" />
+									<p:inputText id="porcentajeValorPq"
+												 value="#{negociacionPaqueteSSController.porcentajeValor}"
+												 size="4" maxlength="6" label="#{i18n.negociacion_paquete_porcentaje}"
+												 converterMessage="Debe ingresar un número válido"
+												 validatorMessage="Error de validación: el atributo especificado no esta entre los valores -100 y 100.">
+										<f:convertNumber pattern="#0.00"/>
+										<f:validateLongRange minimum="-100" maximum="100"/>
+									</p:inputText>
+								</h:panelGrid>
+								<br />
+								<div class="row">
+									<div class="col-lg-12">
+										<p:commandButton id="btnAsignacionTarifasPaquete"
+											value="#{i18n.form_label_button_aceptar}"
+											update="tecnologiasSSForm:tabsTecnologias:negociacionPaquetesSS"
+											process="opcionesPaquetesMasivoGrid"
+											actionListener="#{negociacionPaqueteSSController.asignarTarifasPaquete()}" />
+									</div>
+								</div>
+							</h:panelGroup>
+						</div>
+
+						<div class="col-lg-7" style="border: 1px solid #E5E5E5;">
+							<h:panelGroup id="panelAgregarPaquetes">
+								<h5 class="title ui-widget-header ui-corner-all col-lg-12">
+									<strong>Agregar paquetes a la negociación </strong>
+								</h5>
+								<div class="col-lg-12">
+									<div class="col-lg-6">
+										<p:outputLabel value="Código: " styleClass="col-lg-12"
+											for="codigoTecnologiaAgregar" />
+										<p:inputText id="codigoTecnologiaAgregar" styleClass="anchoInput col-lg-12"
+											value="#{negociacionPaqueteSSController.paqueteAgregar.codigo}" />
+										<h:message for="codigoTecnologiaAgregar" />
+									</div>
+									<div class="col-lg-6">
+										<p:outputLabel value="Código IPS: " styleClass="col-lg-12"
+											for="codigoIpsTecnologiaAgregar" />
+										<p:inputText id="codigoIpsTecnologiaAgregar" styleClass="anchoInput col-lg-12"
+											value="#{negociacionPaqueteSSController.paqueteAgregar.codigoIps}" />
+										<h:message for="codigoTecnologiaAgregar" />
+									</div>
+								</div>
+								<div class="col-lg-12">
+									<div class="col-lg-12">
+										<p:outputLabel value="Descripción: " styleClass="col-lg-12"
+											for="descripicionTecnologiaAgregar" />
+										<p:inputText id="descripicionTecnologiaAgregar" styleClass="anchoInput col-lg-12"
+											value="#{negociacionPaqueteSSController.paqueteAgregar.descripcion}" />
+										<h:message for="descripicionTecnologiaAgregar" />
+									</div>
+								</div>
+								<p:spacer/>
+								<div class="col-lg-12">
+									<div class="col-lg-12">
+										<p:commandButton id="btnAgregarTecnologia"
+											value="#{i18n.form_label_agregar}"
+											update="@([id$=panelSedesPrestador]), @([id$=selectSedesPrestador]), @([id$=panelAgregarPaquetes]), 
+                                                                                                @([id$=paquetesAgregarPanel]), @([id$=paquetesAgregarTable])"
+											process="panelAgregarPaquetes"
+											styleClass="btn btn-sm btn-primary"
+											actionListener="#{negociacionPaqueteSSController.consultarPaquetesAgregar()}" />
+										<p:commandButton id="btnLimpiarPanelAgregar"
+											value="#{i18n.form_label_button_limpiar}"
+											update="@([id$=panelAgregarPaquetes]), @([id$=panelSedesPrestador])"
+											process="@this" styleClass="btn btn-sm btn-warning"
+											actionListener="#{negociacionPaqueteSSController.limpiarPanelAgregar()}" />
+									</div>
+								</div>
+							</h:panelGroup>
+						</div>
+					</div>
+				</div>
+			</p:tab>
+		</p:accordionPanel>
+		<div class="form-group">
+			<p:toolbar>
+				<p:toolbarGroup align="right">
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right" for="gestionPaquetes"
+							value="#{i18n.negociacion_paquete_gestionar_paquetes}" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionPaquetes" value="#{negociacionPaqueteSSController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}" itemValue="" noSelectionOption="true"/>
+								<f:selectItems value="#{negociacionPaqueteSSController.gestionTecnologiasNegociacion}"
+											   var="tipoGestionPq" itemValue="#{tipoGestionPq}"
+											   itemLabel="#{i18n[cnx:enum_key(tipoGestionPq)]}"/>
+								<p:ajax update="@this" listener="#{negociacionPaqueteSSController.gestionarPaquetes('negociacionPaquetesSS')}"/>
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deletePq" layout="block">
+				<p:confirmDialog widgetVar="cdDeletePq" showEffect="fade" header="Confirmar Eliminar Paquetes" icon="fa fa-warning">
+					<f:facet name="message">
+						<p:outputPanel>
+							<h:outputFormat value="#{i18n.paquete_msj_confirm_eliminar}" />
+						</p:outputPanel>
+					</f:facet>
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{negociacionPaqueteSSController.eliminarPaquetesMasivo()}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+						onclick="PF('cdDeletePq').hide()" immediate="true"
+						update="panelPaqueteSS,@([id$=tabsTecnologias]), @([id$=panelTablePaquetesNegociacion]), @([id$=negociacionPaquetesSS]),
+						        @([id$=paquetesAgregarForm]), @([id$=selectSedesPrestador]), @([id$=col11]), @([id$=col12])"
+                                                onsuccess="PF('negociacionPaquetesSS').clearFilters()" >
+                                                
+						<p:resetInput target="panelPaqueteSS, tecnologiasSSForm:tabsTecnologias:negociacionPaquetesSS" />
+					</p:commandButton>
+					<p:commandButton value="#{i18n.form_label_button_cancelar}" type="button"
+									 styleClass="btn btn-sm btn-warning" icon="fa fa-close" onclick="PF('cdDeletePq').hide()" />
+				</p:confirmDialog>
+			</p:outputPanel>
+			<p:remoteCommand name="onRepintarTablaPaquetes" update="negociacionPaquetesSS,tecnologiasSSForm:tabsTecnologias:negociacionPaquetesSS" />
+			<p:panel id="panelTablePaquetesNegociacion">
+				<!--@elvariable id="paqueteNegociacion" type="com.conexia.contratacion.commons.dto.negociacion.PaqueteNegociacionDto"-->
+				<p:dataTable id="negociacionPaquetesSS" var="paqueteNegociacion"
+							 value="#{negociacionPaqueteSSController.paquetesNegociacion}"
+							 rowKey="#{paqueteNegociacion.paquetePortafolioDto.id}"
+							 selection="#{negociacionPaqueteSSController.paquetesNegociacionSeleccionados}"
+							 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+							 widgetVar="negociacionPaquetesSS" paginator="true" paginatorPosition="bottom"
+							 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox" scrollable="true"
+							 rowStyleClass="#{empty paqueteNegociacion.valorNegociado ? 'noNegociado' : null}">
+
+					<p:ajax event="page" update="@this" />
+					<p:ajax event="sort" update="@this" />
+					<p:ajax event="filter" update="@this" />
+
+					<p:ajax event="rowSelectCheckbox" listener="#{negociacionPaqueteSSController.rowSelect}" />
+				    <p:ajax event="rowUnselectCheckbox" listener="#{negociacionPaqueteSSController.unRowSelect}" />
+					<p:ajax event="toggleSelect"  listener="#{negociacionPaqueteSSController.toggleSelect}"/>
+
+					<p:column filterBy="#{paqueteNegociacion.cantidadTecnologiasBasico}" filterMatchMode="contains"
+							  style="width: 90px" headerText="Cantidad Tecnologías Paquete Básico"
+							  filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.cantidadTecnologiasBasico}"/>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.cantidadTecnologiasIPS}" filterMatchMode="contains"
+							  style="width: 90px" headerText="Cantidad Tecnologías Paquete IPS"
+							  filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.cantidadTecnologiasIPS}"/>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.sedePrestadorDto.codigoPrestador}" style="width: 100px"
+							  filterMatchMode="contains" headerText="Código Sede" filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.sedePrestadorDto.codigoPrestador}"/>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.sedePrestadorDto.nombreSede}" filterMatchMode="contains"
+							  headerText="Nombre Sede" style="width: 100px" filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.sedePrestadorDto.nombreSede}"/>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.paquetePortafolioDto.codigoSedePrestador}"
+							  filterMatchMode="contains" headerText="Código Tecnología Única Emssanar"
+							  style="width: 100px" filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.paquetePortafolioDto.codigoSedePrestador}"/>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.paquetePortafolioDto.codigoPortafolio}" style="width: 80px"
+							  filterMatchMode="contains" headerText="Código IPS" filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.paquetePortafolioDto.codigoPortafolio}"/>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.paquetePortafolioDto.descripcion}" style="width: 200px"
+							  filterMatchMode="contains" headerText="Descripción Emssanar/IPS"
+							  filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.paquetePortafolioDto.descripcion}"
+									  title="#{paqueteNegociacion.paquetePortafolioDto.descripcion}"/>
+					</p:column>
+					<p:column headerText="Detalle de paquete" style="width: 70px">
+						<h:commandLink id="btnVerDetallePaquete" styleClass="fa fa-suitcase" target="_blank"
+									   title="#{i18n.paquete_label_ver_detalle_paquete}" immediate="true"
+									   action="#{negociacionPaqueteSSController.verDetallePaquete(paqueteNegociacion.paquetePortafolioDto.portafolio.id)}">
+							<f:setPropertyActionListener target="#{flash.sedePrestador}"
+														 value="#{paqueteNegociacion.sedePrestadorDto}"/>
+						</h:commandLink>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.valorContratoAnterior}" filterMatchMode="contains"
+							  style="width: 100px" headerText="Valor Contrato Anterior" filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.valorContratoAnterior}">
+							<f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2"/>
+						</h:outputText>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.valorPropuestoPortafolio}" filterMatchMode="contains"
+							  headerText="Valor Propuesta Portafolio" filterStyleClass="anchoInput" class="text-right"
+							  style="width: 100px">
+						<h:outputText value="#{paqueteNegociacion.valorPropuestoPortafolio}">
+							<f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2"/>
+						</h:outputText>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.valorReferencia}" filterMatchMode="contains"
+							  style="width: 90px" headerText="Valor de Referencia" filterStyleClass="anchoInput">
+						<h:outputText value="#{paqueteNegociacion.valorReferencia}">
+							<f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Diferencia en %" filterStyleClass="anchoInput" style="width: 95px">
+						<f:facet name="header">
+							<h:outputLabel value="#{i18n.negociacion_paquete_diferencia_porcentaje}"/>
+							<p:selectOneMenu id="selectFiltroPorcentajePaquete" style="width: 50px"
+											 value="#{negociacionPaqueteSSController.filtroEspecialSeleccionadoPorcentaje}">
+								<p:ajax event="change" update="@this"/>
+								<f:selectItem itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"/>
+								<f:selectItems value="#{negociacionPaqueteSSController.filtroEspecialEnum}"
+											   var="filtro" itemValue="#{filtro}"
+											   itemLabel="#{i18n[cnx:enum_key(filtro)]}"/>
+							</p:selectOneMenu>
+							<p:commandButton style="vertical-align: top; padding-bottom: 2px"
+											 actionListener="#{negociacionPaqueteSSController.filtroEspecial(negociacionPaqueteSSController.diferenciaPorcentaje, 'negociacionPaquetesSS')}"
+											 icon="fa fa-filter" update="@([id$=panelTablePaquetesNegociacion])"
+											 process="@this, inputValorCompararPaquetes"/>
+							<br/>
+							<p:inputText id="inputValorCompararPaquetes" maxlength="20" style="width: 80px"
+										 placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+										 value="#{negociacionPaqueteSSController.filtroPorcentaje}">
+							</p:inputText>
+						</f:facet>
+						<h:outputText value="#{paqueteNegociacion.diferenciaPorcentajeContratado}">
+							<f:convertNumber pattern="###,###" maxFractionDigits="3"/>
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Diferencia en $" filterStyleClass="anchoInput" style="width: 95px">
+						<f:facet name="header">
+							<h:outputText value="#{i18n.negociacion_paquete_diferencia_valor}"/>
+							<p:selectOneMenu id="selectFiltroValores" style="width: 50px" converter="omnifaces.SelectItemsConverter"
+											 value="#{negociacionPaqueteSSController.filtroEspecialSeleccionadoValor}">
+								<p:ajax event="change" update="@this"/>
+								<f:selectItem itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"/>
+								<f:selectItems value="#{negociacionPaqueteSSController.filtroEspecialEnum}"
+											   var="filtro" itemValue="#{filtro}" itemLabel="#{i18n[cnx:enum_key(filtro)]}"/>
+							</p:selectOneMenu>
+							<p:commandButton style="vertical-align: top; padding-bottom: 2px"
+											 actionListener="#{negociacionPaqueteSSController.filtroEspecial(negociacionPaqueteSSController.diferenciaValor, 'negociacionPaquetesSS')}"
+											 icon="fa fa-filter" update="@([id$=panelTablePaquetesNegociacion])"
+											 process="@this, inputValorCompararPorcPaquetes"/>
+							<br/>
+							<p:inputText id="inputValorCompararPorcPaquetes" maxlength="20" style="width: 80px"
+										 placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+										 value="#{negociacionPaqueteSSController.filtroValor}">
+							</p:inputText>
+						</f:facet>
+						<h:outputText value="#{paqueteNegociacion.diferenciaValorContratado}">
+							<f:convertNumber pattern="###,###.###"/>
+						</h:outputText>
+					</p:column>
+					<p:column filterBy="#{paqueteNegociacion.valorNegociado}" filterMatchMode="contains"
+							  styleClass="text-center" headerText="Valor Negociado" filterStyleClass="anchoInput" style="width: 100px">
+						<p:inputText id="col11" label="Valor Negociado" 
+									 value="#{paqueteNegociacion.valorNegociado}" size="10">
+							<f:convertNumber pattern="#,##0.00"/>
+							<p:ajax event="change" update="negociacionPaquetesSS"
+									listener="#{negociacionPaqueteSSController.guardarValorPaquete(paqueteNegociacion)}"/>
+						</p:inputText>
+					</p:column>
+					<p:column headerText="#{i18n.negociacion_paquete_negociado}" style="width: 100px" styleClass="text-center">
+                                            <p:selectBooleanCheckbox id="col12" value="#{paqueteNegociacion.negociado}" disabled="#{!paqueteNegociacion.negociado}">
+							<p:ajax update="@this col11"  
+									listener="#{negociacionPaqueteSSController.guardarNegociado(paqueteNegociacion)}"/>
+						</p:selectBooleanCheckbox>
+					</p:column>
+					<p:column id="col13" class="text-center" selectionMode="multiple" style="width: 100px"
+							  headerText="#{i18n.negociacion_paquete_seleccionado}"/>
+				</p:dataTable>
+
+				<p:panel header="#{i18n.form_label_fecha_concertacion_pq}" id="panelFechaConcertacionPq" style="height:90px;"
+					rendered="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+					<p:calendar id="fechaConcertacionPq" showOn="button" size="20" pattern="dd/MM/yyyy"
+								required="true" requiredMessage="Ingrese la fecha de concertacion" locale="es"
+								converterMessage="La fecha de Concertacion debe tener formato Día Mes Año"
+								value="#{tecnologiasSSController.negociacion.fechaConcertacionPq}">
+					</p:calendar>
+					<p:spacer style="width:50px"/>
+					<p:commandButton styleClass="btn btn-sm btn-info" value="#{i18n.form_label_button_actualizar}"
+									 process="panelFechaConcertacionPq" ajax="true"
+									 actionListener="#{tecnologiasSSController.actualizarFechaConcertacion('paquetes')}">
+					</p:commandButton>
+				</p:panel>
+			</p:panel>
+		</div>
+                <p:growl id="growlNegociacionPaqueteSS" life="5000" />
+	</p:panel>
+</f:view>

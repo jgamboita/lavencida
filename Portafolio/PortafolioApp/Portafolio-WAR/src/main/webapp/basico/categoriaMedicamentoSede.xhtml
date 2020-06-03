@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+
+	<div class="form-group form-group-sm">
+		<h:form>
+			<p:dataTable id="tblCategoriaMedicamento" var="categoria"
+				value="#{categoriaMedicamentoModel}" lazy="true"
+				style="margin: 0 auto;"
+				rowKey="#{categoria.id}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="10"
+				paginator="true" paginatorPosition="bottom"
+				disabledSelection="#{sedesPrestadorModel.puedeReabrirPortafolio}"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+				selection="#{categoriaMedicamentoModel.categoriasMedicamentoSeleccion}"	>
+	
+				<p:ajax event="rowSelectCheckbox"				
+					update="tblCategoriaMedicamento"
+					listener="#{categoriaMedicamentoModel.seleccionarFila}" />
+	
+				<p:ajax event="rowUnselectCheckbox"				
+					onstart="PF('dlgConfirmarDeseleccionCategoria').show()" 
+					listener="#{categoriaMedicamentoModel.deseleccionarFila}"/>
+	
+				<p:ajax event="toggleSelect"
+					onstart="PF('dlgConfirmarSeleccionMasivaCategoria').show()" 
+					listener="#{categoriaMedicamentoModel.toggleSelect}"/>
+	
+				<p:column headerText="#{i18n.tb_grupo_med_codigo}"
+					filterMatchMode="contains" filterStyleClass="anchoInput"
+					filterBy="#{categoria.categoriaMedicamento.codigo}"
+					styleClass="col-lg-1 text-center">
+	
+					<h:outputText value="#{categoria.categoriaMedicamento.codigo}" />
+				</p:column>
+	
+				<p:column headerText="#{i18n.tb_grupo_med_nombre}"
+					filterMatchMode="contains" filterStyleClass="anchoInput"
+					filterBy="#{categoria.categoriaMedicamento.nombre}">
+	
+					<h:outputText value="#{categoria.categoriaMedicamento.nombre}" />
+				</p:column>
+	
+				<p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+					styleClass="text-center col-lg-1">
+	
+					<f:facet name="header">
+						<p:outputLabel value="CUM" />
+						<p style="margin: 0px;">
+							<h:outputText value="#{i18n.tb_servicio_seleccion}"
+								style="font-size:8px;" />
+						</p>
+					</f:facet>
+	
+					<h:outputText value="#{categoria.medicamentosSeleccionados}" /> / 
+					<h:outputText value="#{categoria.medicamentosTotales}" />
+				</p:column>
+	
+				<p:column selectionMode="multiple" styleClass="text-center col-lg-1">
+					<f:facet name="header">
+						<h:outputText value="Ofertar" />
+					</f:facet>
+				</p:column>
+				
+				<p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+					styleClass="col-lg-1 text-center">
+	
+					<p:commandButton id="btnVerDetalle" icon="fa fa-search"
+						iconPos="left" ttl="#{i18n.tb_grupo_btn_ver_ttl}"
+						action="#{contenedorTecnologias.seleccionarCategoriaMedicamento(categoria)}" />
+				</p:column>
+			</p:dataTable>
+	
+			<p:confirmDialog widgetVar="dlgConfirmarDeseleccionCategoria"
+				header="#{i18n.confirm_uncheck_title}" closable="false">
+	
+				<f:facet name="message">
+					#{i18n.confirm_uncheck_mx_message}				
+				</f:facet>
+	
+				<div class="text-right">
+					<p:commandButton value="Cancelar"
+						styleClass="btn btn-sm btn-warning"
+						action="#{categoriaMedicamentoModel.confirmacionDeseleccion(false)}"
+						onclick="PF('dlgConfirmarDeseleccionCategoria').hide()"
+						update="tblCategoriaMedicamento" />
+	
+					<p:commandButton value="Continuar"
+						styleClass="btn btn-sm btn-success"
+						action="#{categoriaMedicamentoModel.confirmacionDeseleccion(true)}"
+						oncomplete="PF('dlgConfirmarDeseleccionCategoria').hide()"
+						update="tblCategoriaMedicamento" />
+				</div>
+			</p:confirmDialog>
+	
+			<p:confirmDialog widgetVar="dlgConfirmarSeleccionMasivaCategoria"
+				header="#{i18n.confirm_uncheck_title}" closable="false">
+	
+				<f:facet name="message">
+					#{i18n.confirm_uncheck_all_mx_message}				
+				</f:facet>
+	
+				<div class="text-right">
+					<p:commandButton value="Cancelar"
+						styleClass="btn btn-sm btn-warning"
+						onclick="PF('dlgConfirmarSeleccionMasivaCategoria').hide()"
+						update="tblCategoriaMedicamento" />
+	
+					<p:commandButton value="Continuar"
+						styleClass="btn btn-sm btn-success"
+						action="#{categoriaMedicamentoModel.confirmacionSeleccionMasiva}"
+						oncomplete="PF('dlgConfirmarSeleccionMasivaCategoria').hide()" 
+						update="tblCategoriaMedicamento"/>
+				</div>
+			</p:confirmDialog>
+			
+		</h:form>	
+	</div>
+</f:view>
+

@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:cnx="http://conexia.com/utils"
+               	xmlns:o="http://omnifaces.org/ui">
+
+    <h:form id="formMedicamentos">
+        <h:panelGrid columns="1" style="width:100%">
+            <f:facet name="header">
+                <p:outputLabel value="Consultar medicamentos a parametrizar"
+                               styleClass="titulo-bold"></p:outputLabel>
+
+                <div class="separador"></div>
+            </f:facet>
+        </h:panelGrid>
+        <br/>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-12">
+                    <pe:masterDetail id="categoriasMedicamentos" level="#{parametrizarMedicamentoController.currentLevel}">
+                        <pe:masterDetailLevel level="1" levelLabel="Categorías" id="categoriasM">
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Grupo:"/>
+                                    </div>
+                                    <div class="ui-grid-col-2">
+                                        <p:selectCheckboxMenu id="filtroMedicamento"
+                                            value="#{parametrizarMedicamentoController.filtroMedicamento.categoriasMedicamento}"
+                                            label="Seleccionar" filter="true" filterMatchMode="startsWith"
+                                            converter="omnifaces.SelectItemsConverter"
+                                            style="width:300px">
+                                            <f:selectItems value="#{parametrizarMedicamentoController.categoriasMedicamento}"
+                                                           var="categoria"
+                                                           itemLabel="#{categoria.codigo} - #{categoria.nombre} "
+                                                           itemValue="#{categoria}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                    <div class="ui-grid-col-5 text-right">
+										<p:commandButton value="Buscar"
+											styleClass="btn btn-sm btn-info" icon="fa fa-search"
+											iconPos="left"
+											update=":tabTecnologias:formMedicamentos:tblListaMedicamentosPorParametrizar"
+											id="buscarMedicamento" ajax="true" />
+									</div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+								<div class="ui-grid-row">
+									<div class="ui-grid-col-2 text-right">
+										<p:outputLabel value="Gestión Parametrización Ambulatorio" />
+									</div>
+									<div class="ui-grid-col-2">
+										<p:selectOneMenu id="opcionesParamAmb" label="Seleccionar..."
+											style="width:300px"
+											value="#{parametrizarMedicamentoController.opcionAmbulatorio}"
+											disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+											<f:selectItems
+												value="#{parametrizarMedicamentoController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+										</p:selectOneMenu>
+									</div>
+									<div class="ui-grid-col-4 text-right">
+										<p:outputLabel value="Gestión Parametrización Hospitalario" />
+									</div>
+									<div class="ui-grid-col-4">
+										<p:selectOneMenu id="opcionesParamHos" label="Seleccionar..."
+											style="width:300px"
+											value="#{parametrizarMedicamentoController.opcionHospitalario}"
+											disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+											<f:selectItems
+												value="#{parametrizarMedicamentoController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+										</p:selectOneMenu>
+									</div>
+								</div>
+							</div>
+
+							<br/>
+
+							<div class="form-group">
+								<p:toolbar>
+									<p:toolbarGroup align="right">
+										<div class="col-lg-11">
+											<p:outputLabel class="col-lg-6 text-right"
+												for="gestionMedicamentosParam"
+												value="Gestión Parametrización" />
+											<div class="col-lg-2">
+												<p:selectOneMenu id="gestionMedicamentosParam"
+													value="#{parametrizarMedicamentoController.gestionSeleccionada}">
+													<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+													<f:selectItems
+														value="#{parametrizarMedicamentoController.gestionTecnologiasParametrizacion}"
+														var="tipoGestionP" itemValue="#{tipoGestionP}"
+														itemLabel="#{tipoGestionP.descripcion}" />
+													<p:ajax
+														listener="#{parametrizarMedicamentoController.gestionarMedicamentos('tblParametrizarMedicamentosW')}" />
+												</p:selectOneMenu>
+											</div>
+										</div>
+									</p:toolbarGroup>
+								</p:toolbar>
+								<p:dataTable id="tblListaMedicamentosPorParametrizar"
+									value="#{parametrizarMedicamentoController.medicamentosPorParametrizar}"
+									var="sedeNegociacionMedicamentoDto" rows="5" paginator="true"
+									rowKey="#{sedeNegociacionMedicamentoDto.codigo}"
+									rowSelectMode="checkbox"
+									widgetVar="tblParametrizarMedicamentosW"
+									selection="#{parametrizarMedicamentoController.medicamentosParametrizarSeleccionados}"
+									paginatorPosition="bottom"
+									paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="5,10,20" rendered="true"
+									emptyMessage="Sin registros...">
+
+									<p:ajax event="page" update="@this" />
+									<p:ajax event="sort" update="@this" />
+									<p:ajax event="rowSelectCheckbox" update="@this" />
+									<p:ajax event="rowUnselectCheckbox" update="@this" />
+									<p:ajax event="toggleSelect" update="@this" />
+									<p:ajax event="filter" update="@this" />
+
+									<p:columnGroup type="header">
+										<p:row>
+											<p:column rowspan="2" colspan="1"
+												headerText="Código" style="text-align: center"
+												filterBy="#{sedeNegociacionMedicamentoDto.codigo}"
+												filterMatchMode="contains" filterStyleClass="anchoInput"/>
+											<p:column rowspan="2" colspan="1"
+													headerText="Grupo Farmacológico" style="text-align: center"
+													filterBy="#{sedeNegociacionMedicamentoDto.grupo}"
+													filterMatchMode="contains" filterStyleClass="anchoInput" />
+											<p:column rowspan="2" colspan="1" headerText="Número Tecnologías" />
+											<p:column colspan="3" headerText="Requiere Autorización Ambulatoria" />
+											<p:column colspan="3" headerText="Requiere Autorización Hospitalaria" />
+											<p:column rowspan="2" selectionMode="multiple" />
+										</p:row>
+										<p:row>
+											<p:column colspan="1"  headerText="SI"/>
+											<p:column colspan="1"  headerText="NO"/>
+											<p:column colspan="1"  headerText="ESPECIAL"/>
+											<p:column colspan="1"  headerText="SI"/>
+											<p:column colspan="1"  headerText="NO"/>
+											<p:column colspan="1"  headerText="ESPECIAL"/>
+										</p:row>
+									</p:columnGroup>
+
+									<p:column >
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.codigo}" />
+									</p:column>
+									<p:column >
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.grupo}" />
+									</p:column>
+									<p:column headerText="No. Medicamentos en la Solicitud"
+										style="text-align: center">
+										<p:commandLink
+											value="#{sedeNegociacionMedicamentoDto.cantidadSolicitadas}"
+											action="#{parametrizarMedicamentoController.setCurrentLevel(2)}"
+											actionListener="#{parametrizarMedicamentoController.detalleCategoriaMedicamento(sedeNegociacionMedicamentoDto)}"
+											update=":tabTecnologias:formMedicamentos:categoriasMedicamentos"
+											title="Parametrizar tecnologías.">
+											<pe:selectDetailLevel
+												contextValue="#{sedeNegociacionMedicamentoDto}" />
+											<f:setPropertyActionListener
+												value="#{sedeNegociacionMedicamentoDto}"
+												target="#{parametrizarMedicamentoController.sedeNegociacionMedicamentoDto}" />
+										</p:commandLink>
+									</p:column>
+									<p:column>
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.cantidadRequiereAmbSi}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.cantidadRequiereAmbNo}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.cantidadRequiereAmbEspecial}" />
+									</p:column>
+
+									<p:column>
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.cantidadRequiereHosSi}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.cantidadRequiereHosNo}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{sedeNegociacionMedicamentoDto.cantidadRequiereHosEspecial}" />
+									</p:column>
+									<p:column class="text-center" selectionMode="multiple"
+										width="72">
+									</p:column>
+								</p:dataTable>
+							</div>
+
+							<div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-offset-8 col-lg-4">
+                                        <div class="text-right">
+                                            <p:commandButton id = "btnAsociarGrupoM"
+															 action="#{parametrizarMedicamentoController.asociar()}"
+                                                             value="Parametrizar" update="@form"
+                                                             styleClass="btn btn-sm btn-info"
+                                                             icon="fa fa-floppy-o" iconPos="left"
+                                                             disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}"/>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </pe:masterDetailLevel>
+                        <pe:masterDetailLevel level="2" id="categoriaMedicamentos"
+                                              contextVar="sedeNegociacionMedicamentoDto"
+                                              levelLabel="#{sedeNegociacionMedicamentoDto.codigo}">
+							<div class="form-group">
+							 <div class="ui-grid ui-grid-responsive">
+								<div class="ui-grid-row">
+									<div class="ui-grid-col-2 text-right">
+										<p:outputLabel value="Gestión Parametrización Ambulatorio" />
+									</div>
+									<div class="ui-grid-col-2">
+										<p:selectOneMenu id="opcionesParamAmbMx" label="Seleccionar..."
+											style="width:300px"
+											value="#{parametrizarMedicamentoController.opcionAmbulatorioMx}"
+											disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true"
+														 />
+											<f:selectItems
+												value="#{parametrizarMedicamentoController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+										</p:selectOneMenu>
+									</div>
+									<div class="ui-grid-col-4 text-right">
+										<p:outputLabel value="Gestión Parametrización Hospitalario" />
+									</div>
+									<div class="ui-grid-col-4">
+										<p:selectOneMenu id="opcionesParamHosMx" label="Seleccionar..."
+											style="width:300px"
+											value="#{parametrizarMedicamentoController.opcionHospitalarioMx}"
+											disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+											<f:selectItems
+												value="#{parametrizarMedicamentoController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+										</p:selectOneMenu>
+									</div>
+								</div>
+							</div>
+								<p:toolbar>
+									<p:toolbarGroup align="right">
+										<div class="col-lg-11">
+											<p:outputLabel class="col-lg-6 text-right"
+												for="gestionMxParam"
+												value="Gestión Parametrización" />
+											<div class="col-lg-2">
+												<p:selectOneMenu id="gestionMxParam"
+													value="#{parametrizarMedicamentoController.gestionSeleccionada}">
+													<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+													<f:selectItems
+														value="#{parametrizarMedicamentoController.gestionTecnologiasParametrizacion}"
+														var="tipoGestionMx" itemValue="#{tipoGestionMx}"
+														itemLabel="#{tipoGestionMx.descripcion}" />
+													<p:ajax
+														listener="#{parametrizarMedicamentoController.gestionarMedicamentos('tblMedicamentosW')}" />
+												</p:selectOneMenu>
+											</div>
+										</div>
+									</p:toolbarGroup>
+								</p:toolbar>
+								<p:dataTable id="medicamentosPorParametrizar"
+									value="#{parametrizarMedicamentoController.medicamentos}" var="medicamento"
+									rows="5" paginator="true"
+									paginatorPosition="bottom"  rowKey = "#{medicamento.id}"
+									rowSelectMode="checkbox"
+									widgetVar="tblMedicamentosW"
+									selection="#{parametrizarMedicamentoController.medicamentosSeleccionados}"
+									paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="5,10,20" emptyMessage="Sin registros...">
+
+									<p:ajax event="page" update="@this" />
+									<p:ajax event="sort" update="@this" />
+									<p:ajax event="rowSelectCheckbox" update="@this" />
+									<p:ajax event="rowUnselectCheckbox" update="@this" />
+									<p:ajax event="toggleSelect" update="@this" />
+									<p:ajax event="filter" update="@this" />
+
+									<p:column headerText="ATC" style="text-align: center"
+										filterBy="#{medicamento.atc}">
+										<h:outputText value="#{medicamento.atc}" />
+									</p:column>
+									<p:column headerText="CUMS" style="text-align: center"
+										filterBy="#{medicamento.cums}">
+										<h:outputText value="#{medicamento.cums}" />
+									</p:column>
+									<p:column headerText="Principio Activo"
+										style="text-align: center"
+										filterBy="#{medicamento.principioActivo}">
+										<h:outputText value="#{medicamento.principioActivo}" />
+									</p:column>
+									<p:column headerText="Concentración" style="text-align: center"
+										filterBy="#{medicamento.concentracion}">
+										<h:outputText value="#{medicamento.concentracion}" />
+									</p:column>
+									<p:column headerText="Forma Farmacéutica"
+										filterBy="#{medicamento.formaFarmaceutica}">
+										<h:outputText value="#{medicamento.formaFarmaceutica}" />
+									</p:column>
+									<p:column headerText="Titular Registro Sanitario"
+										filterBy="#{medicamento.titularRegistroSanitario}">
+										<h:outputText value="#{medicamento.titularRegistroSanitario}" />
+									</p:column>
+									<p:column headerText="Vía de Administración"
+										filterBy="#{medicamento.viaAdministracion}">
+										<h:outputText value="#{medicamento.viaAdministracion}" />
+									</p:column>
+									<p:column headerText="Requiere Autorizaciones - Ambulatorio">
+										<p:selectOneMenu id="paramAmbclMx" style="width:100%"
+											value="#{medicamento.requiereAutorizacionAmbulatorio}"
+											valueChangeListener="#{parametrizarMedicamentoController.asociarMedicamentoIndividualAmbulatorio}"
+											immediate="true"
+											disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItems
+												value="#{parametrizarMedicamentoController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+											<p:ajax process="paramAmbclMx" partialSubmit="true" event="valueChange"   />
+											<f:attribute name="medicamento"
+												value="#{medicamento}" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column headerText="Requiere Autorizaciones - Hospitalario">
+										<p:selectOneMenu id="paramHosclMx" style="width:100%"
+											value="#{medicamento.requiereAutorizacionHospitalario}"
+											valueChangeListener="#{parametrizarMedicamentoController.asociarMedicamentoIndividualHospitalario}"
+											immediate="true"
+											disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItems
+												value="#{parametrizarMedicamentoController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+											<p:ajax process="paramHosclMx" partialSubmit="true" event="valueChange"   />
+											<f:attribute name="medicamento"
+												value="#{medicamento}" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column class="text-center" selectionMode="multiple"
+										width="72">
+									</p:column>
+								</p:dataTable>
+
+								<div class="form-group">
+									<div class="row">
+										<div class="col-md-offset-8 col-lg-4">
+											<div class="text-right">
+												<p:commandButton value="Regresar" id='btnRegresar'
+													icon="ui-icon-arrowthick-1-w" process="@this"
+													immediate="true" update="@form"
+													styleClass="btn btn-sm btn-warning">
+													<pe:selectDetailLevel step="-1" />
+												</p:commandButton>
+												<p:commandButton id='btnAsociar' update="@form"
+													action="#{parametrizarMedicamentoController.asociarPorMedicamento}"
+													value="Parametrizar" styleClass="btn btn-sm btn-info"
+													icon="fa fa-floppy-o" iconPos="left"
+													disabled = "#{parametrizarMedicamentoController.estadoParametrizacion == 'PARAMETRIZADA'}"/>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</pe:masterDetailLevel>
+                    </pe:masterDetail>
+                </div>
+            </div>
+        </div>
+    </h:form>
+</ui:composition>
+

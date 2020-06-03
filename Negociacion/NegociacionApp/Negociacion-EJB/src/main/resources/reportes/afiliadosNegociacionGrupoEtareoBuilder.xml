@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xls>
+	<area ref="Template!A1:K2">
+		<each items="afiliados" var="row" ref="Template!A2:K2">
+            <area ref="Template!A2:K2"/>
+        </each>
+	</area>
+</xls>

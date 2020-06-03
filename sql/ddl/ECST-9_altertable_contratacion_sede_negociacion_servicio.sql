@@ -1,0 +1,1 @@
+ALTER TABLE contratacion.sede_negociacion_servicio ADD COLUMN item_visible boolean;

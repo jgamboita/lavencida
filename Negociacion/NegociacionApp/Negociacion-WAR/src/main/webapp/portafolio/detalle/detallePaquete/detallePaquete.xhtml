@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="detallePaquetesForm">
+		<!-- Detalle paquete -->
+		<p:panel id="panelDetallePaquete">
+			<div class="form-group">
+				<!-- Inicio Título-->
+				<div class="widget-header">
+					<span class="widget-caption">#{i18n.paquete_label_detalle_paquete}</span>
+				</div>
+				<!-- Fin Título-->
+
+				<br></br>
+
+				<div class="row">
+					<h:outputLabel value="#{i18n.paquete_label_codigo_eps}"
+						for="codigoEps" styleClass="col-lg-2" />
+					<div class="col-lg-2">
+						<h:outputText id="codigoEps"
+							value="#{detallePortafolioController.paqueteSeleccionado.codigoPortafolio}" />
+					</div>
+
+					<h:outputLabel value="#{i18n.form_label_descripcion}"
+						for="descripcion" styleClass="col-lg-2" />
+					<div class="col-lg-2">
+						<h:outputText id="descripcion"
+							value="#{detallePortafolioController.paqueteSeleccionado.descripcion}" />
+					</div>
+
+					<h:outputLabel value="#{i18n.form_label_valor}" for="valor"
+						styleClass="col-lg-2" />
+					<div class="col-lg-2">
+						<h:outputText id="valor"
+							value="#{detallePortafolioController.paqueteSeleccionado.valor}" />
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<h:outputLabel value="#{i18n.paquete_label_codigo_ips}"
+						for="codigoIps" styleClass="col-lg-2" />
+					<div class="col-lg-2">
+						<h:outputText id="codigoIps"
+							value="#{detallePortafolioController.paqueteSeleccionado.codigoSedePrestador}" />
+					</div>
+
+					<h:outputLabel value="#{i18n.servicio_label_grupo_habilitacion}"
+						for="grupoHabilitacion" styleClass="col-lg-2" />
+					<div class="col-lg-2">
+						<h:outputText id="grupoHabilitacion"
+							value="#{detallePortafolioController.paqueteSeleccionado.macroservicio.nombre}" />
+					</div>
+
+					<h:outputLabel value="#{i18n.paquete_label_tipo_paquete}"
+						for="tipoPaquete" styleClass="col-lg-2" />
+					<div class="col-lg-2">
+						<h:outputText id="tipoPaquete"
+							value="#{detallePortafolioController.paqueteSeleccionado.tipoPaquete}" />
+					</div>
+
+				</div>
+
+				<hr></hr>
+
+			</div>
+		</p:panel>
+
+		<!-- Diagnosticos -->
+		<p:panel id="panelDiagnostico"
+			rendered="#{not empty detallePortafolioController.diagnosticosPortafolio}">
+			<div class="form-group">
+				<!-- Inicio Título-->
+				<div class="widget-header">
+					<span class="widget-caption">#{i18n.detalle_portafolio_diagnostico_titulo}</span>
+				</div>
+				<!-- Fin Título-->
+
+				<p:dataTable id="diagnosticos" var="diagnosticoVar"
+					value="#{detallePortafolioController.diagnosticosPortafolio}"
+					style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" 
+					widgetVar="diagnosticosVar">
+
+					<p:column headerText="#{i18n.form_label_codigo}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{diagnostico.diagnostico.codigo}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{diagnostico.diagnostico.codigo}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.form_label_descripcion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{diagnostico.diagnostico.descripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{diagnostico.diagnostico.descripcion}" />
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+		</p:panel>
+
+		<!-- Tecnologias -->
+		<p:panel id="panelTecnologias">
+			<div class="form-group">
+				<!-- Inicio Título-->
+				<div class="widget-header">
+					<span class="widget-caption">#{i18n.form_label_tecnologia}</span>					            
+                    <div class="text-right">
+					 <p:commandButton value="#{i18n.form_label_button_regresar}" 
+                     		styleClass="btn btn-sm btn-warning" 
+                     		icon="fa fa-arrow-circle-left"
+                     		iconPos="left"
+                     		oncomplete="PF('dialogDetallePaqueteW').hide();"							 
+							process="@this" />           
+					</div>           
+				</div>
+				
+				
+				
+				<!-- Fin Título-->
+
+				<p:tabView id="tabsTecnologias">
+					<p:tab title="#{i18n.enum_tipotecnologiaenum_procedimientos}">
+						<p:dataTable id="procedimientosPaquete" var="procedimintoPaquete"
+							value="#{detallePortafolioController.procedimientosPaquete}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+							<p:column headerText="#{i18n.paq_prod_col_cups}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.procedimiento.cups}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{procedimintoPaquete.procedimiento.cups}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.form_label_codigo_emssanar}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.procedimiento.codigoCliente}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{procedimintoPaquete.procedimiento.codigoCliente}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.negociacion_label_complejidad}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.procedimiento.nombreComplejidad}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{procedimintoPaquete.procedimiento.nombreComplejidad}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.form_label_grupo}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.procedimiento.servicioSalud.macroservicio.nombre}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{procedimintoPaquete.procedimiento.servicioSalud.macroservicio.nombre}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.servicio_label_servicio_habilitacion}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.procedimiento.servicioSalud.nombre}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{procedimintoPaquete.procedimiento.servicioSalud.nombre}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.form_label_descripcion}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.procedimiento.descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{procedimintoPaquete.procedimiento.descripcion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.paq_prod_col_prod_ppal}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.principalTexto}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{procedimintoPaquete.principalTexto}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.paq_prod_col_cantidad}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{procedimintoPaquete.cantidad}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{procedimintoPaquete.cantidad}" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="#{i18n.enum_tipotecnologiaenum_medicamentos}">
+						<p:dataTable id="medicamentosPaquete" var="medicamentoPaquete"
+							value="#{detallePortafolioController.medicamentosPaquete}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+							<p:column headerText="#{i18n.medicamento_label_atc}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.medicamento.atc}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{medicamentoPaquete.medicamento.atc}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.medicamento_label_cum}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.medicamento.cums}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{medicamentoPaquete.medicamento.cums}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.medicamento_label_principio_activo}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.medicamento.principioActivo}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{medicamentoPaquete.medicamento.principioActivo}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.medicamento_label_concentracion}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.medicamento.concentracion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{medicamentoPaquete.medicamento.concentracion}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.medicamento_label_forma_farmaceutica}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.medicamento.formaFarmaceutica}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{medicamentoPaquete.medicamento.formaFarmaceutica}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.medicamento_label_titular_reg_sanitario}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.medicamento.titularRegistroSanitario}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{medicamentoPaquete.medicamento.titularRegistroSanitario}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.medicamento_label_via_administracion}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.medicamento.viaAdministracion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText
+									value="#{medicamentoPaquete.medicamento.viaAdministracion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.paq_prod_col_cantidad}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{medicamentoPaquete.cantidad}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{medicamentoPaquete.cantidad}" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="#{i18n.enum_tipotecnologiaenum_insumos}">
+						<p:dataTable id="insumosPaquete" var="insumoPaquete"
+							value="#{detallePortafolioController.insumosPaquete}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+							<p:column headerText="#{i18n.form_label_codigo}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{insumoPaquete.insumo.codigo}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{insumoPaquete.insumo.codigo}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.medicamento_label_descripcion}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{insumoPaquete.insumo.descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{insumoPaquete.insumo.descripcion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.form_label_grupo}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{insumoPaquete.insumo.grupoInsumo.descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{insumoPaquete.insumo.grupoInsumo.descripcion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.form_label_categoria}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{insumoPaquete.insumo.categoriaInsumo.descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{insumoPaquete.insumo.categoriaInsumo.descripcion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.form_label_observaciones}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{insumoPaquete.observacion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{insumoPaquete.observacion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.paq_prod_col_cantidad}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{insumoPaquete.cantidad}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{insumoPaquete.cantidad}" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="#{i18n.enum_tipotecnologiaenum_transportes}">
+						<p:dataTable id="trasladosPaquete" var="trasladoPaquete"
+							value="#{detallePortafolioController.trasladosPaquete}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+							<p:column headerText="#{i18n.form_label_codigo}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{trasladoPaquete.transporte.codigo}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{trasladoPaquete.transporte.codigo}" />
+							</p:column>
+							
+							<p:column headerText="#{i18n.form_label_codigo_emssanar}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{trasladoPaquete.transporte.codigoCliente}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{trasladoPaquete.transporte.codigoCliente}" />
+							</p:column>
+							
+							<p:column headerText="#{i18n.form_label_descripcion}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{trasladoPaquete.transporte.descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{trasladoPaquete.transporte.descripcion}" />
+							</p:column>
+							
+							<p:column headerText="#{i18n.form_label_grupo}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{trasladoPaquete.transporte.grupo}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{trasladoPaquete.transporte.grupo}" />
+							</p:column>
+							
+							<p:column headerText="#{i18n.form_label_categoria}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{trasladoPaquete.transporte.categoria}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{trasladoPaquete.transporte.categoria}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.paq_prod_col_cantidad}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{trasladoPaquete.cantidad}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{trasladoPaquete.cantidad}" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+				</p:tabView>
+				
+				
+				<div class="widget-footer">
+					<div class="text-right">
+					 <p:commandButton value="#{i18n.form_label_button_regresar}" 
+                     		styleClass="btn btn-sm btn-warning" 
+                     		icon="fa fa-arrow-circle-left"
+                     		iconPos="left"
+                     		oncomplete="PF('dialogDetallePaqueteW').hide();"							 
+							process="@this" />           
+					</div>           
+				</div>
+
+			</div>
+		</p:panel>
+	</h:form>
+</f:view>

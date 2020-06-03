@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+        >
+
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoPrestadorEnum" />
+    <ui:composition template="/template/inner.xhtml">
+            <ui:define name="title">
+                    <h:outputLabel value="#{i18n.comparacion_tarifas_comparacion_titulo}" />
+            </ui:define>
+            <ui:define name="content">
+                <h:form id="comparacionTarifasForm">
+                    <p:panel id="panelDatosPrestador" style="text-align: center">
+                    <!-- Inicio Título-->
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                             <c:if test="#{comparacionTarifasController.ria}">
+                             	<p:outputLabel value="#{i18n.comparacion_tarifas_rias}" styleClass="titulo-bold"></p:outputLabel>
+                             </c:if>
+                             <c:if test="#{!comparacionTarifasController.ria}">
+                             	<p:outputLabel value="#{i18n.comparacion_tarifas_prestador_titulo}" styleClass="titulo-bold"></p:outputLabel>
+                             </c:if>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />                    
+                    
+                    <!-- Rias -->
+                    <c:if test="#{comparacionTarifasController.ria}">    
+						<p:panel id="panelRias" >
+							<div class="row">
+								<div class="col-lg-3">	
+									<p:selectCheckboxMenu id="rias" value="#{comparacionTarifasController.riasSeleccionados}"
+											converter="omnifaces.SelectItemsConverter" effect="fold"
+											required="false" requiredMessage="#{i18n.form_label_required}"
+											styleClass="anchoInput" label="#{i18n.form_label_rias_titulo}">
+											<f:selectItems value="#{listaRias}" var="ria" itemValue="#{ria}"
+													itemLabel="#{ria.descripcion}" />
+									</p:selectCheckboxMenu>
+									<p:message for="rias" />
+								</div>
+								<div class="col-lg-3">	
+										<p:selectCheckboxMenu id="rangoPoblacion" value="#{comparacionTarifasController.rangosSeleccionados}"
+											converter="omnifaces.SelectItemsConverter" effect="fold"
+											required="false" requiredMessage="#{i18n.form_label_required}"
+											styleClass="anchoInput" label="#{i18n.form_label_rias_rango_poblacion}">
+											<f:selectItems value="#{listaRangoPoblacion}" var="rangoPoblacion" itemValue="#{rangoPoblacion}"
+											itemLabel="#{rangoPoblacion.descripcion}" />
+										</p:selectCheckboxMenu>
+										<p:message for="rangoPoblacion" />
+								</div>
+							</div>
+						</p:panel>
+						<p:separator />
+					</c:if>	
+                    
+                    <c:if test="#{!comparacionTarifasController.ria}"> 
+                        <p:dataTable value="#{comparacionTarifasController.prestadorSeleccionado}" style="width:80%;margin:auto">
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_nombre_prestador}" style="width:50%">
+                                <h:outputText value="#{comparacionTarifasController.prestadorSeleccionado.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_numero_documento}">
+                                <h:outputText value="#{comparacionTarifasController.prestadorSeleccionado.numeroDocumento}"/>
+                            </p:column>
+
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_nro_sedes}">
+                                <h:outputText value="#{comparacionTarifasController.prestadorSeleccionado.sedes}"/>
+                            </p:column>
+
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_acciones}">
+                                <h:commandLink id="btnVerDetalleProcedimientosContrato"
+						styleClass="btn btn-sm"
+						actionListener="#{comparacionTarifasController.verPortafolio()}"
+						title="#{i18n.bandeja_prestador_label_ver_portafolio}"
+						target="_blank">
+                                    <span class="fa fa-suitcase"></span>    
+                                </h:commandLink>
+                                <p:commandLink id="btnPasarComite"
+						styleClass="btn btn-sm"
+						actionListener="#{comparacionTarifasController.pasarComite()}"
+                                                rendered="#{comparacionTarifasController.prestadorSeleccionado.estadoPrestador == EstadoPrestadorEnum.REVISION_TARIFAS}"
+						title="#{i18n.comparacion_tarifas_btn_enviar_comite}">
+                                    <span class="fa fa-user-md"></span>    
+                                </p:commandLink>
+                                <p:commandLink id="pasarNegociacionEvento" 
+                                				 styleClass="btn btn-sm"
+                                                 alt="Enviar a Negociacion"
+                                                 title="Enviar a Negociacion"
+                                                 actionListener="#{comparacionTarifasController.enviarNegociacion}" 
+                                                 rendered="#{comparacionTarifasController.prestadorSeleccionado.estadoPrestador == EstadoPrestadorEnum.REVISION_TARIFAS}">
+                                    <span class="fa fa-dollar"></span>             
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </c:if>    
+                    </p:panel>
+                    
+                    <!-- Inicio Título-->
+                    <div class="widget-header">
+                        <span class="widget-caption">
+                            #{i18n.comparacion_tarifas_criterios_titulo}:
+                        </span>
+                    </div>
+                    
+                    <p:panel id="panelCriteriosComparacion" >
+                    	<c:if test="#{!comparacionTarifasController.ria}">
+						<div class="row">
+							<div class="col-lg-2" style="titulo-bold">
+								#{i18n.comparacion_tarifas_seleccion_tipo_getion}
+							</div>
+							<div class="col-lg-4">
+								<p:selectOneRadio id="tipoGestion" style="width:80%" required="true"
+								               value="#{comparacionTarifasController.reporteSeleccionado}" >
+								        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Evento " itemValue="gEvento" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Pgp " itemValue="gPgp"/>
+                                        </div>
+                                         <p:ajax event="change" update="comparacionTarifasForm:panelCriteriosComparacion, panelResultadosComparacion " 
+                                         listener="#{comparacionTarifasController.seleccionarReporte()}" />   
+								</p:selectOneRadio>
+							</div>
+						</div>
+
+                        <div>
+                        </div>
+                        <p:spacer></p:spacer>
+						<div class="row">
+                            <div class="col-lg-4">
+                                #{i18n.comparacion_tarifas_seleccion_tipo_reporte}
+                            </div>
+                            
+                            <div class="col-lg-8">
+                                <!-- Validaciones sobre las tecnologias disponibles -->
+                                <p:selectOneRadio id="tecnologiaSeleccionada" 
+                                                  value="#{comparacionTarifasController.tecnologiaSeleccionada}" 
+                                                  style="width:80%" >
+                                    <c:if test="#{comparacionTarifasController.prestadorSeleccionado.tiposTecnologias.contains('Procedimientos')}">
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Procedimientos " itemValue="Procedimientos"/>
+                                        </div>
+                                    </c:if>
+                                    
+                                    <c:if test="#{comparacionTarifasController.prestadorSeleccionado.tiposTecnologias.contains('Paquetes')
+                                    and  comparacionTarifasController.reporteSeleccionado eq 'gEvento'}">
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Paquetes " itemValue="Paquetes"/>
+                                        </div>
+                                    </c:if>
+                                    <c:if test="#{comparacionTarifasController.prestadorSeleccionado.tiposTecnologias.contains('Medicamentos')}">
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Medicamentos " itemValue="Medicamentos"/>
+                                        </div>
+                                    </c:if>
+                                    <c:if test="#{comparacionTarifasController.prestadorSeleccionado.tiposTecnologias.contains('Traslados')
+                                         and  comparacionTarifasController.reporteSeleccionado eq 'gEvento'}">
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Traslados" itemValue="Traslados"/>
+                                        </div>
+                                    </c:if>
+                                    <f:ajax render="seleccionCriterios" 
+                                            event="click" 
+                                            listener="#{comparacionTarifasController.seleccionarTecnologia()}" />
+                                    <p:ajax event="click" update="panelResultadosComparacion "/>
+                                </p:selectOneRadio>
+                            </div>
+                        </div> 
+                        </c:if>                                                   	                    
+                        <h:panelGroup id="seleccionCriterios">
+                        	<c:if test="#{!comparacionTarifasController.ria}">
+                        	<h:panelGroup rendered="#{not empty comparacionTarifasController.tecnologiaSeleccionada}">
+                        	<c:if test="#{comparacionTarifasController.reporteSeleccionado eq 'gEvento'}">
+                        	    <div class="row" >                        	
+			                       <div class="col-lg-4">
+			                           1.1 Comparar con negociaciones finalizadas
+			                     </div>
+			                       <div class="col-lg-8">
+			                       		<p:selectBooleanCheckbox label="Comparar con negociaciones" value="#{comparacionTarifasController.compararConNegociacion}" ></p:selectBooleanCheckbox>
+			                       </div>                            
+								</div>
+							</c:if> 
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        #{i18n.comparacion_tarifas_seleccion_criterios}
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px">
+                                    <div class="col-lg-2">
+                                        <p:outputLabel>#{i18n.sede_neg_prestador_title}</p:outputLabel>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <p:selectCheckboxMenu id="sedesPrestador" 
+                                                            value="#{comparacionTarifasController.sedesPrestadorSeleccionadas}" 
+                                                            label="Sedes"
+                                                            filterMatchMode="startsWith" 
+                                                            converter="omnifaces.SelectItemsConverter"
+                                                            style="border:1px solid #ccc;width:79%"
+                                                            filter="true">
+                                            <f:selectItems value="#{comparacionTarifasController.sedesPrestador}"
+                                                           var="sede" 
+                                                           itemLabel="#{sede.codigoPrestador}-#{sede.codigoSede}  -  #{sede.nombreSede}" 
+                                                           itemValue="#{sede}" />
+                                            
+                                            
+                                            <p:ajax event="toggleSelect" 
+                                                    update="gruposHabilitacion,categoriasMedicamento,capitulos,categoriaCapitulos"
+                                                    process="@this"
+                                                    listener="#{comparacionTarifasController.seleccionarSedesXTecnologia()}"/>
+                                            
+                                            <p:ajax event="change" 
+                                                    update="gruposHabilitacion,categoriasMedicamento,capitulos,categoriaCapitulos"
+                                                    process="@this"
+                                                    listener="#{comparacionTarifasController.seleccionarSedesXTecnologia()}"/>
+                                            
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div> 
+                            </h:panelGroup>
+                             <!--EVENTO -->
+                            <h:panelGroup rendered="#{comparacionTarifasController.tecnologiaSeleccionada eq 'Procedimientos'
+                            and comparacionTarifasController.reporteSeleccionado eq 'gEvento'}">
+                                <div class="row" style="margin-top:10px">
+                                    <div class="col-lg-2">
+                                        <p:outputLabel>#{i18n.servicio_label_grupo_habilitacion}</p:outputLabel>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p:selectCheckboxMenu id="gruposHabilitacion" 
+                                                            value="#{comparacionTarifasController.gruposHabilitacionSeleccionados}" 
+                                                            label="Grupos Habilitación"
+                                                            filter="true" 
+                                                            filterMatchMode="startsWith" 
+                                                            converter="omnifaces.SelectItemsConverter"
+                                                            style="border:1px solid #ccc;width:100%">
+                                            <f:selectItems value="#{comparacionTarifasController.gruposHabilitacion}"
+                                                           var="grupo"
+                                                           itemLabel="#{grupo.nombre}" 
+                                                           itemValue="#{grupo}">
+                                            </f:selectItems>    
+                                            
+                                            <p:ajax update="gruposHabilitacion,serviciosSalud"
+                                                    listener="#{comparacionTarifasController.seleccionarGruposHabilitacion()}"/>
+                                            
+                                            <p:ajax event="toggleSelect" 
+                                                    update="gruposHabilitacion,serviciosSalud"
+                                                    process="@this"
+                                                    listener="#{comparacionTarifasController.seleccionarGruposHabilitacion()}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <p:outputLabel>#{i18n.servicio_label_servicio_habilitacion}</p:outputLabel>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p:selectCheckboxMenu id="serviciosSalud" 
+                                                              value="#{comparacionTarifasController.serviciosSaludSeleccionados}" 
+                                                            label="Servicios Habilitación"
+                                                            filter="true" 
+                                                            filterMatchMode="startsWith" 
+                                                            converter="omnifaces.SelectItemsConverter"
+                                                            style="border:1px solid #ccc;width:100%">
+                                            <f:selectItems value="#{comparacionTarifasController.serviciosSalud}"
+                                                           var="servicio"
+                                                           itemLabel="#{servicio.codigo} #{servicio.nombre}" 
+                                                           itemValue="#{servicio}">
+                                            </f:selectItems>    
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                            
+                             <!--   PGP -->
+                             <h:panelGroup rendered="#{comparacionTarifasController.tecnologiaSeleccionada eq 'Procedimientos'
+                             and comparacionTarifasController.reporteSeleccionado eq 'gPgp' }">
+                                <div class="row" style="margin-top:10px">
+                                    <div class="col-lg-2">
+                                        <p:outputLabel>#{i18n.servicio_label_capitulos}</p:outputLabel>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p:selectCheckboxMenu id="capitulos" 
+                                                            value="#{comparacionTarifasController.capitulosProcedimientoSeleccionados}" 
+                                                            label="Capítulos"
+                                                            filter="true" 
+                                                            filterMatchMode="startsWith" 
+                                                            converter="omnifaces.SelectItemsConverter"
+                                                            style="border:1px solid #ccc;width:100%">
+                                            <f:selectItems value="#{comparacionTarifasController.capitulosProcedimientoDto}"
+                                                           var="cap"
+                                                           itemLabel="#{cap.codigo.concat(' - ').concat(cap.descripcion)}" 
+                                                           itemValue="#{cap}">
+                                            </f:selectItems>    
+                                            
+                                            <p:ajax update="capitulos,categoriaCapitulos"
+                                                    listener="#{comparacionTarifasController.seleccionarCapitulos()}"/>
+                                            
+                                            <p:ajax event="toggleSelect" 
+                                                    update="capitulos,categoriaCapitulos"
+                                                    process="@this"
+                                                    listener="#{comparacionTarifasController.seleccionarCapitulos()}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <p:outputLabel>#{i18n.servicio_label_categorias_capitulos}</p:outputLabel>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p:selectCheckboxMenu id="categoriaCapitulos" 
+                                                              value="#{comparacionTarifasController.categoriasSeleccionados}" 
+                                                            label="Categoría capítulos"
+                                                            filter="true" 
+                                                            filterMatchMode="startsWith" 
+                                                            converter="omnifaces.SelectItemsConverter"
+                                                            style="border:1px solid #ccc;width:110%">
+                                            <f:selectItems value="#{comparacionTarifasController.categoriasProcedimientos}"
+                                                           var="cat"
+                                                           itemLabel="#{cat.codigo} - #{cat.descripcion}" 
+                                                           itemValue="#{cat}">
+                                            </f:selectItems>    
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div>
+                            </h:panelGroup> 
+                            
+                            
+                            
+                            <h:panelGroup rendered="#{comparacionTarifasController.tecnologiaSeleccionada eq 'Medicamentos'}">
+                                <div class="row" style="margin-top:10px">
+                                    <div class="col-lg-2">
+                                        <p:outputLabel>Grupo Terapéutico</p:outputLabel>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <p:selectCheckboxMenu id="categoriasMedicamento" 
+                                                            value="#{comparacionTarifasController.categoriasMedicamentoSeleccionadas}" 
+                                                            label="Grupo Terapéutico"
+                                                            filter="true" 
+                                                            filterMatchMode="startsWith" 
+                                                            converter="omnifaces.SelectItemsConverter"
+                                                            style="border:1px solid #ccc;width:50%">
+                                            <f:selectItems value="#{comparacionTarifasController.categoriasMedicamento}"
+                                                           var="categoria"
+                                                           itemLabel="#{categoria.codigo} #{categoria.nombre}" 
+                                                           itemValue="#{categoria}">
+                                            </f:selectItems>    
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                            
+                            <h:panelGroup rendered="#{comparacionTarifasController.tecnologiaSeleccionada eq 'Paquetes'}">
+                                
+                            </h:panelGroup>
+                            
+                            <h:panelGroup rendered="#{comparacionTarifasController.tecnologiaSeleccionada eq 'Traslados'}">
+                                
+                            </h:panelGroup>
+                            </c:if>
+                            <h:panelGroup rendered="#{not empty comparacionTarifasController.tecnologiaSeleccionada or comparacionTarifasController.ria}">
+                                <hr/>
+                                <div class="row">
+                                	<c:if test="#{!comparacionTarifasController.ria}">
+	                                    <div class="col-lg-9">
+	                                        #{i18n.comparacion_tarifas_seleccion_prestador}
+	                                    </div>
+	                                </c:if>    
+                                    <div class="col-lg-3">
+                                        <p:commandButton value="#{i18n.form_label_button_aceptar}"                                                          
+                                            styleClass="btn btn-sm btn-info" 
+                                            icon="fa fa-search" 
+                                            update="tablaComparacionTarifas,botoneraComparacion,panelResultadosComparacion"
+                                            actionListener="#{comparacionTarifasController.realizarComparacionTarifas()}"
+                                            iconPos="left">
+                                            
+                                        </p:commandButton>
+                                        <p:commandButton value="#{i18n.form_label_button_limpiar}" 
+                                            process="@this"
+                                            update="comparacionTarifasForm"
+                                            styleClass="btn btn-sm btn-warning" 
+                                            icon="fa fa-trash-o" 
+                                            actionListener="#{comparacionTarifasController.reset()}"
+                                            iconPos="left" />
+                                    </div>  		
+                                </div>
+                            </h:panelGroup>
+                            
+                        </h:panelGroup>
+                        
+                    </p:panel>
+                    
+                    <p:outputPanel id="panelResultadosComparacion">
+                            <p:panel  rendered="#{not empty comparacionTarifasController.sedesPrestadorSeleccionadas or comparacionTarifasController.ria
+                             and comparacionTarifasController.reporteSeleccionado eq 'gEvento'}">
+                                <h:panelGroup id="resultadosComparacion" >
+                                    <h:panelGroup>
+                                 
+                                        <p:dataTable id="tablaComparacionTarifas" var="comparacion" 
+                                        	value="#{comparacionTarifasController.tablaComparacion}" 
+                            				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                            				paginator="true" paginatorPosition="bottom"
+                                            rowKey="#{comparacion.sedeId}"
+                                            selection="#{comparacionTarifasController.tablaComparacionSeleccionados}"
+                            				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            				rowsPerPageTemplate="5,10,15"
+                            				rowSelectMode="checkbox">
+                                            <p:ajax event="page" update="comparacionTarifasForm:botoneraComparacion"/>
+                                            <p:ajax event="sort" update="comparacionTarifasForm:botoneraComparacion"/>
+                                            <p:ajax event="rowSelectCheckbox" update="comparacionTarifasForm:botoneraComparacion"/>
+                                            <p:ajax event="rowUnselectCheckbox" update="comparacionTarifasForm:botoneraComparacion"/>
+                                            <p:ajax event="toggleSelect" update="comparacionTarifasForm:botoneraComparacion"/>
+                                            <p:ajax event="filter" update="comparacionTarifasForm:botoneraComparacion"/>
+
+                                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_numero_documento}" 
+                                                      filterBy="#{comparacion.numeroDocumento}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                <h:outputText value="#{comparacion.numeroDocumento}" />
+                            </p:column>
+
+                                            <p:column headerText=" #{i18n.comparacion_tarifas_tbl_nombre_prestador}" 
+                                                      filterBy="#{comparacion.nombrePrestador}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                <h:outputText value="#{comparacion.nombrePrestador}" />
+                            </p:column>
+
+                                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_nombre_sede}" 
+                                                      filterBy="#{comparacion.nombreSede}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                <h:outputText value="#{comparacion.nombreSede}" />
+                            </p:column>
+
+                                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_codigo_habilitacion}" 
+                                                      filterBy="#{comparacion.codigoHabilitacionSede}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                <h:outputText value="#{comparacion.codigoHabilitacionSede}" />
+                            </p:column>
+
+                                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_departamento}" 
+                                                      filterBy="#{comparacion.departamento}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                <h:outputText value="#{comparacion.departamento}" />
+                            </p:column>
+
+                                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_municipio}" 
+                                                      filterBy="#{comparacion.municipio}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                <h:outputText value="#{comparacion.municipio}" />
+                            </p:column>
+
+                                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_porcentaje}" 
+                                                      styleClass="text-center">
+                                <h:outputText value="#{comparacion.porcentajeCubrimiento}%" />
+                            </p:column>
+                            <!-- Acciones -->
+                            <p:column headerText="" styleClass="text-center" selectionMode="multiple"/>
+                        </p:dataTable>
+
+
+                        </h:panelGroup>
+                                </h:panelGroup>
+                                <h:panelGroup id="botoneraComparacion">
+                                    <p:commandButton value="#{i18n.form_label_descargar}" id="descargarExcel" style="margin-top:10px"
+                                                    styleClass="btn btn-success btn-sm"   icon="fa fa-download" iconPos="left"
+                                                    onclick="PrimeFaces.monitorDownload(start, stop);" ajax="false" immediate="true"
+                                                    disabled="#{comparacionTarifasController.tablaComparacionSeleccionados.size() == 0}"
+                                                    rendered="#{comparacionTarifasController.tablaComparacion.size() > 0}"
+                                                    actionListener="#{comparacionTarifasController.descargarReporteComparacion()}"
+                                                    >
+                                        <p:fileDownload value="#{comparacionTarifasController.reporteComparacionFile}" />
+                                    </p:commandButton>
+
+                                    <script type="text/javascript">
+                                        function start() {
+                                            PF('statusDialog').show();
+                                        }
+                                        function stop() {
+                                            PF('statusDialog').hide();
+                                        }
+                                    </script>
+
+                                </h:panelGroup>
+                            </p:panel>
+                    </p:outputPanel>   
+                    <p:panel>
+                        <p:commandButton value="#{i18n.form_label_button_regresar}" onclick="window.history.back();"
+                                            styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left" iconPos="left"/>
+                    </p:panel>
+                </h:form>
+            </ui:define>
+    </ui:composition>
+</f:view>

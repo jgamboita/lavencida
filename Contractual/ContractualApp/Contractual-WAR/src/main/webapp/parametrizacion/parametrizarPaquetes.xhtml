@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:ui="http://java.sun.com/jsf/facelets" 
+                xmlns:cnx="http://conexia.com/utils"
+               	xmlns:o="http://omnifaces.org/ui">
+
+    <h:form id="formPaquetes">
+        <p:messages autoUpdate="true" severity="error"/>
+        <h:panelGrid columns="1" style="width:100%">
+            <f:facet name="header">
+                <p:outputLabel value="Consultar Paquetes a Parametrizar"
+                               styleClass="titulo-bold"></p:outputLabel>
+
+                <div class="separador"></div>
+            </f:facet>
+        </h:panelGrid>
+        <br/>                    
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-12">
+                    <pe:masterDetail id="categoriasPaquetes" level="1"> 
+                        <pe:masterDetailLevel level="1" levelLabel="Paquetes    " id="categorias">
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Grupo de Habilitación:"/>
+                                    </div>
+                                    <div class="ui-grid-col-2">
+                                        <p:selectCheckboxMenu 
+                                            value="#{parametrizarPaqueteController.filtroPaqueteDto.macroServicios}"
+                                            label="Seleccionar" filter="true" filterMatchMode="startsWith"
+                                            converter="omnifaces.SelectItemsConverter"
+                                            style="width:300px">                                    
+                                            <f:selectItems value="#{parametrizarPaqueteController.macroServicios}" var="servicio"
+                                                           itemLabel="#{servicio.nombre}"  itemValue="#{servicio}"/>
+                                        </p:selectCheckboxMenu>
+                                    </div>
+									<div class="ui-grid-col-5 text-right">
+										<p:commandButton value="Buscar"
+											styleClass="btn btn-sm btn-info" icon="fa fa-search"
+											iconPos="left" ajax="true"
+											update=":tabTecnologias:formPaquetes:tblListaPaquetesPorParametrizar" />
+									</div>
+								</div>
+                            </div>
+                             <div class="ui-grid ui-grid-responsive">
+								<div class="ui-grid-row">
+									<div class="ui-grid-col-2 text-right">
+										<p:outputLabel value="Gestión Parametrización Ambulatorio" />
+									</div>
+									<div class="ui-grid-col-2">
+										<p:selectOneMenu id="opcionesParamAmb" label="Seleccionar..."
+											style="width:300px"
+											value="#{parametrizarPaqueteController.opcionAmbulatorio}"
+											disabled = "#{parametrizarPaqueteController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+											<f:selectItems
+												value="#{parametrizarPaqueteController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+										</p:selectOneMenu>
+									</div>
+									<div class="ui-grid-col-4 text-right">
+										<p:outputLabel value="Gestión Parametrización Hospitalario" />
+									</div>
+									<div class="ui-grid-col-4">
+										<p:selectOneMenu id="opcionesParamHos" label="Seleccionar..."
+											style="width:300px"
+											value="#{parametrizarPaqueteController.opcionHospitalario}"
+											disabled = "#{parametrizarPaqueteController.estadoParametrizacion == 'PARAMETRIZADA'}">
+											<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+											<f:selectItems
+												value="#{parametrizarPaqueteController.opcionesParametrizacion}"
+												var="opcionesParam" itemLabel="#{opcionesParam.descripcion}"
+												itemValue="#{opcionesParam}" />
+										</p:selectOneMenu>
+									</div>
+								</div>
+							</div>
+                            <br/>
+							<div class="form-group">
+								<p:toolbar>
+									<p:toolbarGroup align="right">
+										<div class="col-lg-11">
+											<p:outputLabel class="col-lg-6 text-right"
+												for="gestionPaquetesParam"
+												value="Gestión Parametrización" />
+											<div class="col-lg-2">
+												<p:selectOneMenu id="gestionPaquetesParam"
+													value="#{parametrizarPaqueteController.gestionSeleccionada}">
+													<f:selectItem itemLabel="Seleccionar..." itemValue=""
+														noSelectionOption="true" />
+													<f:selectItems
+														value="#{parametrizarPaqueteController.gestionTecnologiasParametrizacion}"
+														var="tipoGestionP" itemValue="#{tipoGestionP}"
+														itemLabel="#{tipoGestionP.descripcion}" />
+													<p:ajax
+														listener="#{parametrizarPaqueteController.gestionarPaquetes('tblParametrizarPaquetesW')}" />
+												</p:selectOneMenu>
+											</div>
+										</div>
+									</p:toolbarGroup>
+								</p:toolbar>
+								<p:dataTable id="tblListaPaquetesPorParametrizar"
+									value="#{parametrizarPaqueteController.paquetesPorParametrizar}"
+									var="sedeNegociacionPaquete" rows="5" paginator="true"
+									rowKey="#{sedeNegociacionPaquete.codigoPortafolio}" rowSelectMode="checkbox" 
+									selection = "#{parametrizarPaqueteController.paqueteParametrizarSeleccionados}"
+									widgetVar="tblParametrizarPaquetesW"
+									paginatorPosition="bottom"
+									paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="5,10,20" emptyMessage="Sin registros...">
+
+									<p:ajax event="page" update="@this" />
+									<p:ajax event="sort" update="@this" />
+									<p:ajax event="rowSelectCheckbox" update="@this" />
+									<p:ajax event="rowUnselectCheckbox" update="@this" />
+									<p:ajax event="toggleSelect" update="@this" />
+									<p:ajax event="filter" update="@this" />
+								
+
+									<p:column headerText="Código" style="text-align: center"
+									filterBy="#{sedeNegociacionPaquete.codigoPortafolio}"
+									filterMatchMode="contains" 
+									filterStyleClass="anchoInput">
+										<h:outputText
+											value="#{sedeNegociacionPaquete.codigoPortafolio}" />
+									</p:column>
+									<p:column headerText="Descripción" style="text-align: center"
+									filterBy="#{sedeNegociacionPaquete.descripcion}"
+									filterMatchMode="contains" 
+									filterStyleClass="anchoInput">
+										<h:outputText value="#{sedeNegociacionPaquete.descripcion}" />
+									</p:column>
+									<p:column headerText="Grupo" style="text-align: center">
+										<h:outputText value="#{sedeNegociacionPaquete.grupo}" />
+									</p:column>
+									<p:column headerText="Clasificación" style="text-align: center">
+										<h:outputText value="#{sedeNegociacionPaquete.tipoPaquete}" />
+									</p:column>
+									<p:column headerText="No. Tecnologías del Paquete"
+										style="text-align: center">
+										<p:commandLink
+											value="#{sedeNegociacionPaquete.cantidadSolicitadas}"
+											action="#{parametrizarPaqueteController.setCurrentLevel(2)}"
+											update=":tabTecnologias:formPaquetes:categoriasPaquetes"
+											title="Parametrizar tecnologias.">
+											<pe:selectDetailLevel
+												contextValue="#{sedeNegociacionPaquete}" />
+											<f:setPropertyActionListener
+												value="#{sedeNegociacionPaquete}"
+												target="#{parametrizarPaqueteController.sedeNegociacionPaqueteDto}" />
+										</p:commandLink>
+									</p:column>
+									<p:column headerText="Requiere Autorizaciones - Ambulatorio">
+										<h:outputText value="#{sedeNegociacionPaquete.requiereAutorizacionAmbulatorio}" />
+									</p:column>
+									<p:column headerText="Requiere Autorizaciones - Hospitalario">
+										<h:outputText value="#{sedeNegociacionPaquete.requiereAutorizacionHospitalario}" />
+									</p:column>
+									<p:column class="text-center" selectionMode="multiple"
+										width="72">
+									</p:column>
+								</p:dataTable>
+							</div>
+							<div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-offset-8 col-lg-4">
+                                        <div class="text-right">
+                                            <p:commandButton action="#{parametrizarPaqueteController.asociar}"
+                                                             value="Parametrizar"  update="@form"
+                                                             styleClass="btn btn-sm btn-info"
+                                                             icon="fa fa-floppy-o" iconPos="left"
+                                                             disabled = "#{parametrizarPaqueteController.estadoParametrizacion == 'PARAMETRIZADA'}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </pe:masterDetailLevel>
+                        <pe:masterDetailLevel level="2" id="categoriaPaquetes"
+                                              contextVar="sedeNegociacionPaquete"
+                                              levelLabel="#{sedeNegociacionPaquete.codigoPortafolio}">
+                            <p:tabView>
+                                <p:tab title="Procedimientos" rendered ="#{parametrizarPaqueteController.sedeNegociacionPaqueteDto.cantidadProcedimientos > 0}">
+                                    <h:panelGrid columns="2" cellpadding="10">
+                                        <p:dataTable id="procedimientosPaquete" 
+                                                     value="#{parametrizarPaqueteController.procedimientos}"
+                                                     var="procedimiento"
+                                                     rows="5"
+                                                     paginator="true"
+                                                     paginatorPosition="bottom"
+                                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     rowsPerPageTemplate="5,10,20"
+                                                     emptyMessage="Sin registros...">
+                                            <p:column headerText="CUPS" style="text-align: center" 
+                                                      filterBy="#{procedimiento.cups}" filterMatchMode="contains">
+                                                <h:outputText value="#{procedimiento.cups}"/>
+                                            </p:column>
+                                            <p:column headerText="Código Emssanar" style="text-align: center" 
+                                                      filterBy="#{procedimiento.codigoCliente}" filterMatchMode="contains">
+                                                <h:outputText value="#{procedimiento.codigoCliente}"/>
+                                            </p:column>
+                                            <p:column headerText="Grupo de Habilitación" style="text-align: center" 
+                                                      filterBy="#{procedimiento.grupoHabilitacion}" filterMatchMode="contains">
+                                                <h:outputText value="#{procedimiento.grupoHabilitacion}"/>
+                                            </p:column>
+                                            <p:column headerText="Servicio de Habilitación" style="text-align: center" 
+                                                      filterBy="#{procedimiento.servicioHabilitacion}" filterMatchMode="contains">
+                                                <h:outputText value="#{procedimiento.servicioHabilitacion}"/>
+                                            </p:column>
+                                            <p:column headerText="Descripción" style="text-align: center"
+                                                      filterBy="#{procedimiento.descripcion}" filterMatchMode="contains">
+                                                <h:outputText value="#{procedimiento.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="Complejidad" style="text-align: center"
+                                                      filterBy="#{procedimiento.nombreComplejidad}" filterMatchMode="contains">
+                                                <h:outputText value="#{procedimiento.nombreComplejidad}"/>
+                                            </p:column>
+                                            <p:column headerText="Cantidad" style="text-align: center" >
+                                                <h:outputText value="#{procedimiento.cantidad}"/>
+                                            </p:column>
+                                            <p:column headerText="Procedimiento Principal" style="text-align: center">
+                                                <h:outputText value="#{procedimiento.procedimientoPrincipal}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </p:tab>
+                                <p:tab title="Medicamentos" rendered ="#{parametrizarPaqueteController.sedeNegociacionPaqueteDto.cantidadMedicamentos > 0}">
+                                    <h:panelGrid columns="2" cellpadding="10">
+                                        <p:dataTable id="medicamentosPaquete" 
+                                                     value="#{parametrizarPaqueteController.medicamentos}"
+                                                     var="medicamento"
+                                                     rows="5"
+                                                     paginator="true"
+                                                     paginatorPosition="bottom"
+                                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     rowsPerPageTemplate="5,10,20"
+                                                     emptyMessage="Sin registros...">
+                                            <p:column headerText="ATC" style="text-align: center"
+                                                      filterBy="#{medicamento.atc}" filterMatchMode="contains">
+                                                <h:outputText value="#{medicamento.atc}"/>
+                                            </p:column>
+                                            <p:column headerText="CUMS" style="text-align: center"
+                                                      filterBy="#{medicamento.cums}" filterMatchMode="contains">
+                                                <h:outputText value="#{medicamento.cums}"/>
+                                            </p:column>
+                                            <p:column headerText="Pricipio Activo" style="text-align: center"
+                                                      filterBy="#{medicamento.principioActivo}" filterMatchMode="contains">
+                                                <h:outputText value="#{medicamento.principioActivo}"/>
+                                            </p:column>                                    
+                                            <p:column headerText="Concentracion" style="text-align: center"
+                                                      filterBy="#{medicamento.concentracion}" filterMatchMode="contains">
+                                                <h:outputText value="#{medicamento.concentracion}"/>
+                                            </p:column>
+                                            <p:column headerText="Forma Farmaceutica" style="text-align: center"
+                                                      filterBy="#{medicamento.formaFarmaceutica}" filterMatchMode="contains">
+                                                <h:outputText value="#{medicamento.formaFarmaceutica}"/>
+                                            </p:column>
+                                            <p:column headerText="Titular Registro Sanitario" style="text-align: center"
+                                                      filterBy="#{medicamento.titularRegistroSanitario}" filterMatchMode="contains">
+                                                <h:outputText value="#{medicamento.titularRegistroSanitario}"/>
+                                            </p:column>
+                                            <p:column headerText="Vía de Administración" style="text-align: center"
+                                                      filterBy="#{medicamento.viaAdministracion}" filterMatchMode="contains">
+                                                <h:outputText value="#{medicamento.viaAdministracion}"/>
+                                            </p:column>
+                                            <p:column headerText="Cantidad" style="text-align: center">                                                      
+                                                <h:outputText value="#{medicamento.cantidad}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </p:tab>
+                                <p:tab title="Traslados" rendered ="#{parametrizarPaqueteController.sedeNegociacionPaqueteDto.cantidadTraslados > 0}">
+                                    <h:panelGrid columns="2" cellpadding="10">
+                                        <p:dataTable id="trasladosPaquete" 
+                                                     value="#{parametrizarPaqueteController.traslados}"
+                                                     var="traslado"
+                                                     rows="5"
+                                                     paginator="true"
+                                                     paginatorPosition="bottom"
+                                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     rowsPerPageTemplate="5,10,20"
+                                                     emptyMessage="Sin registros...">
+                                            <p:column headerText="Código" style="text-align: center"
+                                                      filterBy="#{traslado.codigo}" filterMatchMode="contains">
+                                                <h:outputText value="#{traslado.codigo}"/>
+                                            </p:column>
+                                            <p:column headerText="Descripción" style="text-align: center"
+                                                      filterBy="#{traslado.descripcion}" filterMatchMode="contains">
+                                                <h:outputText value="#{traslado.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="Grupo" style="text-align: center"
+                                                      filterBy="#{traslado.grupo}" filterMatchMode="contains">
+                                                <h:outputText value="#{traslado.grupo}"/>
+                                            </p:column>                                    
+                                            <p:column headerText="Categoría" style="text-align: center"
+                                                      filterBy="#{traslado.categoria}" filterMatchMode="contains">
+                                                <h:outputText value="#{traslado.categoria}"/>
+                                            </p:column>
+                                            <p:column headerText="Cantidad" style="text-align: center">
+                                                <h:outputText value="#{traslado.cantidad}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </p:tab>
+                                <p:tab title="Insumos" rendered ="#{parametrizarPaqueteController.sedeNegociacionPaqueteDto.cantidadInsumos > 0}">
+                                    <h:panelGrid columns="2" cellpadding="10">
+                                        <p:dataTable id="insumosPaquete" 
+                                                     value="#{parametrizarPaqueteController.insumos}"
+                                                     var="insumo"
+                                                     rows="5"
+                                                     paginator="true"
+                                                     paginatorPosition="bottom"
+                                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     rowsPerPageTemplate="5,10,20"
+                                                     emptyMessage="Sin registros...">
+                                            <p:column headerText="Código" style="text-align: center"
+                                                      filterBy="#{insumo.codigo}" filterMatchMode="contains">
+                                                <h:outputText value="#{insumo.codigo}"/>
+                                            </p:column>
+                                            <p:column headerText="Descripción" style="text-align: center"
+                                                      filterBy="#{insumo.descripcion}" filterMatchMode="contains">
+                                                <h:outputText value="#{insumo.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="Grupo" style="text-align: center"
+                                                      filterBy="#{insumo.grupoInsumo.descripcion}" filterMatchMode="contains">
+                                                <h:outputText value="#{insumo.grupoInsumo.descripcion}"/>
+                                            </p:column>                                    
+                                            <p:column headerText="Categoría" style="text-align: center"
+                                                      filterBy="#{insumo.categoriaInsumo.descripcion}" filterMatchMode="contains">
+                                                <h:outputText value="#{insumo.categoriaInsumo.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="Cantidad" style="text-align: center">
+                                                <h:outputText value="#{insumo.cantidad}" />
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:tabView>
+							<div class="form-group">
+								<div class="row">
+									<div class="col-md-offset-8 col-lg-4">
+										<div class="text-right">
+											<p:commandButton value="Regresar" id='btnRegresar'
+												icon="ui-icon-arrowthick-1-w" process="@this"
+												immediate="true" update="@form"
+												styleClass="btn btn-sm btn-warning">
+												<pe:selectDetailLevel step="-1" />
+											</p:commandButton>
+										</div>
+									</div>
+								</div>
+							</div>
+						</pe:masterDetailLevel>
+                    </pe:masterDetail>
+                </div>
+            </div>
+        </div>                    
+    </h:form>
+</ui:composition>

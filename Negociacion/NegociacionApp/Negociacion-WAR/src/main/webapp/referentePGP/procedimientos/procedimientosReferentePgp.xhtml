@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+	<pe:masterDetail id="masterPx" showBreadcrumb="false">
+		<pe:masterDetailLevel level="1" >
+			<p:toolbar rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}">
+				<p:toolbarGroup align="right" >
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right"
+							for="gestionCapitulos"
+							value="Gestionar Capitulos" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionCapitulos"
+								value="#{gestionReferentePgpController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+									noSelectionOption="true" />
+								<f:selectItems
+									value="#{gestionReferentePgpController.gestionTecnologias}"
+									var="tipoGestionPq" itemValue="#{tipoGestionPq}"
+									itemLabel="#{i18n[cnx:enum_key(tipoGestionPq)]}" />
+								<p:ajax
+									listener="#{gestionReferentePgpController.gestionarCapitulos('tabCapitulosReferenteW','gestionCapitulos')}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deleteCap" layout="block">
+				<p:dialog widgetVar="cdDeleteCap" modal="true"
+					header="#{i18n.referente_title_modal_borrar_capitulos}"
+					icon="fa fa-warning">
+
+					<p:outputPanel>
+						<h:outputLabel
+							value="#{i18n.referente_body_modal_borrar_capitulos}" />
+					</p:outputPanel>
+
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{gestionReferentePgpController.eliminarCapitulosReferente}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+						onclick="PF('cdDeleteCap').hide()" update="@([id$=pnlTecnologias])"/>
+
+					<p:commandButton value="#{i18n.form_label_button_cancelar}"
+						type="button" styleClass="btn btn-sm btn-warning"
+						icon="fa fa-close" onclick="PF('cdDeleteCap').hide()" />
+				</p:dialog>
+			</p:outputPanel>
+
+			<p:dataTable id="tablaCapituloReferente"
+						value="#{gestionReferentePgpController.listarReferenteCapitulo}"
+						selection="#{gestionReferentePgpController.referenteCapituloSeleccionados}"
+						var="capitulo" rowKey="#{capitulo.id}"
+						emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+						widgetVar="tabCapitulosReferenteW" paginator="true"
+						paginatorPosition="bottom"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+						<p:ajax event="page" update="@this" />
+						<p:ajax event="sort" update="@this" />
+						<p:ajax event="rowSelectCheckbox" update="@this" />
+						<p:ajax event="rowUnselectCheckbox" update="@this" />
+						<p:ajax event="toggleSelect" update="@this" />
+						<p:ajax event="filter" update="@this" />
+
+						<p:column headerText="#{i18n.column_ref_capitulo}"
+							styleClass="text-center"
+							filterBy="#{capitulo.capituloProcedimiento.descripcion}"
+							filterMatchMode="contains" filterStyleClass="anchoInput">
+							<h:outputText
+								value="#{capitulo.capituloProcedimiento.descripcion}" />
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_categoria}"
+							styleClass="text-center"
+							filterBy="#{capitulo.categoriaProcedimiento.descripcion}"
+							filterMatchMode="contains" filterStyleClass="anchoInput">
+							<h:outputText
+								value="#{capitulo.categoriaProcedimiento.descripcion}"
+								maxlength = "50"/>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_ver}"
+							styleClass="text-center">
+							<p:commandButton icon="ui-icon-search" title="Detalle"
+								oncomplete="PF('tablaProcedimientoReferenteW').filter();"
+								actionListener="#{gestionReferentePgpController.mostrarDetalleCapituloReferente(capitulo)}"
+								immediate="true" process="@this" update="@form">
+								<pe:selectDetailLevel step="1" />
+							</p:commandButton>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_frecuencia}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.frecuencia}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_costo_medio}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.costoMedioUsuaro}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_n_atenciones}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.numeroUsuarios}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{i18n.column_ref_n_usuarios}"
+						styleClass="text-center">
+							<h:outputText value="#{capitulo.numeroAtenciones}" >
+							<f:convertNumber pattern="###,###.######"/>
+							</h:outputText>
+						</p:column>
+
+						<p:column selectionMode="multiple" style="width:50px;text-align:center" />
+
+					</p:dataTable>
+				</pe:masterDetailLevel>
+
+		<pe:masterDetailLevel level="2">
+			<p:toolbar rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}">
+				<p:toolbarGroup align="right" >
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right" for="gestionCapitulos"
+							value="Gestionar Procedimientos" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionProcedimientos"
+								value="#{gestionReferentePgpController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+									noSelectionOption="true" />
+								<f:selectItems
+									value="#{gestionReferentePgpController.gestionTecnologias}"
+									var="tipoGestionPq" itemValue="#{tipoGestionPq}"
+									itemLabel="#{i18n[cnx:enum_key(tipoGestionPq)]}" />
+								<p:ajax
+									listener="#{gestionReferentePgpController.gestionarProcedimientos('tablaProcedimientoReferenteW','gestionProcedimientos')}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deletePro" layout="block">
+				<p:dialog widgetVar="cdDeletePro" modal="true"
+					header="#{i18n.referente_title_modal_borrar_capitulos}"
+					icon="fa fa-warning">
+
+					<p:outputPanel>
+						<h:outputLabel
+							value="#{i18n.referente_body_modal_borrar_capitulos}" />
+					</p:outputPanel>
+
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{gestionReferentePgpController.eliminarProcedimientosReferente}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o" update="@([id$=tablaProcedimientosRefente])"
+						onclick="PF('cdDeletePro').hide()" />
+
+					<p:commandButton value="#{i18n.form_label_button_cancelar}"
+						type="button" styleClass="btn btn-sm btn-warning"
+						icon="fa fa-close" onclick="PF('cdDeletePro').hide()" />
+				</p:dialog>
+			</p:outputPanel>
+
+			<p:dataTable id="tablaProcedimientosRefente"
+				value="#{gestionReferentePgpController.listarReferenteProcedimiento}"
+				selection="#{gestionReferentePgpController.referenteProcedimientoSeleccionados}"
+				var="procedimiento" rowKey="#{procedimiento.id}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+				widgetVar="tablaProcedimientoReferenteW" paginator="true"
+				paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+				<p:ajax event="page" update="@this" />
+				<p:ajax event="sort" update="@this" />
+				<p:ajax event="rowSelectCheckbox" update="@this" />
+				<p:ajax event="rowUnselectCheckbox" update="@this" />
+				<p:ajax event="toggleSelect" update="@this" />
+				<p:ajax event="filter" update="@this" />
+
+				<p:column headerText="#{i18n.column_ref_codigo}"
+					styleClass="text-center"
+					filterBy="#{procedimiento.procedimiento.codigoCliente}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{procedimiento.procedimiento.codigoCliente}" />
+				</p:column>
+
+				<p:column headerText="Tipo procedimiento" styleClass="text-center"
+					filterBy="#{procedimiento.tipoPx}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{procedimiento.tipoPx}" />
+				</p:column>
+
+
+				<p:column headerText="Cups" styleClass="text-center"
+					filterBy="#{procedimiento.procedimiento.cups}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{procedimiento.procedimiento.cups}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_descripcion}"
+					styleClass="text-center"
+					filterBy="#{procedimiento.procedimiento.descripcion}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{procedimiento.procedimiento.descripcion}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_frecuencia}"
+					styleClass="text-center">
+					<h:outputText value="#{procedimiento.frecuencia}">
+						<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_costo_medio}"
+					styleClass="text-center">
+					<h:outputText value="#{procedimiento.costoMedioUsuario}">
+						<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_atenciones}"
+					styleClass="text-center">
+					<h:outputText value="#{procedimiento.numeroUsuarios}">
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_usuarios}"
+					styleClass="text-center">
+					<h:outputText value="#{procedimiento.numeroAtenciones}">
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_pgp}"
+					styleClass="text-center">
+					<h:outputText value="#{procedimiento.pgp}">
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column selectionMode="multiple" style="width:50px;text-align:center" />
+
+			</p:dataTable>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-md-offset-8 col-lg-4">
+							<div class="text-right">
+								<p:commandButton value="Regresar" icon="ui-icon-arrowthick-1-w"
+									oncomplete="PF('tabCapitulosReferenteW').filter();"
+									actionListener="#{gestionReferentePgpController.setActiveTab(0)}"
+									immediate="true" process="@this" update="@([id$=tabsTecnologias])"
+									ajax="true"
+									styleClass="btn btn-sm btn-warning">
+								</p:commandButton>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</pe:masterDetailLevel>
+	</pe:masterDetail>
+</f:view>

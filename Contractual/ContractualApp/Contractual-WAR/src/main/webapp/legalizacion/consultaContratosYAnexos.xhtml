@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:o="http://omnifaces.org/ui">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" var="EstadoLegalizacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" var="NegociacionModalidadEnum"/>
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            #{i18n.bandeja_consulta_contratos_anexos}
+        </ui:define>
+        <ui:define name="content">
+            <p:dialog id="anexoDialog" header="Anexo tarifario" modal="true" widgetVar="anexoTarifarioDlg" width="40%"
+                      height="45%">
+                <ui:include src="./anexo/descargarAnexo.xhtml"/>
+            </p:dialog>
+            <h:form id="formConsultaContratosAnexos">
+                <p:panel id="pnlConsultaContratosAnexos">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="#{i18n.bandeja_consulta_contratos_anexos}" styleClass="titulo-bold"/>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br/>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.bandeja_consulta_nro_contrato}" for="txtNumeroContrato"/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:inputText id="txtNumeroContrato"
+                                             value="#{consultaContratosAnexosTarifarioController.filtroConsultaSolicitudDto.numeroContrato}"
+                                             converterMessage="#{i18n.error_numero_negociacion}">
+                                </p:inputText>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.bandeja_consulta_modalidad} "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="modalidadNegociacion" class="anchoInput"
+                                                 value="#{consultaContratosAnexosTarifarioController.filtroConsultaSolicitudDto.negociacionModalidad}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="#{i18n.form_label_seleccionar}" itemValue=""/>
+                                    <f:selectItems
+                                            value="#{consultaContratosAnexosTarifarioController.modalidadesNegociacion}"
+                                            var="negociacionModalidad"
+                                            itemLabel="#{negociacionModalidad.descripcion}"
+                                            itemValue="#{negociacionModalidad}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.form_label_tipdocumento_extendido}"/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="tipoIdentificacion" class="anchoInput"
+                                                 value="#{consultaContratosAnexosTarifarioController.filtroConsultaSolicitudDto.tipoIdentificacionDto}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="#{i18n.form_label_seleccionar}" itemValue=""/>
+                                    <f:selectItems
+                                            value="#{consultaContratosAnexosTarifarioController.tipoIdentificacion}"
+                                            var="tipoIdentificacion"
+                                            itemLabel="#{tipoIdentificacion.descripcion}"
+                                            itemValue="#{tipoIdentificacion}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.form_label_nrodocumento}"/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:inputText id="txtNumeroIdentificacion" class="anchoInput"
+                                             value="#{consultaContratosAnexosTarifarioController.filtroConsultaSolicitudDto.numeroIdentificacion}">
+                                </p:inputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.form_razon_social}:"/>
+                            </div>
+                            <div class="ui-grid-col-9">
+                                <p:inputText id="txtRazonSocial" style="width: 100%"
+                                             value="#{consultaContratosAnexosTarifarioController.filtroConsultaSolicitudDto.razonSocial}">
+                                </p:inputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="#{i18n.form_estado_contrato}: "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="estadoLegalizacion" class="anchoInput"
+                                                 value="#{consultaContratosAnexosTarifarioController.filtroConsultaSolicitudDto.estadoLegalizacionEnum}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItems
+                                            value="#{consultaContratosAnexosTarifarioController.estadosLegalizacion}"
+                                            var="estadoLegalizacion"
+                                            itemLabel="#{estadoLegalizacion.descripcion}"
+                                            itemValue="#{estadoLegalizacion}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12 text-right">
+                                <p:commandButton id="buscarContratos" value="Buscar" styleClass="btn btn-sm btn-info"
+                                                 icon="fa fa-search" iconPos="left"
+                                                 update="tblListaContratosPorVistoBueno"/>
+                                <p:commandButton id="limpiarFiltrosContratos" value="Limpiar" immediate="true"
+                                                 styleClass="btn btn-sm btn-warning"
+                                                 actionListener="#{consultaContratosAnexosTarifarioController.limpiar()}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12">
+                                <p:scrollPanel mode="native" style="width:100%;height:100%">
+                                    <!--@elvariable id="contratoYAnexos" type="com.conexia.contratacion.commons.dto.contractual.parametrizacion.SolicitudContratacionParametrizableDto"-->
+                                    <p:dataTable id="tblListaContratosPorVistoBueno" lazy="true"
+                                                 value="#{consultaContratosAnexosTarifarioController}"
+                                                 var="contratoYAnexos" rows="15" paginator="true"
+                                                 paginatorPosition="bottom" rowsPerPageTemplate="5,10,20"
+                                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 emptyMessage="Sin registros...">
+                                        <f:facet name="header">
+                                            Bandeja Contratos y anexos
+                                            <p:commandButton id="toggler" type="button"
+                                                             value="Columnas" icon="ui-icon-calculator"/>
+                                            <p:columnToggler datasource="tblListaContratosPorVistoBueno"
+                                                             trigger="toggler">
+                                            </p:columnToggler>
+                                        </f:facet>
+                                        <p:column headerText="Número de Negociación"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.numeroNegociacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.numeroNegociacion}"/>
+                                        </p:column>
+                                        <p:column headerText="Número de Contrato"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.numeroContrato}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.numeroContrato}"/>
+                                        </p:column>
+                                        <p:column headerText="Razón Social Sede Firma Contrato"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.prestadorDto.nombre}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.prestadorDto.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="Número Documento"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.prestadorDto.numeroDocumento}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.prestadorDto.numeroDocumento}"/>
+                                        </p:column>
+                                        <p:column headerText="Tipo Contrato"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.contrato.tipoContratoEnum}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.contrato.tipoContratoEnum}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Regional"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.regional}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.regional}"/>
+                                        </p:column>
+                                        <p:column headerText="Modalidad de Negociación"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.modalidadNegociacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText
+                                                    value="#{contratoYAnexos.modalidadNegociacion}"/>
+                                        </p:column>
+                                        <p:column headerText="Régimen de Negociación"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.regimenNegociacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText
+                                                    value="#{contratoYAnexos.regimenNegociacion}"/>
+                                        </p:column>
+                                        <p:column headerText="Tipo de Subsidio"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.contrato.tipoSubsidiado}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.contrato.tipoSubsidiado}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Fecha Inicio"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.contrato.fechaInicioVigencia}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.contrato.fechaInicioVigencia}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText="Fecha Fin"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.contrato.fechaFinVigencia}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.contrato.fechaFinVigencia}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText="Nivel Contrato"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.contrato.nivelContrato}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.contrato.nivelContrato}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Minuta"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.minuta.descripcion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.minuta.descripcion}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Población"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.poblacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.poblacion}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Responsable Creación"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.responsableCreacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText value="#{contratoYAnexos.responsableCreacion}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Estado Legalización"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.estadoLegalizacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText
+                                                    value="#{contratoYAnexos.estadoLegalizacion}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Fecha de Legalización"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.fechaLegalizacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText
+                                                    value="#{contratoYAnexos.fechaLegalizacion}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText="Estado Parametrización"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.estadoParametrizacion}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText
+                                                    value="#{contratoYAnexos.estadoParametrizacion}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Estado Contrato"
+                                                  styleClass="text-center" style="width:100px;"
+                                                  filterBy="#{contratoYAnexos.contrato.estadoContrato}"
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput">
+                                            <h:outputText
+                                                    value="#{contratoYAnexos.contrato.estadoContrato}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Acciones" class="text-center" style="width:100px;">
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <p:commandButton
+                                                            id="btnDescargarAnexoCapita"
+                                                            icon="fa fa-download"
+                                                            alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                            title="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                            actionListener="#{consultaContratosAnexosTarifarioController.descargarAnexoExcel(contratoYAnexos)}"
+                                                            rendered="#{contratoYAnexos.modalidadNegociacionEnum eq NegociacionModalidadEnum.CAPITA}">
+                                                        <p:ajaxStatus onstart="PF('statDialog').show()"
+                                                                      onsuccess="PF('statDialog').hide()"/>
+                                                    </p:commandButton>
+                                                    <p:commandButton
+                                                            id="btnDescargarAnexoEvento"
+                                                            icon="fa fa-download"
+                                                            alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                            title="#{i18n.negociacion_btn_alt_des_anexo}"
+                                                            actionListener="#{consultaContratosAnexosTarifarioController.descargarAnexoExcel(contratoYAnexos)}"
+                                                            rendered="#{contratoYAnexos.modalidadNegociacionEnum eq NegociacionModalidadEnum.EVENTO ||
+                                                    			contratoYAnexos.modalidadNegociacionEnum eq NegociacionModalidadEnum.RIAS_CAPITA ||
+                                                    			contratoYAnexos.modalidadNegociacionEnum eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO ||
+                                                    			contratoYAnexos.modalidadNegociacionEnum eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO
+                                                    			}"
+                                                            process="@this"
+                                                            update="anexoDialog"
+                                                            ajax="true">
+
+                                                    </p:commandButton>
+                                                    <p:tooltip id="toolTipAnexoEvento" for="btnDescargarAnexoEvento"
+                                                               value="Descargar anexo" position="left"/>
+                                                    <p:tooltip id="toolTipAnexoCapita" for="btnDescargarAnexoCapita"
+                                                               value="Descargar anexo" position="left"/>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <p:commandButton id="descargarActa"
+                                                                     rendered="#{contratoYAnexos.nombreArchivo ne null}"
+                                                                     icon="fa fa-file-pdf-o"
+                                                                     ajax="false"
+                                                                     actionListener="#{consultaSolicitudesLegalizarController.descargarActa(contratoYAnexos.nombreArchivo, contratoYAnexos.numeroContrato, contratoYAnexos.nombreOriginalArchivo)}"
+                                                                     process="@this">
+                                                        <p:fileDownload
+                                                                value="#{consultaSolicitudesLegalizarController.file}"/>
+                                                    </p:commandButton>
+                                                    <p:tooltip id="toolTipActa" for="descargarActa"
+                                                               value="Descargar minuta firmada" position="left"/>
+                                                </div>
+                                            </div>
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </p:scrollPanel>
+                            </div>
+                        </div>
+                    </div>
+                    <p:dialog modal="true" id="statDialog" widgetVar="statDialog" draggable="false" closable="false">
+                        <p:graphicImage library="img" name="ajaxloadingbar.gif"/>
+                    </p:dialog>
+                    <script type="text/javascript">
+                        function showStatus() {
+                            PF('statDialog').show();
+                        }
+
+                        function hideStatus() {
+                            PF('statDialog').hide();
+                        }
+                    </script>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Matriz de Contratación
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="formMatriz">
+                <p:remoteCommand name="updateCamposTecnologia"
+                                 update="formMatriz:grupo,formMatriz:codigoTecnologia,formMatriz:nombreTecnologia" />
+                <p:panel id="panelFiltrosMatriz">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Matriz de Contratación"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+
+                            <h:outputLabel value="No. Contrato: " for="numeroContrato"
+                                           styleClass="col-lg-12" />
+
+                            <div class="col-lg-12">
+                                <p:inputText id="numeroContrato"
+                                             value="#{matrizContratacionController.filtroMatriz.numeroContrato}"
+                                             styleClass="anchoInput" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Regional: " for="regional"
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectOneMenu id="regional" label="Seleccionar"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 value="#{matrizContratacionController.filtroMatriz.regional}"
+                                                 class="anchoInput">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="" />
+                                    <f:selectItems
+                                        value="#{matrizContratacionController.regionales}"
+                                        var="regional" itemLabel="#{regional.descripcion} "
+                                        itemValue="#{regional}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Departamento:" styleClass="col-lg-12" />
+
+                            <div class="col-12">
+                                <p:selectOneMenu id="departamentoFirma" class="anchoInput"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 value="#{matrizContratacionController.filtroMatriz.departamento}">
+                                    <p:ajax update="municipioFirma"
+                                            listener="#{matrizContratacionController.buscarMunicipios()}" />
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="" />
+                                    <f:selectItems
+                                        value="#{matrizContratacionController.departamentos}"
+                                        var="departamento" itemLabel="#{departamento.descripcion}"
+                                        itemValue="#{departamento}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Municipio:" styleClass="col-lg-12" />
+
+                            <div class="col-lg-12">
+                                <p:selectOneMenu id="municipioFirma" class="anchoInput"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 value="#{matrizContratacionController.filtroMatriz.municipio}">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="" />
+                                    <f:selectItems
+                                        value="#{matrizContratacionController.municipios}"
+                                        var="municipio" itemLabel="#{municipio.descripcion}"
+                                        itemValue="#{municipio}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Segunda fila -->
+                    <div class="row">
+                        <div class="col-lg-3">
+
+                            <h:outputLabel value="Tipo Servicio: " for="tipoServicio"
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectCheckboxMenu id="tipoServicio"
+                                                      converter="omnifaces.SelectItemsConverter"
+                                                      value="#{matrizContratacionController.filtroMatriz.tiposServicios}"
+                                                      class="anchoInput" onchange="updateCamposTecnologia();">
+                                    <p:ajax />
+                                    <f:selectItems value="#{enumController.tiposServicio}"
+                                                   var="tipoServicio" itemLabel="#{tipoServicio.descripcion} "
+                                                   itemValue="#{tipoServicio}" />
+                                </p:selectCheckboxMenu>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h:outputLabel
+                                value="#{matrizContratacionController.filtroMatriz.tiposServicios.stream().filter(ts -> ts.equals(TipoServicioEnum.SERVICIO)).count()}Grupo: "
+                                for="grupo" styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectCheckboxMenu id="grupo"
+                                                      converter="omnifaces.SelectItemsConverter"
+                                                      value="#{matrizContratacionController.filtroMatriz.gruposServicio}"
+                                                      class="anchoInput"
+                                                      disabled="#{matrizContratacionController.servicioActivo}">
+                                    <f:selectItems value="#{matrizContratacionController.grupos}"
+                                                   var="grupo" itemLabel="#{grupo.nombre} " itemValue="#{grupo}" />
+                                </p:selectCheckboxMenu>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Nivel: " for="nivel"
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectOneMenu id="nivel"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 value="#{matrizContratacionController.filtroMatriz.nivel}"
+                                                 class="anchoInput">
+                                    <f:selectItem itemLabel="Seleccione" itemValue="" />
+                                    <f:selectItems value="#{enumController.nivelesContrato}"
+                                                   var="nivel" itemLabel="#{nivel.descripcion} "
+                                                   itemValue="#{nivel}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Regimen: " for="regimen"
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectOneMenu id="regimen"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 value="#{matrizContratacionController.filtroMatriz.regimen}"
+                                                 class="anchoInput">
+                                    <f:selectItem itemLabel="Seleccione" itemValue="" />
+                                    <f:selectItems value="#{enumController.regimenes}"
+                                                   var="regimen" itemLabel="#{regimen.descripcion} "
+                                                   itemValue="#{regimen}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tercera fila -->
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Modalidad de Negociación: "
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectCheckboxMenu id="modalidadNegociacion"
+                                                      class="anchoInput"
+                                                      value="#{matrizContratacionController.filtroMatriz.modalidades}"
+                                                      converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItems
+                                        value="#{consultaSolicitudesLegalizarController.modalidadesNegociacion}"
+                                        var="negociacionModalidad"
+                                        itemLabel="#{negociacionModalidad.descripcion}"
+                                        itemValue="#{negociacionModalidad}" />
+                                </p:selectCheckboxMenu>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <h:outputLabel value="Valor Fiscal: " styleClass="col-lg-12" />
+                            <div class="col-lg-6">
+                                <p:inputText
+                                    value="#{matrizContratacionController.filtroMatriz.valorFiscalMin}">
+                                    <f:validateDoubleRange />
+                                </p:inputText>
+                            </div>
+                            <div class="col-lg-6">
+                                <p:inputText
+                                    value="#{matrizContratacionController.filtroMatriz.valorFiscalMax}">
+                                    
+                                </p:inputText>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <h:outputLabel value="Vigencia: " styleClass="col-lg-12" />
+                            <div class="col-lg-6">
+                                <p:calendar id="inicioVigencia" showOn="button" size="10"
+                                            converterMessage="La fecha de inicio debe tener formato Día Mes Año"
+                                            pattern="dd/MM/yyyy"
+                                            value="#{matrizContratacionController.filtroMatriz.fechaInicioVigencia}"
+                                            locale="es">
+                                    <p:ajax event="dateSelect" update="finVigencia" />
+                                </p:calendar>
+                            </div>
+                            <div class="col-lg-6">
+                                <p:calendar id="finVigencia" showOn="button" size="10"
+                                            converterMessage="La fecha fin debe tener formato Día Mes Año"
+                                            pattern="dd/MM/yyyy"
+                                            mindate="#{matrizContratacionController.filtroMatriz.fechaInicioVigencia}"
+                                            value="#{matrizContratacionController.filtroMatriz.fechaFinVigencia}"
+                                            locale="es" disabled="#{matrizContratacionController.filtroMatriz.fechaInicioVigencia == null}">
+                                </p:calendar>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <!-- Datos del prestador-->
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Datos del Prestador"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <!-- Fin datos del prestador-->
+                    <br></br>
+                    <!-- Primera columna -->
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Tipo de identificación: "
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectOneMenu id="tiposIdentificacion" class="anchoInput"
+                                                 value="#{matrizContratacionController.filtroMatriz.prestador.tipoIdentificacionRepLegal}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="" />
+                                    <f:selectItems value="#{listaTiposDocumento}"
+                                                   var="tipoIdentificacion"
+                                                   itemLabel="#{tipoIdentificacion.descripcion}"
+                                                   itemValue="#{tipoIdentificacion}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Nro. de identificación: "
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:inputText style="margin-bottom:20px"
+                                             id="numeroIdentificacion" class="anchoInput"
+                                             value="#{matrizContratacionController.filtroMatriz.prestador.numeroDocumento}" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h:outputLabel value="Razon social: " styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:inputText id="razonSocial" class="anchoInput"
+                                             value="#{matrizContratacionController.filtroMatriz.prestador.nombre}" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tecnologia especifica -->
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Tecnología Especifica"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br></br>
+                    <!-- Primera columna -->
+                    <div class="row">
+
+                        <div class="col-lg-4">
+                            <h:outputLabel value="Tecnologia: " styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:selectOneMenu id="tipoTecnologia"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 value="#{matrizContratacionController.filtroMatriz.tipoTecnologia}"
+                                                 class="anchoInput" onchange="updateCamposTecnologia();">
+                                    <p:ajax />
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="" />
+                                    <f:selectItems value="#{enumController.tiposServicio}"
+                                                   var="tipoServicio" itemLabel="#{tipoServicio.descripcion} "
+                                                   itemValue="#{tipoServicio}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <h:outputLabel value="Código: " styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:inputText id="codigoTecnologia" class="anchoInput"
+                                             value="#{matrizContratacionController.filtroMatriz.codigoTecnologiaEspecifica}"
+                                             disabled="#{matrizContratacionController.filtroMatriz.tipoTecnologia == nul}" />
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <h:outputLabel value="Nombre tecnologia especifica: "
+                                           styleClass="col-lg-12" />
+                            <div class="col-lg-12">
+                                <p:inputText id="nombreTecnologia" class="anchoInput"
+                                             value="#{matrizContratacionController.filtroMatriz.nombreTecnologiaEspecifica}"
+                                             disabled="#{matrizContratacionController.filtroMatriz.tipoTecnologia == nul}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-offset-8 col-lg-4">
+                                    <div class="text-right">
+                                        <p:commandButton type="submit"
+                                                         styleClass="btn btn-sm btn-info"
+                                                         actionListener="#{matrizContratacionController.consultarContratos()}"
+                                                         value="Buscar" update="formMatriz:contratos">
+                                        </p:commandButton>
+                                        <p:commandButton type="submit"
+                                                         styleClass="btn btn-sm btn-warning"
+                                                         actionListener="#{matrizContratacionController.limpiarFormulario()}"
+                                                         value="Limpiar" update="formMatriz" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p:dataTable id="contratos"
+                                             value="#{matrizContratacionController.contratos}"
+                                             var="contrato" rows="5" paginator="true"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,20" emptyMessage="Sin registros...">                                    
+                                    <f:facet name="header">
+                                        Contratos
+                                        <p:commandButton id="toggler" type="button" value="Seleccionar columnas" style=" position: absolute; right: 15px;" icon="ui-icon-calculator" />
+                                        <p:columnToggler datasource="contratos" trigger="toggler" />
+                                    </f:facet>
+                                    <p:column headerText="No."
+                                              filterBy="#{contrato.contratoDto.numeroContrato}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contrato.contratoDto.numeroContrato}" />
+                                    </p:column>
+                                    <p:column headerText="Número Documento"
+                                              filterBy="#{contrato.contratoDto.solicitudContratacionParametrizableDto.prestadorDto.numeroDocumento}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.contratoDto.solicitudContratacionParametrizableDto.prestadorDto.numeroDocumento}" />
+                                    </p:column>
+                                    <p:column headerText="Razón Social"
+                                              filterBy="#{contrato.contratoDto.solicitudContratacionParametrizableDto.prestadorDto.nombre}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.contratoDto.solicitudContratacionParametrizableDto.prestadorDto.nombre}" />
+                                    </p:column>
+                                    <p:column headerText="Naturaleza"
+                                              filterBy="#{contrato.contratoDto.solicitudContratacionParametrizableDto.prestadorDto.naturalezaJuridica}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.contratoDto.solicitudContratacionParametrizableDto.prestadorDto.naturalezaJuridica}" />
+                                    </p:column>
+                                    <p:column headerText="Regional"
+                                              filterBy="#{contrato.contratoDto.regionalDto.descripcion}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.contratoDto.regionalDto.descripcion}" />
+                                    </p:column>
+                                    <p:column headerText="Vigencia"
+                                              filterBy="#{contrato.vigencia}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contrato.vigencia}"
+                                                      style="#{contrato.proximoVencer ? 'color: red;' : ''}" />
+                                    </p:column>
+                                    <p:column headerText="Modalidad"
+                                              filterBy="#{contrato.contratoDto.solicitudContratacionParametrizableDto.modalidadNegociacion}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.contratoDto.solicitudContratacionParametrizableDto.modalidadNegociacion}" />
+                                    </p:column>
+                                    <p:column headerText="Valor Fiscal"
+                                              filterBy="#{contrato.valorFiscal}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contrato.valorFiscal}" />
+                                    </p:column>
+                                    <p:column headerText="Población"
+                                              filterBy="#{contrato.contratoDto.solicitudContratacionParametrizableDto.poblacion}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.contratoDto.solicitudContratacionParametrizableDto.poblacion}" />
+                                    </p:column>
+                                    <p:column headerText="Nivel"
+                                              filterBy="#{contrato.contratoDto.nivelContrato.descripcion}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.contratoDto.nivelContrato.descripcion}" />
+                                    </p:column>
+                                    <p:column headerText="Tarifario y %"
+                                              rendered="#{matrizContratacionController.filtroMatriz.codigoTecnologiaEspecifica != null}"
+                                              filterBy="#{contrato.tarifarioPorcentajeTecnologia}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contrato.tarifarioPorcentajeTecnologia}" />
+                                    </p:column>
+                                    <p:column headerText="Valor"
+                                              rendered="#{matrizContratacionController.filtroMatriz.codigoTecnologiaEspecifica != null}"
+                                              filterBy="#{contrato.valorTecnologia}"
+                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contrato.valorTecnologia}" />
+                                    </p:column>
+                                    <p:column headerText="Ver" class="text-center">
+                                        <p:commandButton icon="ui-icon-search"
+                                                         update="formMatriz:tab, formMatriz:nombreContrato">
+                                            <f:setPropertyActionListener value="#{contrato}"
+                                                                         target="#{matrizContratacionController.current}" />
+                                        </p:commandButton>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel id="nombreContrato" value="Contrato #{matrizContratacionController.current.contratoDto.numeroContrato}"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid><br/>
+                    <p:tabView id="tab">
+                        <p:tab title="Caracteristicas">
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-3 text-right">
+                                        <h:outputLabel value="Objeto: " />
+                                    </div>
+                                    <div class="ui-grid-col-3">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.tipoObjetoContrato.descripcion}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-3 text-right">
+                                        <h:outputLabel value="Fecha Firma Contrato: " />
+                                    </div>
+                                    <div class="ui-grid-col-3">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.fechafirmaContrato}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>                                                
+                                    </div>
+                                    <div class="ui-grid-col-3 text-right">
+                                        <h:outputLabel value="Responsable Firma Contrato: " />
+                                    </div>
+                                    <div class="ui-grid-col-3">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.responsableFirmaContrato.nombre}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-3 text-right">
+                                        <h:outputLabel value="Fecha Vo.Bo: " />
+                                    </div>
+                                    <div class="ui-grid-col-3">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.fechaVoContrato}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </div>
+                                    <div class="ui-grid-col-3 text-right">
+                                        <h:outputLabel value="Responsable Vo.Bo: " />
+                                    </div>
+                                    <div class="ui-grid-col-3">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.responsableVoBo.nombre}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Valor Poliza: " />
+                                    </div>
+                                    <div class="ui-grid-col-2">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.valorPoliza}" />
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Días Plazo: " />
+                                    </div>
+                                    <div class="ui-grid-col-2">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.diasPlazo}" />
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <h:outputLabel value="Población: " />
+                                    </div>
+                                    <div class="ui-grid-col-2">
+                                        <h:outputText
+                                            value="#{matrizContratacionController.current.contratoDto.solicitudContratacionParametrizableDto.poblacion}" />											
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <p:commandButton id="descargarMinuta"
+                                                         styleClass="btn btn-sm btn-info" icon="fa fa-print"
+                                                         iconPos="left" value="Descargar minuta"
+                                                         onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"
+                                                         actionListener="#{matrizContratacionController.generarMinuta}"
+                                                         ajax="false"
+                                                         rendered="#{matrizContratacionController.current != null}">
+                                            <p:fileDownload
+                                                value="#{matrizContratacionController.pdfFile}">
+                                            </p:fileDownload>
+                                        </p:commandButton>
+
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <p:link href="http://#{request.serverName}:#{request.serverPort}/wap/negociacion/rest/reports/anexo/#{matrizContratacionController.current.contratoDto.solicitudContratacionParametrizableDto.numeroNegociacion}"
+                                                rendered="#{matrizContratacionController.current != null}"
+                                                styleClass="btn btn-sm btn-info" value="Descargar Anexo" >
+                                        </p:link>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Cubrimiento">
+                            <p:dataTable id="sedes"
+                                         value="#{matrizContratacionController.sedes}" var="sede"
+                                         rows="5" paginator="true" paginatorPosition="bottom"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="5,10,20" emptyMessage="Sin registros...">
+                                <p:column headerText="Código" style="text-align: center">
+                                    <h:outputText value="#{sede.codigoSede}" />
+                                </p:column>
+                                <p:column headerText="Sede">
+                                    <h:outputText value="#{sede.nombreSede}" />
+                                </p:column>
+                                <p:column headerText="Primaria" style="text-align: center">
+                                    <h:outputText value="#{sede.ipsPrimaria}" />
+                                </p:column>
+                                <p:column headerText="Departamento - Municipio">
+                                    <h:outputText
+                                        value="#{sede.municipio.departamento} - #{sede.municipio.descripcion} " />
+                                </p:column>
+                                <p:column headerText="Dirección">
+                                    <h:outputText value="#{sede.direccion}" />
+                                </p:column>
+                                <p:column headerText="Área de Influencia"
+                                          style="text-align: center">
+                                    <p:commandButton icon="ui-icon-extlink" immediate="true"
+                                                     oncomplete="PF('areaInfluenciaDialog').show();"
+                                                     update="@form:dialog">
+                                        <f:setPropertyActionListener value="#{sede}"
+                                                                     target="#{matrizContratacionController.sedeSelected}" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Descuentos">
+                            <p:dataTable id="descuentos"
+                                         value="#{matrizContratacionController.current.descuentos}"
+                                         var="descuento" rows="5" paginator="true"
+                                         paginatorPosition="bottom"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="5,10,20" emptyMessage="Sin registros...">
+                                <p:column headerText="Tipo Descuento">
+                                    <h:outputText value="#{descuento.tipoDescuento.descripcion}" />
+                                </p:column>
+                                <p:column headerText="Valor Condición">
+                                    <h:outputText value="#{descuento.valorDescuento}" />
+                                </p:column>
+                                <p:column headerText="Tipo Condición">
+                                    <h:outputText value="#{descuento.tipoCondicion.descripcion}" />
+                                </p:column>
+                                <p:column headerText="Valor Descuento">
+                                    <h:outputText value="#{descuento.valorDescuento}" />
+                                </p:column>
+                                <p:column headerText="Tipo Valor">
+                                    <h:outputText value="#{descuento.tipoValor}" />
+                                </p:column>
+                                <p:column headerText="Detalle">
+                                    <h:outputText value="#{descuento.detalle}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                    <p:dialog
+                        header="Area de Influencia #{matrizContratacionController.sedeSelected.nombreSede}"
+                        id="dialog" widgetVar="areaInfluenciaDialog" modal="true"
+                        width="500">
+                        <ui:include src="areaInfluencia.xhtml"></ui:include>
+                    </p:dialog>
+                    <p:dialog modal="true" id="statDialog" widgetVar="statDialog"
+                              draggable="false" closable="false">
+                        <p:graphicImage library="img" name="ajaxloadingbar.gif" />
+                    </p:dialog>
+                    <script type="text/javascript">
+                        function showStatus() {
+                            PF('statDialog').show();
+                        }
+
+                        function hideStatus() {
+                            PF('statDialog').hide();
+                        }
+                    </script>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

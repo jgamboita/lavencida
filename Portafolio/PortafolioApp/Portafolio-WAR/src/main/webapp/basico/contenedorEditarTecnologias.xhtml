@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="Portafolio" />
+		</ui:define>
+		<ui:define name="content">
+			<p:panel id="panelOpcionesCapita">
+				<h:panelGrid columns="1" style="width:100%; margin-bottom: 10px;">
+					<f:facet name="header">
+						<p:outputLabel
+							value="#{i18n.form_title_contenedor_tecnologias} - #{contenedorTecnologias.sedePrestador.nombreSede}"
+							styleClass="titulo-bold">
+						</p:outputLabel>
+						<div class="separador"></div>
+					</f:facet>
+				</h:panelGrid>
+
+				<p:tabView activeIndex="#{contenedorTecnologias.activeTab}">
+					<p:tab title="#{i18n.tab_title_cups}">
+						<ui:include src="/basico/serviciosHabilitacionSede.xhtml" />
+					</p:tab>
+
+					<p:tab title="#{i18n.tab_title_cum}">
+						<ui:include src="/basico/categoriaMedicamentoSede.xhtml" />
+					</p:tab>						
+				</p:tabView>
+
+				<div class="row" style="margin-top: 10px;">
+					<div class="text-right col-lg-12 form-group form-group-sm">
+						<h:form>
+							<p:commandButton value="#{i18n.form_label_button_regresar}"
+								styleClass="btn btn-sm btn-warning" icon="fa fa-chevron-left"
+								iconPos="left" action="#{contenedorTecnologias.regresar()}" />
+						</h:form>			
+					</div>
+				</div>
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+</f:view>

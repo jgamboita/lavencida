@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:o="http://omnifaces.org/ui">
+    
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoComiteEnum" />
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="#{i18n.bandeja_comite_title}" />
+			
+		</ui:define>
+		<ui:define name="content">
+			<h:form id="gestionarComiteForm">
+				<p:panel id="panelGestionarComite">
+					<div class="form-group">
+		
+						<!-- Inicio Título-->
+						<div class="widget-header">
+							<span class="widget-caption">#{i18n.gestionar_comite_label_comite_actual} #{gestionComiteController.comiteActual.id}</span>
+						</div>
+						<!-- Fin Título-->
+						<!-- row -->
+						<h:outputText value="&#160;" />
+						<div class="row">
+							<div class="col-lg-12">
+								<p:outputLabel
+									value="#{i18n.gestionar_comite_label_asistentes}" />								
+							</div>
+							<div class="col-lg-12">
+								<p:dataTable id="tablaAsistentesComite" var="asistenteComite"
+									value="#{gestionComiteController.asistentes}"
+									emptyMessage="#{i18n.form_label_datatable_noregistros}"
+									editable="#{gestionComiteController.comiteActual.estadoComite ne EstadoComiteEnum.FINALIZADO}"
+									paginator="false" rowKey="#{asistenteComite.id}">
+
+									<p:ajax event="rowEdit"
+										listener="#{gestionComiteController.onRowEdit}"
+										update=":gestionarComiteForm:tablaAsistentesComite" />
+									<p:ajax event="rowEditCancel"
+										listener="#{gestionComiteController.onRowCancel}"
+										update=":gestionarComiteForm:tablaAsistentesComite" />
+
+									<!-- Cargo -->
+									<p:column headerText="#{i18n.tbl_asistentes_comite_cargo}"
+										styleClass="text-center">
+										<!-- Permite cambiar entre el modo de edición o solo vista. -->
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{asistenteComite.cargo}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText value="#{asistenteComite.cargo}"
+													style="width:80%" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<!-- Nombres -->
+									<p:column headerText="#{i18n.tbl_asistentes_comite_nombres}"
+										styleClass="text-center">
+										<!-- Permite cambiar entre el modo de edición o solo vista. -->
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{asistenteComite.nombre}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText value="#{asistenteComite.nombre}"
+													style="width:80%" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<!-- Asiste -->
+									<p:column headerText="#{i18n.tbl_asistentes_comite_asiste}"
+										styleClass="text-center">
+										<!-- Permite cambiar entre el modo de edición o solo vista. -->
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{asistenteComite.asiste}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:selectBooleanButton value="#{asistenteComite.siAsiste}"
+													onLabel="#{i18n.form_label_si}"
+													offLabel="#{i18n.form_label_no}" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<!-- Voz -->
+									<p:column headerText="#{i18n.tbl_asistentes_comite_voz}"
+										styleClass="text-center">
+										<!-- Permite cambiar entre el modo de edición o solo vista. -->
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{asistenteComite.tieneVoz}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:selectBooleanButton value="#{asistenteComite.siTieneVoz}"
+													onLabel="#{i18n.form_label_si}"
+													offLabel="#{i18n.form_label_no}" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<!-- Voto -->
+									<p:column headerText="#{i18n.tbl_asistentes_comite_voto}"
+										styleClass="text-center">
+										<!-- Permite cambiar entre el modo de edición o solo vista. -->
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{asistenteComite.tieneVoto}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:selectBooleanButton
+													value="#{asistenteComite.siTieneVoto}"
+													onLabel="#{i18n.form_label_si}"
+													offLabel="#{i18n.form_label_no}" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+									<!-- Columna para editar la tabla -->
+									<p:column style="width:32px">
+										<p:rowEditor />
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+						<!-- End of row -->
+						<br />
+						<div class="row">
+							<div class="col-lg-12" style="text-align: right;">
+								<p:commandButton value="#{i18n.gestionar_comite_lbl_btn_tramitar}" 
+									actionListener="#{gestionComiteController.tramitarComite()}"
+                                    styleClass="btn btn-sm btn-info" iconPos="left" 
+									rendered="#{gestionComiteController.comiteActual.estadoComite ne EstadoComiteEnum.FINALIZADO}">
+									 <f:ajax render="@form" execute="@form"></f:ajax>
+								</p:commandButton>
+
+								<p:commandButton
+									value="#{i18n.gestionar_comite_lbl_btn_aplazar}"									
+									onclick="PF('dialogReprogramar').show()"
+									styleClass="btn btn-sm btn-warning"
+									rendered="#{gestionComiteController.mostrarAplazar}">
+
+									<p:confirm header="#{i18n.form_label_confirmacion}"
+										icon="ui-icon-alert"
+										message="#{i18n.gestionar_comite_confirm_aplazar}" />
+
+								</p:commandButton>
+																							
+								<p:dialog widgetVar="dialogReprogramar" header="#{i18n.form_label_confirmacion}"
+										icon="fa fa-exclamation-triangle" modal="true" width="500px">	
+									<div class="col-lg-12 text-center">
+										<p><h:outputText value="#{i18n.gestionar_comite_fecha_aplazar}"/></p>
+									
+										<div class="col-lg-7">
+											<p:calendar value="#{gestionComiteController.fechaAplazaComite}" 
+												pattern="dd/MM/yyyy" mode="inline" showOn="button" 
+												size="10" locale="es" autocomplete="false"
+												mindate="#{gestionComiteController.fechaMinimaAplazamiento}">
+												
+												<p:ajax event="dateSelect"
+													listener="#{gestionComiteController.onSeleccionFechaAplazarComite}" 
+													update="fechaAplazarComite"/>
+											</p:calendar>
+										</div>	
+										
+										
+										<div class="col-lg-5">
+											El comite sera realizado el 
+											<b><h:outputText id="fechaAplazarComite" 
+												value="#{gestionComiteController.fechaAplazaComite}"
+												styleClass="text-danger">
+												
+												<f:convertDateTime pattern="dd/MM/yyyy"/>
+											</h:outputText></b>
+										</div>
+									</div>
+									
+									<p:commandButton
+										styleClass="btn btn-info" 
+										actionListener="#{gestionComiteController.aplazarComite()}"
+										value="Aceptar"/>	
+									
+									<p:commandButton
+										styleClass="btn btn-default"
+										onclick="PF('dialogReprogramar').hide()"
+										action="#{gestionComiteController.cancelarAplazarComite()}"
+										update="@parent"
+										value="Cancelar"/>																		
+								</p:dialog>
+							</div>
+						</div>
+						<h:outputText value="&#160;" />		
+						<div class="row">
+							<ui:include src="prestadores/prestadoresComitePrecontratacion.xhtml" />
+						</div>
+						<h:outputText value="&#160;" />		
+						<div class="row">
+							<ui:include src="./resumen/resumenGestionComite.xhtml" />
+						</div>	
+					</div>
+				</p:panel>
+                
+                <p:panel id="panelAccionesComite">
+                    <!-- Boton regresar -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <p:commandButton value="#{i18n.form_label_button_regresar}" action="#{gestionComiteController.regresar}"
+                            styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left" iconPos="left"/>
+                            
+                            <p:commandButton value="#{i18n.gestionar_comite_lbl_btn_finalizar}" 
+                            		actionListener="#{gestionComiteController.terminarComite()}"
+                                    styleClass="btn btn-sm btn-info"
+                                    rendered="#{not gestionComiteController.mostrarAplazar and gestionComiteController.comiteActual.estadoComite ne EstadoComiteEnum.FINALIZADO}"
+                                    update="panelAccionesComite"
+                                    process="@this">
+                                <p:confirm header="#{i18n.form_label_confirmacion}"
+                                        message="#{i18n.gestionar_comite_confirm_terminar}"
+                                        icon="fa fa-exclamation-triangle" />
+                            </p:commandButton>
+                      		<p:commandButton value="#{i18n.acta_comite_imprimir}"                                           
+                                            styleClass="btn btn-sm btn-info"
+                                            process="@this"
+                                            immediate="true"
+                                            ajax="false"  
+                                            actionListener="#{gestionComiteController.imprimirActa}"                                           
+                                            rendered="#{gestionComiteController.comiteActual.estadoComite eq EstadoComiteEnum.FINALIZADO}">
+	                           	
+	                           	<p:fileDownload value="#{gestionComiteController.actaComite}"/>
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </p:panel>
+			</h:form>
+			<h:form>
+            </h:form>
+			<!-- Dialog Concepto Comite -->
+			<p:dialog id="dialogConceptoComite" modal="true"
+				header="Concepto Comite"
+				widgetVar="dialogConceptoComiteW" width="75%" height="500">
+                            <p:ajax event="close" update="gestionarComiteForm"/>
+                            <ui:include src="./concepto/conceptoComitePrecontratacion.xhtml" />
+			</p:dialog>
+		</ui:define>
+	</ui:composition>
+</f:view>

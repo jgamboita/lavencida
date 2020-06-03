@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:p="http://primefaces.org/ui"
+		xmlns:cnx="http://conexia.com/utils" xmlns:o="http://omnifaces.org/ui">
+
+	<script type="text/javascript">
+        function  ValidarPunto(text)
+        {
+            if (text.value.match('[,]'))
+            {
+                text.value = '';
+            }
+        }
+    </script>
+     <style type="text/css">
+		.ui-fileupload-buttonbar {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    border: none;
+		}
+		.ui-fileupload {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    display: inline-block;
+		    border: none;
+		}
+		.ui-fileupload-content {
+		    border: none;
+		}
+		.ui-fileupload-choose {
+        	background-color: #fda63e !important;
+        	color: #ffffff !important;
+		    font-family: 'PT Sans', arial, verdana, sans-serif;
+    		font-size: 1em;
+		    font-weight: normal;
+		}
+		span.ui-fileupload-choose > span.ui-icon-plusthick{
+		    display: none !important;
+		}
+		span.ui-fileupload-choose > span.ui-button-text{
+		    padding-left: 1em !important;
+		}
+	</style>
+	<o:importConstants		type="com.conexia.contratacion.commons.constants.enums.ArchivosNegociacionEnum" />
+	<o:importConstants		type="com.conexia.contratacion.commons.constants.enums.OpcionesImportacionTecnologiaEnum"	var="opcionesImportacionEnum" />
+	<p:panel id="panelServicioSS">
+		<p:accordionPanel id="acordionPanelServicioSS">
+			<p:tab title="#{i18n.negociacion_asignacion_masiva_titulo}">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-lg-5" style="border: 1px solid #E5E5E5;">
+							<h:panelGroup id="opcionesServiciosMasivoGrid" layout="block"
+								styleClass="radioButtonSpaceLeft" border="0">
+								<p:selectOneRadio id="opcionesServiciosMasivo" layout="custom"
+									columns="1"
+									value="#{negociacionServiciosSSController.tipoAsignacionSeleccionado}">
+									<f:selectItems
+										value="#{negociacionServiciosSSController.tipoAsignacionTarifaServicioEnum}"
+										var="tipoAsignacionSer" itemValue="#{tipoAsignacionSer}"
+										itemLabel="#{i18n[cnx:enum_key(tipoAsignacionSer)]}" />
+								</p:selectOneRadio>
+								<h:panelGrid columns="2" cellpadding="20" cellspacing="15">
+									<p:radioButton id="optServ1" for="opcionesServiciosMasivo"
+										itemIndex="0" />
+									<h:outputLabel for="optServ1"
+										value="#{i18n.negociacion_servicios_asignar_tarifa_contrato}" />
+
+									<p:radioButton id="optServ2" for="opcionesServiciosMasivo"
+										itemIndex="1" />
+									<h:outputLabel for="optServ2"
+										value="#{i18n.negociacion_servicios_asignar_tarifa_portafolio}" />
+
+									<p:radioButton id="optServ3" for="opcionesServiciosMasivo"
+										itemIndex="2" />
+									<h:column>
+										<h:outputLabel for="optServ3"
+											value="#{i18n.negociacion_tarifario_titulo}" />
+										<h:outputLabel />
+										<p:selectOneMenu id="selectFiltroTarifarios"
+											value="#{negociacionServiciosSSController.tarifarioAsignar}"
+											converter="omnifaces.SelectItemsConverter" effect="fold"
+											style="width: 150px">
+											<f:selectItem
+												itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+												itemValue="" />
+											<f:selectItems value="#{listaTiposTarifariosPermitidos}"
+												var="tarifario" itemValue="#{tarifario}"
+                                                                                            	itemLabel="#{i18n[(tarifario.descripcion.replaceAll(' ','_'))]}" />
+										</p:selectOneMenu>
+										<h:outputLabel for="optServ3"
+											value="#{i18n.form_label_porcentaje_simbolo}" />
+										<p:inputText id="porcentajeTarifario"
+											value="#{negociacionServiciosSSController.porcentajeAsignar}"
+											onkeyup="ValidarPunto(this);" size="4" maxlength="6"
+											label="#{i18n.negociacion_servicio_porcentaje_tarifario}"
+											validatorMessage="#{i18n.form_label_validar_rango_porcentaje}">
+											<f:validateLongRange minimum="-100" maximum="100" />
+										</p:inputText>
+									</h:column>
+
+
+									<p:radioButton id="optServ4" for="opcionesServiciosMasivo"
+										itemIndex="3" />
+									<h:column>
+										<h:outputLabel for="optServ4"
+											value="#{i18n.negociacion_servicios_incremento_propia}" />
+										<p:inputText id="incrementoPropia"
+											value="#{negociacionServiciosSSController.porcentajeAumentoPropia}"
+											size="4" maxlength="4"
+											label="#{i18n.negociacion_servicio_tarifa_propia}" />
+									</h:column>
+
+									<p:radioButton id="optServ5" for="opcionesServiciosMasivo"
+										itemIndex="4" />
+									<h:column>
+										<h:outputLabel for="optServ5"
+											value="#{i18n.negociacion_servicios_valor_tarifa_propia}" />
+										<p:inputText id="valorpropia"
+											value="#{negociacionServiciosSSController.valorTarifaPropia}"
+											size="9" maxlength="9"
+											label="#{i18n.negociacion_servicio_tarifa_propia}">
+											<f:convertNumber pattern="#0" integerOnly="true"
+												maxFractionDigits="0" />
+										</p:inputText>
+									</h:column>
+								</h:panelGrid>
+								<br />
+								<div class="col-lg-12">
+									<p:commandButton id="btnAsignacionTarifasServicio"
+										value="#{i18n.form_label_button_aceptar}"
+										update=":tecnologiasSSForm:tabsTecnologias:negociacionServiciosSS,@([id$=totalNegociacion])"
+										process="acordionPanelServicioSS"
+										actionListener="#{negociacionServiciosSSController.asignarTarifasServicios()}"
+										oncomplete="PF('negociacionServiciosSS').unselectAllRows();" />
+								</div>
+							</h:panelGroup>
+						</div>
+						<div class="col-lg-7" style="border: 1px solid #E5E5E5;">
+							<h:panelGroup id="panelAgregarServicios">
+							<div class="ui-grid ui-grid-responsive">
+								<div class="ui-grid-row ui-grid-col-12">
+									<h5 class="title ui-widget-header ui-corner-all col-lg-12">
+										<strong>Agregar servicios a la negociación </strong>
+									</h5>
+								</div>
+								<div class="col-lg-12">
+									<div class="form-group form-group-sm col-lg-4">
+										<p:outputLabel value="Código emssanar: " styleClass="col-lg-12" for="codigoTecnologiaAgregar" />
+										<p:inputText id="codigoTecnologiaAgregar"
+											label="#{i18n.negociacion_servicios_valor_tarifa_propia}"
+											value="#{negociacionServiciosSSController.servicioAgregar.codigo}"
+											style="col-lg-4" styleClass="anchoInput" />
+										<h:message for="codigoTecnologiaAgregar" />
+									</div>
+									<div class="form-group form-group-sm col-lg-8">
+										<p:outputLabel value="Descripción: " styleClass="col-lg-12"
+											for="descripicionTecnologiaAgregar" />
+										<p:inputText id="descripicionTecnologiaAgregar"
+											value="#{negociacionServiciosSSController.servicioAgregar.nombre}"
+											style="col-lg-6" styleClass="anchoInput" />
+										<h:message for="descripicionTecnologiaAgregar" />
+									</div>
+								</div>
+								<br/>
+								<div class="col-lg-12">
+									<div class="form-group form-group-sm col-lg-12">
+										<p:commandButton id="btnAgregarTecnologia"
+											value="#{i18n.form_label_agregar}"
+											update="tecnologiasSSForm:tabsTecnologias:acordionPanelServicioSS:panelAgregarServicios,tecnologiasSSForm:tabsTecnologias:negociacionServiciosSS,serviciosAgregarForm:serviciosAgregarTable"
+											process="panelAgregarServicios"
+											styleClass="btn btn-sm btn-primary"
+											actionListener="#{negociacionServiciosSSController.consultarServiciosAgregar()}" />
+										<p:commandButton id="btnLimpiarPanelAgregar"
+											value="#{i18n.form_label_button_limpiar}"
+											update="tecnologiasSSForm:tabsTecnologias:acordionPanelServicioSS:panelAgregarServicios"
+											process="@this" styleClass="btn btn-sm btn-warning"
+											actionListener="#{negociacionServiciosSSController.limpiarPanelAgregar()}" />
+									</div>
+								</div>
+								<div class="col-lg-12">
+									<div class="form-group form-group-sm col-lg-12" style="text-align: right">
+										<h:outputLabel value="#{i18n.form_label_importar_servicios_desde_archivo}"
+										style="margin-top: 0.5em; margin-right: 1em"/>
+										<p:commandButton value="Importar"
+														 styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+														 oncomplete="PF('dlgImportarServicios').show()"/>
+									</div>
+								</div>
+							</div>
+							</h:panelGroup>
+						</div>
+					</div>
+				</div>
+			</p:tab>
+		</p:accordionPanel>
+		<!-- pop-up importacion tecnologias -->
+		<p:dialog header="Importar procedimientos" widgetVar="dlgImportarServicios" modal="true"
+		height="150" width="700" position="center" id = "dialogImportarServicios">
+			<p:panel id = "pnlImportProcedimientos">
+				<div class="row">
+					<div class="col-lg-4">
+						<h:outputLabel value="Opciones importacion:" styleClass="titulo-bold" />
+					</div>
+				</div>
+				<div class="separador"></div>
+				<br />
+				<div class="row">
+					<div class="col-lg-4">
+						<p:selectOneMenu id="listOpcionesArea" styleClass="anchoInput"
+							value = "#{negociacionServiciosSSController.tecnologiasController.negociacion.opcionImportarSeleccionada}"
+							converter="omnifaces.SelectItemsConverter">
+							<f:selectItem itemLabel="Seleccionar..." />
+							<f:selectItems
+								value="#{negociacionServiciosSSController.opcionesImportacionTecnologiaEnums}"
+								var="opcionImport" itemValue="#{opcionImport}"
+								itemLabel="#{opcionImport.descripcion}" />
+							<p:ajax update="@([id$=pnlImportProcedimientos])" />
+						</p:selectOneMenu>
+					</div>
+					<div class="col-lg-offset-1  ui-grid-col-2">
+						<p:commandButton id="btn-generar-plantilla-medicamentos"
+							style="width:90px" styleClass="btn btn-sm btn-info"
+							icon="fa fa-download" value="Descargar" partialSubmit="true"
+							immediate="true" process="@this"
+							actionListener="#{negociacionServiciosSSController.descargarFormatoTecnologiasEvento()}"
+							ajax="false" onsuccess="PrimeFaces.monitorDownload(start, stop);"
+							rendered="#{negociacionServiciosSSController.tecnologiasController.negociacion.opcionImportarSeleccionada != null}">
+							<p:fileDownload
+								value="#{negociacionServiciosSSController.formatoDownload}" />
+						</p:commandButton>
+					</div>
+					<div class="col-lg-offset-5">
+						<p:fileUpload id="btnImportarProcedimientosEventoSedes"
+							styleClass="btn btn-warning btn-sm" icon="fa fa-upload"
+							auto="true" multiple="true"
+							allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+							accept="xls|xlsx|XLS|XLSX" mode="advanced"
+							rendered="#{negociacionServiciosSSController.tecnologiasController.negociacion.opcionImportarSeleccionada == opcionesImportacionEnum.IMPORTAR_SEDE_A_SEDE}"
+							update="@([id$=dialogoErroresProcedimientos]), @([id$=negociacionServiciosSS]), @([id$=totalNegociacion])"
+							cancelLabel="#{i18n.form_label_button_cancelar}"
+							uploadLabel="#{i18n.form_label_importar}"
+							label="#{i18n.form_label_importar}" sizeLimit="5242880"
+							invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+							invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+							fileUploadListener="#{negociacionServiciosSSController.importFiles}"
+							onstart="PF('statusDialog').show();"
+							oncomplete="PF('statusDialog').hide();">
+							<f:attribute name="foo"
+								value="#{ArchivosNegociacionEnum.PROCEDURE_EVENTO_SEDES_FILE}" />
+						</p:fileUpload>
+
+						<p:fileUpload id="btnImportarProcedimientosEventoTodos"
+							styleClass="btn btn-warning btn-sm" icon="fa fa-upload"
+							auto="true" multiple="true"
+							allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+							accept="xls|xlsx|XLS|XLSX" mode="advanced"
+							rendered="#{negociacionServiciosSSController.tecnologiasController.negociacion.opcionImportarSeleccionada == opcionesImportacionEnum.IMPORTAR_TODAS_LAS_SEDES}"
+							update="@([id$=dialogoErroresProcedimientos]), @([id$=negociacionServiciosSS]), @([id$=totalNegociacion])"
+							cancelLabel="#{i18n.form_label_button_cancelar}"
+							uploadLabel="#{i18n.form_label_importar}"
+							label="#{i18n.form_label_importar}" sizeLimit="5242880"
+							invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+							invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+							fileUploadListener="#{negociacionServiciosSSController.importFiles}"
+							onstart="PF('statusDialog').show();"
+							oncomplete="PF('statusDialog').hide();">
+							<f:attribute name="foo"
+								value="#{ArchivosNegociacionEnum.PRCEDURE_EVENTO_TODOS_FILE}" />
+						</p:fileUpload>
+					</div>
+				</div>
+			</p:panel>
+		</p:dialog>
+
+		<!-- Pop up no procesados -->
+		<p:dialog header="#{i18n.title_no_procesados}"
+			widgetVar="dlgNoProcesadosEventoW" modal="true" height="400"
+			width="80%">
+			<h:commandLink title="#{i18n.form_label_file_excel}">
+				<h:outputText class="fa fa-file-excel-o fa-2x success" />
+
+				<p:dataExporter type="xlsx" target="erroresPxEvento"
+					fileName="Procedimientos_Evento_No_Procesados" />
+			</h:commandLink>
+
+			<p:dataTable id="erroresPxEvento" var="registroPx"
+				value="#{negociacionServiciosSSController.listadoErroresEvento}"
+				rows="10" dynamic="true" styleClass="paginated" paginator="true"
+				paginatorPosition="bottom" widgetVar="erroresPxTablaW"
+				rowsPerPageTemplate="5,10,20"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+				<p:column headerText="#{i18n.form_label_error}" >
+					<h:outputText value="#{registroPx.codigo} - #{registroPx.mensaje}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.tab_no_proces_codigo_sede}">
+					<h:outputText value="#{registroPx.codigoHabilitacionSede}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.tab_no_proces_codigo_servicio}">
+					<h:outputText value="#{registroPx.codigoServicio}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.tab_no_proces_codigo_emssanar}">
+					<h:outputText value="#{registroPx.codigoEmssanar}" />
+				</p:column>
+
+
+				<p:column headerText="#{i18n.form_label_linea}">
+					<h:outputText value="#{registroPx.lineaArchivo}" />
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+
+		<div class="form-group">
+			<p:toolbar>
+				<p:toolbarGroup align="right">
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right" for="gestionServicios"
+							value="#{i18n.negociacion_servicios_gestionar_servicios}" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionServicios"
+								value="#{negociacionServiciosSSController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+									itemValue="" noSelectionOption="true" />
+								<f:selectItems
+									value="#{negociacionServiciosSSController.gestionTecnologiasNegociacion}"
+									var="tipoGestionServ" itemValue="#{tipoGestionServ}"
+									itemLabel="#{i18n[cnx:enum_key(tipoGestionServ)]}" />
+								<p:ajax
+									listener="#{negociacionServiciosSSController.gestionarServicios('negociacionServiciosSS','tecnologiasSSForm:tabsTecnologias:gestionServicios')}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deleteServ" layout="block">
+				<p:confirmDialog widgetVar="cdDeleteServ" showEffect="fade"
+					header="#{i18n.negociacion_servicios_confir_borrar_servicios}"
+					icon="fa fa-warning">
+
+					<f:facet name="message">
+						<p:outputPanel>
+							<h:outputFormat
+								value="#{i18n.negociacion_servicios_mensaje_eliminar}" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{negociacionServiciosSSController.eliminarServiciosMasivo()}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+						onclick="PF('cdDeleteServ').hide()" immediate="true"
+						update="@([id$=tabsTecnologias])" />
+
+					<p:commandButton value="#{i18n.form_label_button_cancelar}"
+						type="button" styleClass="btn btn-sm btn-warning"
+						icon="fa fa-close" onclick="PF('cdDeleteServ').hide()" />
+				</p:confirmDialog>
+			</p:outputPanel>
+
+			<p:dataTable id="negociacionServiciosSS"
+				binding="#{negociacionServiciosSS}" var="servicioNegociacion"
+				value="#{negociacionServiciosSSController.serviciosNegociacion}"
+				rowKey="#{servicioNegociacion.servicioSalud.id}"
+				selection="#{negociacionServiciosSSController.serviciosNegociacionSeleccionados}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+				widgetVar="negociacionServiciosSS" paginator="true"
+				paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+				rowStyleClass="#{servicioNegociacion.negociado ? null : 'noNegociado'}">
+
+				<p:ajax event="page" update="@this" />
+				<p:ajax event="sort" update="@this" />
+				<p:ajax event="rowSelectCheckbox" update="@this" />
+				<p:ajax event="rowUnselectCheckbox" update="@this" />
+				<p:ajax event="toggleSelect" update="@this" />
+				<p:ajax event="filter" update="@this" />
+
+				<p:columnGroup type="header">
+					<p:row>
+						<p:column colspan="2" headerText="" />
+						<p:column colspan="2"
+							headerText="#{i18n.negociacion_contrato_anterior_header}" />
+						<p:column colspan="2"
+							headerText="#{i18n.negociacion_portafolio_propuesto_header}" />
+						<p:column
+							colspan="#{(negociacionServiciosSSController.showPoblacion) ? 7 : 6}"
+							headerText="#{i18n.negociacion_emmsanar_header}"
+							style="min-width:35%" />
+					</p:row>
+					<p:row>
+						<p:column
+							filterBy="#{servicioNegociacion.servicioSalud.macroservicio.nombre}"
+							filterMatchMode="contains"
+							headerText="#{i18n.servicio_label_grupo_habilitacion}"
+							filterStyleClass="anchoInput"/>
+
+						<p:column
+							filterBy="#{servicioNegociacion.servicioSalud.codigo}-#{servicioNegociacion.servicioSalud.nombre}"
+							filterMatchMode="contains"
+							headerText="#{i18n.servicio_label_servicio_habilitacion}"
+							filterStyleClass="anchoInput">
+							<p:spinner onchange="PF('negociacionServiciosSS').filter()" styleClass="year-spinner"/>
+			                <h:outputText value="#{servicioNegociacion.servicioSalud.codigo}-#{servicioNegociacion.servicioSalud.nombre}" />
+						</p:column>
+						<p:column
+							filterBy="#{servicioNegociacion.tarifarioContratoAnterior.descripcion}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_tarifario_titulo}"
+							filterStyleClass="anchoInput" />
+
+						<p:column
+							filterBy="#{servicioNegociacion.porcentajeContratoAnterior}"
+							filterMatchMode="contains"
+							headerText="#{i18n.form_label_porcentaje_simbolo}"
+							filterStyleClass="anchoInput" />
+
+<!-- 						<p:column -->
+<!-- 							headerText="#{i18n.negociacion_servicios_con_tarifa_diferencial_titulo}" -->
+<!-- 							filterStyleClass="anchoInput" style="text-align: center" /> -->
+
+						<p:column
+							filterBy="#{servicioNegociacion.tarifarioPropuestoPortafolio.descripcion}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_tarifario_titulo}"
+							filterStyleClass="anchoInput" />
+
+						<p:column
+							filterBy="#{servicioNegociacion.porcentajePropuestoPortafolio}"
+							filterMatchMode="contains"
+							headerText="#{i18n.form_label_porcentaje_simbolo}"
+							filterStyleClass="anchoInput" />
+
+<!-- 						<p:column -->
+<!-- 							headerText="#{i18n.negociacion_servicios_con_tarifa_diferencial_titulo}" -->
+<!-- 							filterStyleClass="anchoInput" style="text-align: center" /> -->
+
+						<p:column headerText="#{i18n.form_label_diferencia_porcentaje}"
+							filterStyleClass="anchoInput" style="min-width:120px">
+							<f:facet name="header">
+								<h:outputLabel value="#{i18n.form_label_diferencia_porcentaje}" />
+								<p:selectOneMenu id="selectFiltroPorcentajeServicio"
+									value="#{negociacionServiciosSSController.filtroEspecialSeleccionadoPorcentaje}"
+									style="width: 50px">
+									<p:ajax event="change" update="@this" />
+									<f:selectItem
+										itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+										itemValue="" />
+									<f:selectItems
+										value="#{negociacionServiciosSSController.filtroEspecialEnum}"
+										var="filtro" itemValue="#{filtro}"
+										itemLabel="#{i18n[cnx:enum_key(filtro)]}" />
+								</p:selectOneMenu>
+
+								<p:commandButton
+									style="vertical-align: top; padding-bottom: 2px"
+									action="#{negociacionServiciosSSController.filtroEspecial}"
+									icon="fa fa-filter" update=" "
+									process="@this,:tecnologiasSSForm:tabsTecnologias:negociacionServiciosSS:inputValorCompararServicios" />
+
+								<br />
+
+								<p:inputText id="inputValorCompararServicios"
+									placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+									value="#{negociacionServiciosSSController.filtroPorcentaje}"
+									maxlength="20" style="width: 80px">
+									<!-- Validar caracteres permitidos -->
+									<!--                                         <o:validator validatorId="javax.faces.RegularExpression" -->
+									<!--                                             pattern="#{i18n.negociacion_filtro_especial_validar_caracteres}" -->
+									<!--                                             message="#{i18n.form_label_validar_filtro_especial_porcentaje}" /> -->
+								</p:inputText>
+							</f:facet>
+						</p:column>
+
+						<p:column
+							filterBy="#{servicioNegociacion.tarifarioNegociado.descripcion}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_tarifario_titulo}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{servicioNegociacion.porcentajeNegociado}"
+							filterMatchMode="contains"
+							headerText="#{i18n.form_label_porcentaje_simbolo}"
+							filterStyleClass="anchoInput" />
+
+						<p:column filterBy="#{servicioNegociacion.tarifaDiferencial}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_servicios_con_tarifa_diferencial_titulo}"
+							filterStyleClass="anchoInput" />
+
+						<p:column headerText="Poblacion"
+							visible="#{negociacionServiciosSSController.showPoblacion}">
+						</p:column>
+
+						<p:column headerText="#{i18n.form_label_negociado}" />
+
+
+
+						<p:column headerText="#{i18n.form_label_seleccionado}"
+							selectionMode="multiple" />
+					</p:row>
+				</p:columnGroup>
+
+				<!-- Grupo habilitacion  -->
+				<p:column
+					filterBy="#{servicioNegociacion.servicioSalud.macroservicio.nombre}"
+					filterMatchMode="contains" width="100"
+					headerText="#{i18n.servicio_label_grupo_habilitacion}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{servicioNegociacion.servicioSalud.macroservicio.nombre}" />
+				</p:column>
+
+				<!-- Servicio habilitacion -->
+				<p:column
+					filterBy="#{servicioNegociacion.servicioSalud.codigo} - #{servicioNegociacion.servicioSalud.nombre}"
+					filterMatchMode="contains" width="100"
+					headerText="#{i18n.servicio_label_servicio_habilitacion}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{servicioNegociacion.servicioSalud.codigo} - #{servicioNegociacion.servicioSalud.nombre}" />
+				</p:column>
+
+				<!-- Tarifario contrato anterior -->
+				<p:column
+					filterBy="#{servicioNegociacion.tarifarioContratoAnterior.descripcion}"
+					filterMatchMode="contains"
+					headerText="#{i18n.negociacion_tarifario_titulo}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{servicioNegociacion.tarifarioContratoAnterior.descripcion}" />
+				</p:column>
+
+				<!-- Porcentaje contrato anterior -->
+				<p:column
+					filterBy="#{servicioNegociacion.porcentajeContratoAnterior}"
+					filterMatchMode="contains" class="text-right"
+					headerText="#{i18n.form_label_porcentaje_simbolo}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{servicioNegociacion.porcentajeContratoAnterior}" />
+				</p:column>
+
+				<!-- Detalle contrato anterior -->
+<!-- 				<p:column headerText="#{i18n.negociacion_servicios_detalle_titulo}" -->
+<!-- 					filterStyleClass="anchoInput" style="text-align: center"> -->
+<!-- 					<h:commandLink id="btnVerDetalleProcedimientosContrato" -->
+<!-- 						styleClass="fa fa-eye" -->
+<!-- 						actionListener="#{negociacionServiciosSSController.verDetalleContratoAnterior( -->
+<!--                                                               servicioNegociacion.servicioSalud.macroservicio.nombre, -->
+<!--                                                               servicioNegociacion.servicioSalud.codigo, -->
+<!--                                                               servicioNegociacion.servicioSalud.nombre, -->
+<!--                                                               servicioNegociacion.servicioSalud.id)}" -->
+<!-- 						title="#{i18n.negociacion_servicio_dt_contrato_anterior}" -->
+<!-- 						target="_blank" immediate="true" /> -->
+<!-- 					<h:outputText value="#{servicioNegociacion.tarifaDiferencial}" /> -->
+<!-- 				</p:column> -->
+
+				<!-- Tarifa propuesta -->
+				<p:column
+					filterBy="#{servicioNegociacion.tarifarioPropuestoPortafolio.descripcion}"
+					filterMatchMode="contains" class="text-right"
+					headerText="#{i18n.negociacion_tarifario_titulo}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{servicioNegociacion.tarifarioPropuestoPortafolio.descripcion}" />
+				</p:column>
+
+				<!-- Porcentaje propuesto -->
+				<p:column
+					filterBy="#{servicioNegociacion.porcentajePropuestoPortafolio}"
+					filterMatchMode="contains" class="text-right"
+					headerText="#{i18n.form_label_porcentaje_simbolo}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{servicioNegociacion.porcentajePropuestoPortafolio}" />
+				</p:column>
+
+<!-- 				Detalle propuesto -->
+<!-- 				<p:column headerText="#{i18n.negociacion_servicios_detalle_titulo}" -->
+<!-- 					filterStyleClass="anchoInput" style="text-align: center"> -->
+<!-- 					<h:commandLink id="btnVerDetalleTarifaPropuesta" -->
+<!-- 						styleClass="fa fa-eye" immediate="true" -->
+<!-- 						actionListener="#{negociacionServiciosSSController.verDetalleTarifasPropuestas( -->
+<!--                                                               servicioNegociacion.servicioSalud.macroservicio.nombre, -->
+<!--                                                               servicioNegociacion.servicioSalud.codigo, -->
+<!--                                                               servicioNegociacion.servicioSalud.nombre, -->
+<!--                                                               servicioNegociacion.servicioSalud.id)}" -->
+<!-- 						title="#{i18n.negociacion_servicio_dt_tarifa_propuesta}" -->
+<!-- 						target="_blank" /> -->
+<!-- 					<h:outputText value="#{servicioNegociacion.tarifaDiferencial}" /> -->
+<!-- 				</p:column> -->
+
+				<!-- diferencia %-->
+				<p:column headerText="#{i18n.form_label_diferencia_porcentaje}"
+					class="text-right" filterStyleClass="anchoInput"
+					style="width:120px">
+					<!-- Filtro de la columna -->
+					<!-- Valor de la columna -->
+					<h:outputText
+						value="#{servicioNegociacion.diferenciaPorcentajeContratado}">
+						<f:convertNumber maxFractionDigits="2" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Tarifa Negociacda -->
+				<p:column
+					filterBy="#{servicioNegociacion.tarifarioNegociado.descripcion}"
+					filterMatchMode="contains" class="text-right"
+					headerText="#{i18n.negociacion_tarifario_titulo}"
+					filterStyleClass="anchoInput">
+					<p:selectOneMenu value="#{servicioNegociacion.tarifarioNegociado}"
+						converter="omnifaces.SelectItemsConverter" effect="fold">
+						<p:ajax event="change"
+							update="@this, :tecnologiasSSForm:tabsTecnologias:negociacionServiciosSS"
+							listener="#{negociacionServiciosSSController.cambiarTarifa(servicioNegociacion)}" />
+						<f:selectItem
+							itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+							itemValue="" />
+						<f:selectItems value="#{listaTiposTarifarios}" var="tarifario"
+							itemValue="#{tarifario}"
+							itemLabel="#{i18n[(tarifario.descripcion.replaceAll(' ','_'))]}" />
+					</p:selectOneMenu>
+				</p:column>
+
+				<!-- Porcentaje Negociado -->
+				<p:column filterBy="#{servicioNegociacion.porcentajeNegociado}"
+					filterMatchMode="contains" class="text-right"
+					headerText="#{i18n.form_label_porcentaje_simbolo}"
+					filterStyleClass="anchoInput">
+					<p:inputText id="col11" label="Valor Negociado"
+						value="#{servicioNegociacion.porcentajeNegociado}" size="4"
+						validatorMessage="#{i18n.form_label_validar_rango_porcentaje}"
+                                                disabled="#{negociacionServiciosSSController.desactivarPorcNegciado(servicioNegociacion)}"
+                                                >
+						<f:validateLongRange minimum="-100" maximum="100"/>
+						<p:ajax event="blur"
+							listener="#{negociacionServiciosSSController.marcarDesmarcarNegociado(servicioNegociacion)}"
+							update=":tecnologiasSSForm:tabsTecnologias:negociacionServiciosSS" />
+						<f:convertNumber maxFractionDigits="2" />
+					</p:inputText>
+				</p:column>
+
+				<!-- Tarifa diferencial + detalle negociado-->
+				<p:column filterBy="#{servicioNegociacion.tarifaDiferencial}"
+					filterMatchMode="contains" class="text-right"
+					headerText="#{i18n.negociacion_servicios_con_tarifa_diferencial_titulo}"
+					filterStyleClass="anchoInput">
+					<p:commandButton id="btnVerDetalleProcedimientosNegociado"
+						style="background-color: transparent; border: none;"
+						alt="#{i18n.negociacion_servicio_dt_negociacion}"
+						title="#{i18n.negociacion_servicio_dt_negociacion}"
+						icon="fa fa-eye"
+						actionListener="#{negociacionServiciosSSController.verProcedimientosNegociados(servicioNegociacion)}"
+						process="@this" />
+					<h:outputText value="#{servicioNegociacion.tarifaDiferencial}" />
+				</p:column>
+
+				<p:column headerText="Poblacion"
+					visible="#{negociacionServiciosSSController.showPoblacion}">
+
+					<p:inputText maxlength="6" size="4"
+						value="#{servicioNegociacion.poblacion}"
+						converter="javax.faces.Integer"
+						validatorMessage="La poblacion debe se un número positivo"
+						converterMessage="La población debe consistir en un número de uno o mas digitos">
+						<f:validateLongRange minimum="1" />
+						<p:ajax event="blur" update="@this,@([id$=totalNegociacion])"
+							listener="#{negociacionServiciosSSController.asignarPoblacionPorServicio(servicioNegociacion)}" />
+					</p:inputText>
+				</p:column>
+
+				<!-- check negociado-->
+				<p:column id="colNeg" headerText="#{i18n.form_label_negociado}"
+					styleClass="text-center">
+                                    <p:selectBooleanCheckbox value="#{servicioNegociacion.negociado}" disabled="true">
+					</p:selectBooleanCheckbox>
+				</p:column>
+
+				<!-- check seleccion -->
+				<p:column class="text-center" selectionMode="multiple"
+					headerText="#{i18n.form_label_seleccionado}" />
+
+			</p:dataTable>
+			<!--Fecha Concertacion Procedimientos-->
+			<p:panel 
+			    header="#{i18n.form_label_fecha_concertacion_px}"
+				id="panelFechaConcertacionPx" style="height:90px;"
+				rendered="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+				<p:calendar 
+				    id="fechaConcertacionPx" 
+				    showOn="button" 
+				    size="20"
+					converterMessage="La fecha de Concertacion debe tener formato Día Mes Año"
+					pattern="dd/MM/yyyy" 
+					required="true"
+					requiredMessage="Ingrese la fecha de concertacion"
+					value="#{tecnologiasSSController.negociacion.fechaConcertacionPx}"
+					locale="es">
+				</p:calendar>
+				<p:spacer style="width:50px"></p:spacer>
+				<p:commandButton 
+				    styleClass="btn btn-sm btn-info"
+					value="#{i18n.form_label_button_actualizar}"
+					process="panelFechaConcertacionPx"
+					actionListener="#{tecnologiasSSController.actualizarFechaConcertacion('procedimientos')}"
+					ajax="true">
+				</p:commandButton>
+			</p:panel>
+			<!---->
+		</div>
+                <p:growl id="growlnegociacionServiciosSS" life="5000"/>
+	</p:panel>
+</f:view>

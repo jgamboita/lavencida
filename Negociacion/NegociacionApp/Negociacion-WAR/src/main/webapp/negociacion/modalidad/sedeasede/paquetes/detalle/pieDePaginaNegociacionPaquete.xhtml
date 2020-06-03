@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+
+    <p:panel id="panelPiePaginaPaquete">
+        <h:form id="pieDePaginaNegociacionPaqueteForm">
+            <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption">
+			 	<p:outputLabel value="#{i18n.pie_paquete_title_observaciones}" styleClass="titulo-bold"/>
+			</span>
+            </div>
+
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-lg-12">
+                    <p:outputLabel for="observacion" value="#{i18n.pie_paquete_observacion}" styleClass="col-lg-2"/>
+                    <p:inputText id="observacion" styleClass="input-sm col-lg-4"
+                                 value="#{negociacionPaqueteDetalleSSController.observacion}"/>
+                    <div class="col-lg-1"></div>
+                    <p:commandButton value="#{i18n.form_label_agregar}" styleClass="btn btn-sm btn-info"
+                                     icon="fa fa-plus" iconPos="left" process="@form"
+                                     action="#{negociacionPaqueteDetalleSSController.agregarObservacion}"
+                                     update="#{form}:panelPiePaginaPaquete,#{form}:pieDePaginaNegociacionPaqueteForm:pieTablaObservacion"/>
+                </div>
+            </div>
+
+            <p:dataTable id="pieTablaObservacion" style="margin-top: 20px;" var="observacion"
+                         value="#{negociacionPaqueteDetalleSSController.observacionPaquete}"
+                         emptyMessage="#{i18n.form_label_datatable_noregistros}">
+                <p:column headerText="Observación" styleClass="text-center col-lg-11">
+                    <h:outputText value="#{observacion.observacion}"/>
+                </p:column>
+                <p:column headerText="Eliminar" styleClass="text-center col-lg-1">
+                    <p:commandButton icon="ui-icon-trash" title="Eliminar"
+                                     action="#{negociacionPaqueteDetalleSSController.eliminarObservacion}"
+                                     update="@form">
+                        <f:setPropertyActionListener value="#{observacion}"
+                                                     target="#{negociacionPaqueteDetalleSSController.observacionSeleccionada}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption">
+				<p:outputLabel value="#{i18n.pie_paquete_title_exclusiones}" styleClass="titulo-bold"/>
+			</span>
+            </div>
+
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-lg-12">
+                    <p:outputLabel for="exclusion" value="#{i18n.pie_paquete_exclusion}" styleClass="col-lg-2"/>
+                    <p:inputText id="exclusion" styleClass="input-sm col-lg-4"
+                                 value="#{negociacionPaqueteDetalleSSController.exclusion}"/>
+                    <div class="col-lg-1"></div>
+                    <p:commandButton value="#{i18n.form_label_agregar}" iconPos="left" process="@form"
+                                     action="#{negociacionPaqueteDetalleSSController.agregarExclusion}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-plus"
+                                     update="#{form}:panelPiePaginaPaquete,#{form}:pieDePaginaNegociacionPaqueteForm:pieTablaExclusion"/>
+                </div>
+            </div>
+
+            <p:dataTable id="pieTablaExclusion" style="margin-top: 20px;" var="exclusion"
+                         value="#{negociacionPaqueteDetalleSSController.exclusionPaquete}"
+                         emptyMessage="#{i18n.form_label_datatable_noregistros}">
+                <p:column headerText="Exclusión" styleClass="text-center col-lg-11">
+                    <h:outputText value="#{exclusion.exclusion}"/>
+                </p:column>
+                <p:column headerText="#{i18n.form_label_eliminar}" styleClass="text-center col-lg-1">
+                    <p:commandButton icon="ui-icon-trash" title="Eliminar"
+                                     action="#{negociacionPaqueteDetalleSSController.eliminarExclusion}" update="@form">
+                        <f:setPropertyActionListener value="#{exclusion}"
+                                                     target="#{negociacionPaqueteDetalleSSController.exclusionSeleccionada}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption">
+				<p:outputLabel value="#{i18n.pie_paquete_title_causa_ruptura}" styleClass="titulo-bold"/>
+			</span>
+            </div>
+
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-lg-12">
+                    <p:outputLabel for="causaDeRuptura" value="#{i18n.pie_paquete_causa_ruptura}"
+                                   styleClass="col-lg-2"/>
+                    <p:inputText id="causaDeRuptura" styleClass="input-sm col-lg-4"
+                                 value="#{negociacionPaqueteDetalleSSController.causaRuptura}"/>
+                    <div class="col-lg-1"></div>
+                    <p:commandButton value="#{i18n.form_label_agregar}" styleClass="btn btn-sm btn-info"
+                                     icon="fa fa-plus" iconPos="left" process="@form"
+                                     action="#{negociacionPaqueteDetalleSSController.agregarCausaDeRuptura}"
+                                     update="#{form}:panelPiePaginaPaquete,#{form}:pieDePaginaNegociacionPaqueteForm:pieTablaCausaRuptura"/>
+                </div>
+            </div>
+
+            <p:dataTable id="pieTablaCausaRuptura" style="margin-top: 20px;" var="causaDeRupturaVar"
+                         value="#{negociacionPaqueteDetalleSSController.cauraRupturaPaquete}"
+                         emptyMessage="#{i18n.form_label_datatable_noregistros}">
+                <p:column headerText="Causa de Ruptura" styleClass="text-center col-lg-11">
+                    <h:outputText value="#{causaDeRupturaVar.causaRuptura}"/>
+                </p:column>
+                <p:column headerText="Eliminar" styleClass="text-center col-lg-1">
+                    <p:commandButton icon="ui-icon-trash" title="Eliminar"
+                                     action="#{negociacionPaqueteDetalleSSController.eliminarCausaRuptura}"
+                                     update="@form">
+                        <f:setPropertyActionListener value="#{causaDeRupturaVar}"
+                                                     target="#{negociacionPaqueteDetalleSSController.causaRupturaSeleccionada}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption">
+				<p:outputLabel value="#{i18n.pie_paquete_title_requerimiento}" styleClass="titulo-bold"/>
+			</span>
+            </div>
+
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-lg-12">
+                    <p:outputLabel for="requerimientoTecnico" value="#{i18n.pie_paquete_requerimiento}"
+                                   styleClass="col-lg-2"/>
+                    <p:inputText id="requerimientoTecnico" styleClass="input-sm col-lg-4"
+                                 value="#{negociacionPaqueteDetalleSSController.requerimientoTecnico}"/>
+                    <div class="col-lg-1"></div>
+                    <p:commandButton value="#{i18n.form_label_agregar}" iconPos="left" process="@form"
+                                     action="#{negociacionPaqueteDetalleSSController.agregarRequerimientoTecnico}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-plus"
+                                     update="#{form}:panelPiePaginaPaquete,#{form}:pieDePaginaNegociacionPaqueteForm:pieTablaRequerimientoTecnico"/>
+                </div>
+            </div>
+
+            <p:dataTable id="pieTablaRequerimientoTecnico" style="margin-top: 20px;" var="requerimientoTecnicoVar"
+                         value="#{negociacionPaqueteDetalleSSController.requerimientoPaquete}"
+                         emptyMessage="#{i18n.form_label_datatable_noregistros}">
+                <p:column headerText="Requerimiento Técnico" styleClass="text-center col-lg-11">
+                    <h:outputText value="#{requerimientoTecnicoVar.requerimientoTecnico}"/>
+                </p:column>
+                <p:column headerText="#{i18n.form_label_eliminar}" styleClass="text-center col-lg-1">
+                    <p:commandButton icon="ui-icon-trash" title="Eliminar"
+                                     action="#{negociacionPaqueteDetalleSSController.eliminarRequerimientoTecnico}"
+                                     update="@form">
+                        <f:setPropertyActionListener value="#{requerimientoTecnicoVar}"
+                                                     target="#{negociacionPaqueteDetalleSSController.requerimientoTecnicoSeleccionado}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </p:panel>
+</f:view>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="#{i18n.liq_upc_title}" />
+		</ui:define>
+		<ui:define name="content">
+			<h:form id="datosNorma">
+				<p:panel id="panelDatosNorma">
+					<div class="datosNorma">
+						<!-- Primera Fila -->
+						<div class="row">
+
+							<div class="col-lg-3">
+                                                            <p:outputLabel for="zona" value="#{i18n.liq_upc_lbl_zona}" />
+                                                            <p:selectOneMenu id="zona"
+									value="#{liquidacionUPCController.filtro.zonaCapitaSeleccionado}"
+                                                                        converter="omnifaces.SelectItemsConverter"
+									styleClass="anchoInput">
+								<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+                                                                <f:selectItems value="#{listaZonasCapita}"
+                                                                    var="zonaCapita" itemValue="#{zonaCapita}"
+                                                                    itemLabel="#{zonaCapita.descripcion}" />
+			                                    </p:selectOneMenu>
+			                                    <p:message for="zona" />
+							</div>
+                                                    
+                                                        <div class="col-lg-offset-1  col-lg-3">
+                                                            <p:outputLabel for="regimen" value="#{i18n.liq_upc_lbl_regimen}" /> 
+								
+                                                            <p:selectOneMenu id="regimen"
+                                                                        value="#{liquidacionUPCController.filtro.regimenSeleccionado}"
+                                                                        converter="omnifaces.SelectItemsConverter"
+									styleClass="anchoInput">
+								<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+                                                                <f:selectItems value="#{listaRegimenes}"
+                                                                        var="regimen" itemValue="#{regimen}"
+                                                                        itemLabel="#{regimen.descripcion}" />
+                                                            </p:selectOneMenu>
+
+                                                            <p:message for="regimen" />
+							</div>
+                                                    
+							<div class="col-lg-offset-1  col-lg-3">
+								<p:outputLabel for="vlr_promedio"
+									value="#{i18n.liq_upc_lbl_valor_prm_gral}" />
+								<p:inputText id="vlr_promedio" value="5500" disabled="true"
+									required="true" requiredMessage="#{i18n.form_label_required}"
+									maxlength="4" styleClass="form-control input-sm">
+									<f:validateRegex
+										pattern="#{i18n.form_label_validar_caracteres}" />
+								</p:inputText>
+								<p:message for="vlr_promedio" />
+							</div>
+                                                        
+                                                        
+						</div>
+					</div>
+				</p:panel>
+
+				<p:panel id="panelTblDatosNorma">
+					<div class="datosTablaNorma">
+						<p:dataTable id="tblCargueNorma" var="cargueNorma"
+							value="#{liquidacionUPCController.lsDatosDepartamento}"
+							widgetVar="negociacionesTable" style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}"
+							paginator="false" paginatorPosition="bottom">
+
+							<p:columnGroup type="header">
+								<p:row>
+									<p:column rowspan="3"
+										headerText="#{i18n.liq_upc_tbl_municipios}" />
+
+									<p:column colspan="4" headerText="#{i18n.liq_upc_tbl_grupo}" />
+								</p:row>
+
+								<p:row>
+									<p:column colspan="2" headerText="Menores de Un Año" />
+									<p:column colspan="2" headerText="1-4 Años" />
+								</p:row>
+
+								<p:row>
+									<p:column headerText="Nro. Afiliados" />
+									<p:column headerText="Valor grupo mes" />									
+									<p:column headerText="Nro. Afiliados" />
+									<p:column headerText="Valor grupo mes" />
+								</p:row>
+							</p:columnGroup>
+
+							<p:column headerText="#{i18n.cargue_norma_col_grupos}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.nombreGrupo}" />
+							</p:column>
+
+							
+							<p:column headerText="#{i18n.cargue_norma_col_valor_anio}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorAño}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_mensual}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorMensual}" />
+							</p:column>
+							
+							<p:column headerText="#{i18n.cargue_norma_col_valor_anio}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorAño}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_mensual}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorMensual}" />
+							</p:column>
+						</p:dataTable>
+
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="col-lg-12 ui-widget-content ui-state-default">
+									<div class="text-right form-group form-group-sm"
+										style="margin-top: 10px;">
+										<p:outputLabel value="Total afiliados zona"
+											style="padding-right:5px" />
+										<h:outputText value="34"/>
+									</div>
+
+									<div class="text-right form-group form-group-sm"
+										style="margin-top: 10px;">
+										<p:outputLabel value="UPC Promedio mes"
+											style="padding-right:5px" />
+										<h:outputText value="31000" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

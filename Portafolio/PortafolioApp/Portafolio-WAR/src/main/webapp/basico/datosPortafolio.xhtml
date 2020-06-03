@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+        xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+            
+    
+    <ui:composition template="/template/inner.xhtml">
+       	<ui:define name="title">
+            <h:outputLabel value="#{i18n.pb_lb_contenido_portafolio}" />
+        </ui:define>
+        <ui:define name="content">
+            <h:form id = "datosPortafolioForm">
+               
+                <p:panel id = "panelDatosPortafolio">
+                    <h:panelGrid columns="1" style="width:100%">
+                    <f:facet name="header">
+                        <p:outputLabel 
+                            value="#{i18n.negociacion_prestador_label_datos_generales}:
+                                                ORLANDO ANTONIO VILLOTA PAREDES -
+                                                1026888302" 
+                            styleClass="titulo-bold">
+                        </p:outputLabel>
+                        <div class="separador"></div>
+                    </f:facet>
+                </h:panelGrid>
+                    <p:tabView>
+                        <p:tab title="#{i18n.tb_dts_title_procedimientos}">
+                            <div class="form-group">
+                                <p:dataTable id="dtbProcedimientos" var ="procedimientos" 
+                                             value="#{datosPortafolioCapitaController.lsProcedimientoCapita}"
+                                             style="margin: 0 auto;" emptyMessage="#{i18n.form_label_datatable_noregistros}"
+                                             paginator="true" paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,15">
+                                    <p:ajax event="page" />
+                                    <p:ajax event="sort" />
+                                    <p:ajax event="rowSelectCheckbox" />
+                                    <p:ajax event="filter" />
+                                    
+                                    <p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              styleClass="text-center" headerText="#{i18n.tb_dts_grupo_hab}"
+                                              filterStyleClass="anchoInput" filterBy="#{procedimientos.grupoHabilitacion}">
+                                        <h:outputText value ="#{procedimientos.grupoHabilitacion}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              styleClass="text-center" headerText="#{i18n.tb_dts_servicio_hab}"
+                                              filterStyleClass="anchoInput" filterBy="#{procedimientos.servicioHabilitacion}">
+                                        <h:outputText value ="#{procedimientos.servicioHabilitacion}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              styleClass="text-center" headerText="#{i18n.form_label_porcentaje_simbolo}"
+                                              filterStyleClass="anchoInput" filterBy="#{procedimientos.porcentaje}">
+                                        <h:outputText value ="#{procedimientos.porcentaje}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              styleClass="text-center" headerText="#{i18n.form_label_valor}"
+                                              filterStyleClass="anchoInput" filterBy="#{procedimientos.valor}">
+                                        <h:outputText value ="#{procedimientos.valor}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              styleClass="text-center" headerText="#{i18n.tb_dts_estado}"
+                                              filterStyleClass="anchoInput" filterBy="#{procedimientos.estado}">
+                                        <h:outputText value ="#{procedimientos.estado}"/>
+                                    </p:column>
+
+                                </p:dataTable>
+                                
+                            </div>
+                            
+                        </p:tab>
+                        
+                        <p:tabView>
+                            <p:tab title="#{i18n.tb_dts_title_medicamentos}">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <h:inputText value ="#{i18n.tb_dts_seleccion_medicina}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <p:dataTable id="dtbMedicamentos" var ="medicamentos" 
+                                                     value="#{datosPortafolioCapitaController.lsMedicamentoCapita}"
+                                                     style="margin: 0 auto;" emptyMessage="#{i18n.form_label_datatable_noregistros}"
+                                                     paginator="true" paginatorPosition="bottom"
+                                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     rowsPerPageTemplate="5,10,15">
+                                            
+                                            <p:ajax event="page" />
+                                            <p:ajax event="sort" />
+                                            <p:ajax event="rowSelectCheckbox" />
+                                            <p:ajax event="filter" />
+                                            
+                                            <p:column filterMatchMode="contains" filterStyleClass="anchoInput" filterBy="#{medicamentos.grupoTerapeutico}"
+                                                      styleClass="text-center" headerText="#{i18n.tb_med_grupo}">
+                                                
+                                            </p:column>
+                                            <p:column filterMatchMode="contains" filterStyleClass="anchoInput" filterBy="#{medicamentos.inclusion}"
+                                              styleClass="text-center" headerText="#{i18n.tb_med_incluir}">
+                                                <p:selectOneMenu>
+                                                    <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"/>
+                                                    <f:selectItem itemValue="SI" itemLabel="SI"/>
+                                                    <f:selectItem itemValue="NO" itemLabel="NO"/>
+                                                </p:selectOneMenu>
+                                                    
+                                            </p:column>
+                                            
+                                            <!-- Pop up Cups-->
+
+                                            <p:dialog header="#{i18n.pb_lb_cups_capita}"
+                                                      modal="true" widgetVar="CupsDlg" width="45%" height="50%">
+                                                <ui:include src="cupsMedicamentoPopUp.xhtml"></ui:include>
+                                            </p:dialog>
+                                            <!--acciones-->
+                                            <p:column filterMatchMode="contains" filterStyleClass="anchoInput"
+                                              styleClass="text-center" headerText="#{i18n.form_label_porcentaje_simbolo}">
+                                                <div class="row">
+                                                    <div class="col-lg-3">
+                                                        <p:commandButton id = "btnVerCups"icon="fa fa-eye" alt="#{i18n.tb_ms_revisar_cups}" title="#{i18n.tb_ms_revisar_cups}"
+                                                                         onclick="PF('CupsDlg').show();">
+                                                        </p:commandButton>
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <p:commandButton  id = "editarMedicamento"icon="fa fa-pencil-square-o" alt="#{i18n.tb_ms_editar_medicina}" title="#{i18n.tb_ms_editar_medicina}"
+                                                                         >
+                                                        </p:commandButton>
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <p:commandButton id = "btnBorroGrupo "icon="fa fa-trash" alt="#{i18n.tb_ms_borrar_grupo}" title="#{i18n.tb_ms_borrar_grupo}"
+                                                                         >
+                                                        </p:commandButton>
+                                                    </div>
+                                                </div>
+                                            </p:column>
+                                        </p:dataTable>
+                                        
+                                    </div>
+                                </div>
+                            </p:tab>
+                        </p:tabView>
+                    </p:tabView>
+                    
+                </p:panel>
+                
+            </h:form>
+        </ui:define>		
+    </ui:composition>
+</f:view>  

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+	
+	<h:form id ='validacionesLegalizacionForm'>
+             <h:outputLabel value="No se puede guardar hasta solucionar los siguientes puntos:"></h:outputLabel>
+                <p:dataTable var="procedimiento"
+				value="#{generarMinutaController.procedimientosNoCompletados}"
+				rendered="#{not empty generarMinutaController.procedimientosNoCompletados}"
+				scrollable="true" scrollHeight="200" id="proNoCompletados">
+				<f:facet name="header">
+                        <h:outputLabel value="Procedimientos pendientes de negociación"/>
+                </f:facet>
+				<f:facet name="footer">
+					<p:outputPanel style="text-align: right">
+						<h:commandLink>
+							<h:outputText class="fa fa-file-excel-o fa-2x success" />
+							<p:dataExporter type="xls" target="proNoCompletados"
+								fileName="procedimientosSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-pdf-o fa-2x success" />
+							<p:dataExporter type="pdf" target="proNoCompletados"
+								fileName="procedimientosSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-o fa-2x success" />
+							<p:dataExporter type="csv" target="proNoCompletados"
+								fileName="procedimientosSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-code-o fa-2x success" />
+							<p:dataExporter type="xml" target="proNoCompletados"
+								fileName="procedimientosSinNegociar" />
+						</h:commandLink>
+					</p:outputPanel>
+				</f:facet>
+			<p:column headerText="Rias"
+				rendered="#{generarMinutaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.modalidadNegociacion eq 'Rias Capita'}">
+				<h:outputText value="#{procedimiento.rias}" />
+			</p:column>
+			<p:column headerText="Actividad"
+				rendered="#{generarMinutaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.modalidadNegociacion eq 'Rias Capita'}">
+				<h:outputText value="#{procedimiento.actividad}" />
+			</p:column>
+			<p:column headerText="Código Servicio">
+					<h:outputText value="#{procedimiento.servicioSalud.codigo}" />
+				</p:column>
+				<p:column headerText="Nombre Servicio">
+					<h:outputText value="#{procedimiento.servicioSalud.nombre}" />
+				</p:column>
+				<p:column headerText="Descripción">
+					<h:outputText value="#{procedimiento.descripcion}" />
+				</p:column>
+				<p:column headerText="CUPS">
+					<h:outputText value="#{procedimiento.cups}" />
+				</p:column>
+				<p:column headerText="Código">
+					<h:outputText value="#{procedimiento.codigoCliente}" />
+				</p:column>
+			</p:dataTable>
+			<p:dataTable var="medicamento"
+				value="#{generarMinutaController.medicamentosNoCompletados}"
+				rendered="#{not empty generarMinutaController.medicamentosNoCompletados}"
+				scrollable="true" scrollHeight="200" id="mdNoCompletados">
+				<f:facet name="header">
+                      <h:outputLabel value="Medicamentos pendientes de negociación"/>
+                </f:facet>
+				<f:facet name="footer">
+					<p:outputPanel style="text-align: right">
+						<h:commandLink>
+							<h:outputText class="fa fa-file-excel-o fa-2x success" />
+							<p:dataExporter type="xls" target="mdNoCompletados"
+								fileName="medicamentosSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-pdf-o fa-2x success" />
+							<p:dataExporter type="pdf" target="mdNoCompletados"
+								fileName="medicamentosSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-o fa-2x success" />
+							<p:dataExporter type="csv" target="mdNoCompletados"
+								fileName="medicamentosSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-code-o fa-2x success" />
+							<p:dataExporter type="xml" target="mdNoCompletados"
+								fileName="medicamentosSinNegociar" />
+						</h:commandLink>
+					</p:outputPanel>
+				</f:facet>
+			<p:column headerText="Rias"
+				rendered="#{generarMinutaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.modalidadNegociacion eq 'Rias Capita'}">
+				<h:outputText value="#{medicamento.ria}" />
+			</p:column>
+			<p:column headerText="Actividad"
+				rendered="#{generarMinutaController.legalizacionContratoDto.contratoDto.solicitudContratacionParametrizableDto.modalidadNegociacion eq 'Rias Capita'}">
+				<h:outputText value="#{medicamento.actividad}" />
+			</p:column>
+			<p:column headerText="Código">
+					<h:outputText value="#{medicamento.cums}" />
+				</p:column>
+				<p:column headerText="Descripción">
+					<h:outputText value="#{medicamento.descripcion}" />
+				</p:column>
+			</p:dataTable>
+			<p:dataTable var="paquete"
+				value="#{generarMinutaController.paquetesSinContenido}"
+				rendered="#{not empty generarMinutaController.paquetesSinContenido}"
+				scrollable="true" scrollHeight="200" id="pqSinContenido">
+				<f:facet name="header">
+                        <h:outputLabel value="Paquetes sin contenido"/>     
+                 </f:facet>
+				<f:facet name="footer">
+					<p:outputPanel style="text-align: right">
+						<h:commandLink>
+							<h:outputText class="fa fa-file-excel-o fa-2x success" />
+							<p:dataExporter type="xls" target="pqSinContenido"
+								fileName="paquetesSinContenido" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-pdf-o fa-2x success" />
+							<p:dataExporter type="pdf" target="pqSinContenido"
+								fileName="paquetesSinContenido" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-o fa-2x success" />
+							<p:dataExporter type="csv" target="pqSinContenido"
+								fileName="paquetesSinContenido" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-code-o fa-2x success" />
+							<p:dataExporter type="xml" target="pqSinContenido"
+								fileName="paquetesSinContenido" />
+						</h:commandLink>
+					</p:outputPanel>
+				</f:facet>
+				<p:column headerText="Código">
+					<h:outputText value="#{paquete.codigoPortafolio}" />
+				</p:column>
+				<p:column headerText="Código Sede">
+					<h:outputText value="#{paquete.codigoSedePrestador}" />
+				</p:column>
+				<p:column headerText="Descripción">
+					<h:outputText value="#{paquete.descripcion}" />
+				</p:column>
+			</p:dataTable>
+			<p:dataTable var="paquete"
+				value="#{generarMinutaController.paquetesNoCompletados}"
+				rendered="#{not empty generarMinutaController.paquetesNoCompletados}"
+				scrollable="true" scrollHeight="200" id="pqNoCompletados">
+				<f:facet name="header">
+                         <h:outputLabel value="Paquetes pendientes de negociación"/>     
+                 </f:facet>
+				<f:facet name="footer">
+					<p:outputPanel style="text-align: right">
+						<h:commandLink>
+							<h:outputText class="fa fa-file-excel-o fa-2x success" />
+							<p:dataExporter type="xls" target="pqNoCompletados"
+								fileName="paquetesSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-pdf-o fa-2x success" />
+							<p:dataExporter type="pdf" target="pqNoCompletados"
+								fileName="paquetesSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-o fa-2x success" />
+							<p:dataExporter type="csv" target="pqNoCompletados"
+								fileName="paquetesSinNegociar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-code-o fa-2x success" />
+							<p:dataExporter type="xml" target="pqNoCompletados"
+								fileName="paquetesSinNegociar" />
+						</h:commandLink>
+					</p:outputPanel>
+				</f:facet>
+				<p:column headerText="Código">
+					<h:outputText value="#{paquete.codigoPortafolio}" />
+				</p:column>
+				<p:column headerText="Código Sede">
+					<h:outputText value="#{paquete.codigoSedePrestador}" />
+				</p:column>
+				<p:column headerText="Descripción">
+					<h:outputText value="#{paquete.descripcion}" />
+				</p:column>
+			</p:dataTable>
+			<p:dataTable var="paquete"
+				value="#{generarMinutaController.paquetesSinCodEmsanar}"
+				rendered="#{not empty generarMinutaController.paquetesSinCodEmsanar}"
+				id="pqSinEmssanarTabla" scrollable="true" scrollHeight="200">
+				<f:facet name="header">
+                        <h:outputLabel value="Paquetes sin código emssanar"/>
+                </f:facet>
+				<f:facet name="footer">
+					<p:outputPanel style="text-align: right">
+						<h:commandLink>
+							<h:outputText class="fa fa-file-excel-o fa-2x success" />
+							<p:dataExporter type="xls" target="pqSinEmssanarTabla"
+								fileName="paquetesSinCodigoEmssanar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-pdf-o fa-2x success" />
+							<p:dataExporter type="pdf" target="pqSinEmssanarTabla"
+								fileName="paquetesSinCodigoEmssanar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-o fa-2x success" />
+							<p:dataExporter type="csv" target="pqSinEmssanarTabla"
+								fileName="paquetesSinCodigoEmssanar" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<h:outputText class="fa fa-file-code-o fa-2x success" />
+							<p:dataExporter type="xml" target="pqSinEmssanarTabla"
+								fileName="paquetesSinCodigoEmssanar" />
+						</h:commandLink>
+					</p:outputPanel>
+				</f:facet>
+				<p:column headerText="Código">
+					<h:outputText value="#{paquete.codigoPortafolio}" />
+				</p:column>
+				<p:column headerText="Código Sede">
+					<h:outputText value="#{paquete.codigoSedePrestador}" />
+				</p:column>
+				<p:column headerText="Descripción">
+					<h:outputText value="#{paquete.descripcion}" />
+				</p:column>
+			</p:dataTable>
+	</h:form>                    
+</f:view>

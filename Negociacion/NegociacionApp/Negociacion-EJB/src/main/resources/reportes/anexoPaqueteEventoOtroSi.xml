@@ -1,0 +1,38 @@
+<xls>
+	<area ref="Template!A1:N4">
+		<each items="anexos" var="row" ref="Template!A2:N2">
+            <area ref="Template!A2:N2"/>
+        </each>
+	</area>
+	
+	<area ref="Template!A1:N4">
+		<each items="anexosOtroSi" var="row" ref="Template!A2:N2">
+            <area ref="Template!A2:N2"/>
+        </each>
+	</area>
+
+	<area ref="Template!P1:AF4">
+		<each items="detalle" var="row" ref="Template!P2:AF2">
+			<area ref="Template!P2:AF2"/>
+		</each>
+	</area>
+
+	<area ref="Template!AH1:AS35">
+		<each items="tecnologias" var="tec" ref="Template!AH25:AS25">
+			<area ref="Template!AH25:AS25"/>
+		</each>
+		<each items="observaciones" var="obs" ref="Template!AH27:AS27">
+			<area ref="Template!AH27:AS27"/>
+		</each>
+		<each items="exclusiones" var="exc" ref="Template!AFH9:AS29">
+			<area ref="Template!AH29:AS29"/>
+		</each>
+		<each items="causasRupturas" var="cau" ref="Template!AH31:AS31">
+			<area ref="Template!AH31:AS31"/>
+		</each>
+		<each items="requerimientosTecnicos" var="req" ref="Template!AH33:AS33">
+			<area ref="Template!AH33:AS33"/>
+		</each>
+	</area>
+
+</xls>

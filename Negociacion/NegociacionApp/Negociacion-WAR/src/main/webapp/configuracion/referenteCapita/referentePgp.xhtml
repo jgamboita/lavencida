@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/template/inner.xhtml">
+       	<ui:define name="title">
+            <h:outputLabel value="#{i18n.referente_pgp_title}" />
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="filtroReferentePGP">
+                <p:panel id="panelFiltro">                    
+                	<!-- Inicio 1ra Fila -->
+                    <div class="row">
+                       	<p:tabView id="tabsMenu" widgetVar="tabsMenu" dynamic="true" cache="false">
+							<p:tab title="#{i18n.referente_pgp_por_ubicacion}" id="tabUbicacion">
+								<div class="col-lg-3">
+									<p:outputLabel for="regional" value="#{i18n.form_label_regional}" />                                
+				                    <p:selectOneMenu id="regional" class="anchoInput"
+					                       	value="#{referentePgpController.filtro.regionalDto}"
+					                        converter="omnifaces.SelectItemsConverter" required="true"
+					                        requiredMessage="#{i18n.referente_pgp_seleccion_regional}">
+					                    <p:ajax update="departamento, municipio" listener="#{referentePgpController.buscarDepartamentos()}" />             
+					                    <f:selectItem itemLabel="#{i18n.form_label_seleccionar}" itemValue="" />
+					                    <f:selectItems value="#{listarRegionales}" var="regional" itemLabel="#{regional.descripcion}" itemValue="#{regional}" />
+				                    </p:selectOneMenu>
+				                </div>        
+				                <div class="col-lg-3">
+									<h:outputLabel for="departamento" value="#{i18n.form_label_departamento}" />
+				                    <p:selectOneMenu id="departamento" class="anchoInput" 
+							            	value="#{referentePgpController.filtro.departamentoDto}"
+							                converter="omnifaces.SelectItemsConverter" required="true"
+							                requiredMessage="#{i18n.referente_pgp_seleccion_departamento}">
+							            <p:ajax update="municipio" listener="#{referentePgpController.buscarMunicipios()}" />
+							            <f:selectItem itemLabel="#{i18n.form_label_seleccionar}" itemValue="" />
+							            <f:selectItems value="#{referentePgpController.lsDepartamento}" var="depar" 
+							            	itemLabel="#{depar.descripcion}" itemValue="#{depar}" />
+						            </p:selectOneMenu>
+						      </div>      
+						      <div class="col-lg-3">
+									<h:outputLabel for="municipio" value="#{i18n.form_label_municipio}" />
+				                    <p:selectOneMenu id="municipio" class="anchoInput"
+				                        	value="#{referentePgpController.filtro.municipioDto}"
+				                            converter="omnifaces.SelectItemsConverter" required="true"
+				                            requiredMessage="#{i18n.referente_pgp_seleccion_municipio}">
+				                            <f:selectItem itemLabel="#{i18n.form_label_seleccionar}" itemValue="" />
+				                            <f:selectItems value="#{referentePgpController.lsMunicipio}" var="muni" itemLabel="#{muni.descripcion}" itemValue="#{muni}" />
+				                    </p:selectOneMenu>
+				             </div>           
+							</p:tab>
+							<p:tab title="#{i18n.referente_pgp_por_ruta}" id="tabRuta">
+								<div class="col-lg-3">
+									<h:outputLabel for="prestador" value="#{i18n.bandeja_prestador_label_nombreprestador}" />
+									<p:autoComplete id="prestador" 
+										value="#{referentePgpController.filtro.prestadorDto}" 
+										var="prestador" itemLabel="#{prestador.prefijo - prestador.nombre}" itemValue="#{prestador}"										
+										completeMethod="#{referentePgpController.autoCompletePrestador}">
+										<o:converter converterId="omnifaces.ListConverter" list="#{referentePgpController.listPrestador}" />
+									</p:autoComplete>	
+								</div>
+							</p:tab>	
+                  	</p:tabView>                        	                            
+				</div>
+                        <!-- Fin Primera Fila -->                    
+                </p:panel>
+                
+                
+            </h:form>
+        </ui:define>		
+    </ui:composition>
+</f:view>

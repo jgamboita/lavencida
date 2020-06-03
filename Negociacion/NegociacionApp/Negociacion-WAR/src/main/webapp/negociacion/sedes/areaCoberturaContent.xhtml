@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions"
+        xmlns:o="http://omnifaces.org/ui">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum"/>
+
+    <p:panel id="areaCoberturaPanel">
+        <br/>
+        <h:outputText
+                rendered="#{gestionNegociacionController.estadoNegSel eq EstadoNegociacionEnum.EN_TRAMITE or gestionNegociacionController.estadoNegSel eq EstadoNegociacionEnum.FINALIZADA}"
+                value="#{i18n.area_cobertura_resumen}"/>
+        <h:outputText
+                rendered="#{gestionNegociacionController.estadoLegalizacionNegSel != EstadoLegalizacionEnum.LEGALIZACION_PRELIMINAR}"
+                value="#{i18n.area_cobertura_resumen_lectura}"/>
+        <br/>
+        <br/>
+        <h:form id="areasCoberturaForm">
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <div class="col-lg-11">
+                        <p:outputLabel class="col-lg-6 text-right" for="gestionRutaSalus"
+                                       value="Visualización Municipios Cobertura"/>
+                        <div class="col-lg-2">
+                            <p:selectOneMenu id="gestionRutaSalus"
+                                             value="#{areaCoberturaController.opcionFiltroSeleccionados}">
+                                <p:ajax update="@form:deptoMunicipioCobertura" event="change"
+                                        onsuccess="PF('municipiosCobertura').filter();"
+                                        listener="#{areaCoberturaController.gestionarAreaCobertura(areaCoberturaController.opcionFiltroSeleccionados)}"/>
+                                <f:selectItem itemLabel="Seleccionar..." itemValue="1"/>
+                                <f:selectItem itemLabel="Visualizar Municipios Seleccionados" itemValue="2"/>
+                                <f:selectItem itemLabel="Visualizar Municipios No Seleccionados"
+                                              itemValue="3"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </p:toolbarGroup>
+            </p:toolbar>
+            <p:dataTable id="deptoMunicipioCobertura" var="municipio"
+                         value="#{areaCoberturaController.sedesNegociacion.municipios}"
+                         rowKey="#{municipio.id}"
+                         selection="#{areaCoberturaController.municipiosSeleccionados}"
+                         widgetVar="municipiosCobertura"
+                         emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+                         paginator="true" paginatorPosition="bottom"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+                <p:ajax update="deptoMunicipioCobertura" event="toggleSelect"
+                        listener="#{areaCoberturaController.recordsRowSelected}"/>
+                <p:ajax update="deptoMunicipioCobertura" event="rowSelectCheckbox"
+                        listener="#{areaCoberturaController.recordsRowSelected}"/>
+                <p:ajax update="deptoMunicipioCobertura" event="rowUnselectCheckbox"
+                        listener="#{areaCoberturaController.recordsRowSelected}"/>
+
+                <f:facet name="header">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <h:outputText value="#{i18n.area_cobertura_todos_municipios}"
+                                          rendered="#{!areaCoberturaController.desactivarEdicionArea
+                                                      and areaCoberturaController.sedesNegociacion.municipios.size() > 0}"/>
+                            <p:spacer width="10"/>
+                            <p:commandLink id="selectAll" update="deptoMunicipioCobertura"
+                                           rendered="#{!areaCoberturaController.desactivarEdicionArea
+                                                       and areaCoberturaController.sedesNegociacion.municipios.size() > 0}"
+                                           action="#{areaCoberturaController.marcarTodos()}"
+                                           value="#{i18n.area_cobertura_select_todos}" style="color:green;"/>
+                            <p:spacer width="5"/>
+                            <p:commandLink id="unselectAll" update="deptoMunicipioCobertura"
+                                           style="color:orange;"
+                                           rendered="#{!areaCoberturaController.desactivarEdicionArea
+                                                       and areaCoberturaController.sedesNegociacion.municipios.size() > 0}"
+                                           action="#{areaCoberturaController.desmarcarTodos()}"
+                                           value="#{i18n.area_cobertura_unselect_todos}"/>
+                        </div>
+                    </div>
+                </f:facet>
+                <p:column filterBy="#{municipio.departamentoDto.descripcion}"
+                          headerText="#{i18n.area_cobertura_departamento}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput">
+                    <h:outputText value="#{municipio.departamentoDto.descripcion}" width="50%"/>
+                </p:column>
+                <p:column filterBy="#{municipio.zona.descripcion}"
+                          headerText="#{i18n.area_cobertura_zona_municipio}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput">
+                    <h:outputText value="#{municipio.zona.descripcion}" width="45%"/>
+                </p:column>
+                <p:column filterBy="#{municipio.descripcion}"
+                          headerText="#{i18n.area_cobertura_municipio}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput">
+                    <h:outputText value="#{municipio.descripcion}" width="45%"/>
+                </p:column>
+                <p:column headerText="Población" rendered="#{areaCoberturaController.mostrarPoblacion()}">
+                    <pe:inputNumber value="#{municipio.poblacion}"
+                                    disabled="#{areaCoberturaController.deshabilitarPoblacion(municipio)}"
+                                    converterMessage="Formato de número no valido"
+                                    style="width:70%">
+                        <p:ajax event="change"
+                                listener="#{areaCoberturaController.recordsRowSelectedCapita(municipio)}"/>
+                    </pe:inputNumber>
+                </p:column>
+                <p:column id="columnSeleccion" class="text-center" selectionMode="multiple" width="5%"/>
+            </p:dataTable>
+
+            <br/>
+            <div class="text-right buttons">
+                <p:commandButton actionListener="#{areaCoberturaController.replicarAreaCobertura()}"
+                                 value="#{i18n.area_cobertura_replicar_area}"
+                                 styleClass="btn btn-sm btn-info">
+                    <p:confirm header="#{i18n.form_label_confirmacion}"
+                               message="#{i18n.area_cobertura_confirmar_replicar_area}"
+                               icon="fa fa-exclamation-triangle"/>
+                </p:commandButton>
+            </div>
+        </h:form>
+    </p:panel>
+</f:view>

@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+        >
+
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoPrestadorEnum" />
+    <ui:composition template="/template/inner.xhtml">
+            <ui:define name="title">
+                    <h:outputLabel value="#{i18n.comparacion_tarifas_comparacion_titulo}" />
+            </ui:define>
+            <ui:define name="content">
+                <h:form id="comparacionTarifasForm">
+                    <p:panel id="panelDatosPrestador" style="text-align: center">
+                    <!-- Inicio Título-->
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="#{i18n.comparacion_tarifas_prestador_titulo}"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />                    
+                    
+                        <p:dataTable value="#{comparacionTarifasController.prestadorSeleccionado}" style="width:80%;margin:auto">
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_nombre_prestador}" style="width:50%">
+                                <h:outputText value="#{comparacionTarifasController.prestadorSeleccionado.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_numero_documento}">
+                                <h:outputText value="#{comparacionTarifasController.prestadorSeleccionado.numeroDocumento}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Modalidad">
+                                <h:outputText value="Cápita"/>
+                            </p:column>
+
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_nro_sedes}">
+                                <h:outputText value="#{comparacionTarifasController.prestadorSeleccionado.sedes}"/>
+                            </p:column>
+
+                            <p:column headerText="#{i18n.comparacion_tarifas_tbl_acciones}">
+                                <h:commandLink id="btnVerDetalleProcedimientosContrato"
+                        styleClass="btn btn-sm"
+                        actionListener="#{comparacionTarifasController.verPortafolio()}"
+                        title="#{i18n.bandeja_prestador_label_ver_portafolio}"
+                        target="_blank">
+                                    <span class="fa fa-suitcase"></span>    
+                                </h:commandLink>
+                                <p:commandLink id="btnPasarComite"
+                        styleClass="btn btn-sm"
+                        actionListener="#{comparacionTarifasController.pasarComiteCapita()}"
+                                                rendered="#{comparacionTarifasController.prestadorSeleccionado.estadoPrestador == EstadoPrestadorEnum.REVISION_TARIFAS}"
+                        title="#{i18n.comparacion_tarifas_btn_enviar_comite}">
+                                    <span class="fa fa-user-md"></span>    
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                    
+                    <!-- Inicio Título-->
+                    <div class="widget-header">
+                        <span class="widget-caption">
+                            #{i18n.comparacion_tarifas_criterios_titulo}:
+                        </span>
+                    </div>
+                    
+                    <p:panel id="panelCriteriosComparacion" >
+                        <!--Inicio Régimen-->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                Seleccione el tipo de régimen
+                            </div>
+                            <div class="col-lg-8">
+                                <!-- Validaciones sobre las tecnologias disponibles -->
+                                <p:selectOneRadio id="regimenSeleccionado" 
+                                                  style="width:80%"
+                                                  >
+                                    
+                                    <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Contributivo " itemValue="Contributivo"/>
+                                    </div>
+                                    <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Subsidiado " itemValue="Subsidiado"/>
+                                    </div>
+                                    <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Ambos " itemValue="Ambos"/>
+                                    </div>
+                                    
+                                   
+                                    <f:ajax render="seleccionCriterios" 
+                                            event="click" 
+                                            listener="#{comparacionTarifasController.seleccionarTecnologia()}" />
+                                    <p:ajax event="click" update="panelResultadosComparacion"/>
+                                </p:selectOneRadio>
+                                
+                            </div>
+                        </div>
+                        <!--Fin Régimen-->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                #{i18n.comparacion_tarifas_seleccion_tipo_reporte}
+                            </div>
+                            <div class="col-lg-8">
+                                <!-- Validaciones sobre las tecnologias disponibles -->
+                                <p:selectOneRadio id="tecnologiaSeleccionada" 
+                                                  value="#{comparacionTarifasController.tecnologiaSeleccionada}" 
+                                                  style="width:80%"
+                                                  >
+                                    <c:if test="#{comparacionTarifasController.prestadorSeleccionado.tiposTecnologias.contains('Procedimientos')}">
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Procedimientos " itemValue="Procedimientos"/>
+                                        </div>
+                                    </c:if>
+                                    
+                                    <c:if test="#{comparacionTarifasController.prestadorSeleccionado.tiposTecnologias.contains('Medicamentos')}">
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Medicamentos " itemValue="Medicamentos"/>
+                                        </div>
+                                    </c:if>
+                                    <c:if test="#{comparacionTarifasController.prestadorSeleccionado.tiposTecnologias.contains('Traslados')}">
+                                        <div class="col-lg-3">
+                                            <f:selectItem itemLabel=" Traslados" itemValue="Traslados"/>
+                                        </div>
+                                    </c:if>
+                                    <f:ajax render="seleccionCriterios" 
+                                            event="click" 
+                                            listener="#{comparacionTarifasController.seleccionarTecnologia()}" />
+                                    <p:ajax event="click" update="panelResultadosComparacion"/>
+                                </p:selectOneRadio>
+                                
+                            </div>
+                        </div>                        
+                        <h:panelGroup id="seleccionCriterios">
+                            <h:panelGroup rendered="#{not empty comparacionTarifasController.tecnologiaSeleccionada}">
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        #{i18n.comparacion_tarifas_seleccion_criterios}
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px">
+                                    <div class="col-lg-2">
+                                        <p:outputLabel>#{i18n.sede_neg_prestador_title}</p:outputLabel>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <p:selectCheckboxMenu id="sedesPrestador" 
+                                                            value="#{comparacionTarifasController.sedesPrestadorSeleccionadas}" 
+                                                            label="Sedes"
+                                                            filterMatchMode="startsWith" 
+                                                            converter="omnifaces.SelectItemsConverter"
+                                                            style="border:1px solid #ccc;width:79%"
+                                                            filter="true">
+                                            <f:selectItems value="#{comparacionTarifasController.sedesPrestador}"
+                                                           var="sede"
+                                                           itemLabel="#{sede.nombreSede} - #{sede.codigoPrestador} - #{sede.codigoSede}" 
+                                                           itemValue="#{sede}" />
+                                            
+                                          
+                                            
+                                        </p:selectCheckboxMenu>
+                                    </div>
+                                </div> 
+                            </h:panelGroup>
+                            
+                            
+                            <h:panelGroup rendered="#{not empty comparacionTarifasController.tecnologiaSeleccionada}">
+                                <hr/>
+                                <div class="row">
+                                    <div class="col-lg-9">
+                                        #{i18n.comparacion_tarifas_seleccion_prestador}
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p:commandButton value="#{i18n.form_label_button_aceptar}"                                                          
+                                            styleClass="btn btn-sm btn-info" 
+                                            icon="fa fa-search" 
+                                            update="tablaComparacionTarifas,botoneraComparacion,panelResultadosComparacion"
+                                            actionListener="#{comparacionTarifasController.realizarComparacionTarifasCapita()}"
+                                            iconPos="left">
+                                            
+                                        </p:commandButton>
+                                        <p:commandButton value="#{i18n.form_label_button_limpiar}" 
+                                            process="@this"
+                                            update="comparacionTarifasForm"
+                                            styleClass="btn btn-sm btn-warning" 
+                                            icon="fa fa-trash-o" 
+                                            actionListener="#{comparacionTarifasController.reset()}"
+                                            iconPos="left" />
+                                    </div>          
+                                </div>
+                            </h:panelGroup>
+                            
+                        </h:panelGroup>
+                    </p:panel>
+                    
+                    <p:outputPanel id="panelResultadosComparacion">
+                            <p:panel  rendered="#{not empty comparacionTarifasController.sedesPrestadorSeleccionadas}">
+                                <h:panelGroup id="resultadosComparacion" >
+                                    <h:panelGroup>
+                                        <p:dataTable id="tablaComparacionTarifas" var="comparacion" 
+                                                    value="#{comparacionTarifasController.tablaComparacionCapita}" 
+                                                    emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                                                    paginator="true" paginatorPosition="bottom"
+                                                    rowKey="#{comparacion.nombreSede}"
+                                                    paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+                                                    rowsPerPageTemplate="5,10,15">
+                                            <f:facet name="{Exporters}">
+                                                <h:commandLink>
+                                                    <p:graphicImage value="resources/img/excel.png" width="24"/>
+                                                    <p:dataExporter type="xls" target="tablaComparacionTarifas" fileName="reporte_comparacion_excel" />
+                                                </h:commandLink>      
+                                            </f:facet>
+                                            
+                                            <p:columnGroup type="header">
+                                                <p:row>
+                                                    <p:column colspan="5" headerText="#{i18n.gn_cp_tb_datos_sede}" />
+                                                    <p:column colspan="2" headerText="#{i18n.gn_cp_tb_portafolio}" />
+                                                    <p:column colspan="3" headerText="#{i18n.gn_cp_tb_referente}" />
+                                                </p:row>
+                                                <p:row>
+                                                    <p:column headerText="#{i18n.gn_cp_tb_nit_sede}" 
+                                                      filterBy="#{comparacion.nombreSede}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center"/>
+                                                    <!-- Municipio-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_municipio}" 
+                                                          filterBy="#{comparacion.nombreSede}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- Servicio-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_servicio}" 
+                                                          filterBy="#{comparacion.nombreServicio}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- Código-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_codigo}" 
+                                                          filterBy="#{comparacion.codigoServicio}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- Nombre-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_nombre}" 
+                                                          filterBy="#{comparacion.nombreEmssanar}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- UPC Portafolio-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_port_porc_upc}" 
+                                                          filterBy="#{comparacion.nombreEmssanar}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- Valor Portafolio-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_port_valor}" 
+                                                          filterBy="#{comparacion.nombreEmssanar}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- UPC Referente-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_ref_porc_upc}" 
+                                                          filterBy="#{comparacion.nombreEmssanar}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- Valor Portafolio-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_ref_valor}" 
+                                                          filterBy="#{comparacion.nombreEmssanar}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                    <!-- Diferencia Referente-->
+                                                    <p:column headerText="#{i18n.gn_cp_tb_dif_referente}" 
+                                                          filterBy="#{comparacion.nombreEmssanar}"
+                                                          filterMatchMode="contains" 
+                                                          filterPosition="bottom"
+                                                          filterStyleClass="anchoInput"
+                                                          styleClass="text-center"/>
+                                                </p:row>
+                                            </p:columnGroup>
+                                                <!-- Nombre Sede-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_nit_sede}" 
+                                                      filterBy="#{comparacion.nombreSede}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="#{comparacion.nombreSede}" />
+                                                </p:column>
+                                                <!-- Municipio-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_municipio}" 
+                                                      filterBy="#{comparacion.nombreSede}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="Barbacoas" />
+                                                </p:column>
+                                                <!-- Servicio-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_servicio}" 
+                                                      filterBy="#{comparacion.nombreServicio}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="#{comparacion.nombreServicio}" />
+                                                </p:column>
+                                                <!-- Código-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_codigo}" 
+                                                      filterBy="#{comparacion.codigoServicio}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="#{comparacion.codigoServicio}" />
+                                                </p:column>
+                                                <!-- Nombre-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_nombre}" 
+                                                      filterBy="#{comparacion.nombreEmssanar}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="#{comparacion.nombreEmssanar}" />
+                                                </p:column>
+                                                <!-- UPC Portafolio-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_port_porc_upc}" 
+                                                      filterBy="#{comparacion.nombreEmssanar}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="5%" />
+                                                </p:column>
+                                                <!-- Valor Portafolio-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_port_valor}" 
+                                                      filterBy="#{comparacion.nombreEmssanar}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="5000" />
+                                                </p:column>
+                                                <!-- UPC Referente-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_ref_porc_upc}" 
+                                                      filterBy="#{comparacion.nombreEmssanar}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="6%" />
+                                                </p:column>
+                                                <!-- Valor Portafolio-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_ref_valor}" 
+                                                      filterBy="#{comparacion.nombreEmssanar}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="5500" />
+                                                </p:column>
+                                                <!-- Diferencia Referente-->
+                                                <p:column headerText="#{i18n.gn_cp_tb_dif_referente}" 
+                                                      filterBy="#{comparacion.nombreEmssanar}"
+                                                      filterMatchMode="contains" 
+                                                      filterPosition="bottom"
+                                                      filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                    <h:outputText value="1%" />
+                                                </p:column>
+
+                                    </p:dataTable>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                            </p:panel>
+                    </p:outputPanel>
+                    <p:panel>
+                        <p:commandButton value="#{i18n.form_label_button_regresar}" onclick="window.history.back();"
+                                            styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left" iconPos="left"/>
+                    </p:panel>
+                    <h:panelGroup id="botoneraComparacion">
+                                </h:panelGroup>
+                </h:form>
+            </ui:define>
+    </ui:composition>
+</f:view>

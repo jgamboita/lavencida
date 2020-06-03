@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+	<pe:masterDetail id="masterGrupos" showBreadcrumb="false">
+		<pe:masterDetailLevel level="1" id="nivelUnoGrupos">
+			<p:dataTable id="tablaCategoriasMedicamentoDialog"
+				value="#{tecnologiasSSController.listarReferenteCategoriaMedicamento}"
+				var="categoria" rowKey="#{categoria.id}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+				widgetVar="tabGrupoMedicamentosDialogW" paginator="true"
+				paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox">
+
+				<p:ajax event="page" update="@this" />
+				<p:ajax event="sort" update="@this" />
+				<p:ajax event="filter" update="@this" />
+
+
+				<p:column headerText="#{i18n.column_ref_codigo_grupo}"
+					styleClass="text-center"
+					filterBy="#{categoria.categoriaMedicamento.codigo}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{categoria.categoriaMedicamento.codigo}"/>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_grupo_terapeutico}"
+				styleClass="text-center"
+					filterBy="#{categoria.categoriaMedicamento.nombre}"
+					filterMatchMode="contains" filterStyleClass="anchoInput">
+					<h:outputText value="#{categoria.categoriaMedicamento.nombre}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_frecuencia}" styleClass="text-center">
+					<h:outputText value="#{categoria.frecuencia}" >
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_costo_medio}" styleClass="text-center">
+					<h:outputText value="#{categoria.costoMedioUsuario}" >
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_atenciones}" styleClass="text-center">
+					<h:outputText value="#{categoria.numeroUsuarios}" >
+										<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{i18n.column_ref_n_usuarios}" styleClass="text-center">
+					<h:outputText value="#{categoria.numeroAtenciones}" >
+					<f:convertNumber pattern="###,###.######"/>
+					</h:outputText>
+				</p:column>
+
+			</p:dataTable>
+		</pe:masterDetailLevel>
+
+	</pe:masterDetail>
+</f:view>

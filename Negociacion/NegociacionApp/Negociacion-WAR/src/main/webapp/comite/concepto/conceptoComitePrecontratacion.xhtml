@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:c="http://java.sun.com/jstl/core"
+        xmlns:o="http://omnifaces.org/ui">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoPrestadorComiteEnum" />
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.MotivoRechazoComiteEnum" />
+    <h:form id="conceptoComiteForm">
+
+        <div class="widget-header">
+            <span class="widget-caption"> Resumen </span>
+        </div>
+        <p:panel id="panelResumenComparacion" style="text-align: center">
+            <div class="form-group">
+                <p:dataTable id="resumenComparacion" var="resumen"
+                             value="#{conceptoComiteController.resumenComparacion}"
+                             style="margin: 0 auto;"
+                             emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                             paginator="true" paginatorPosition="bottom"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15">
+
+                    <p:column headerText="#{i18n.comparacion_tarifas_lbl_sedes_seleccionadas}"
+                              styleClass="text-center col-lg-1"
+                              filterBy="#{resumen.sedesPrestador}"
+                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                        <h:outputText
+                            value="#{resumen.sedesComparadas}" />
+                    </p:column>
+
+                    <p:column headerText="#{i18n.comparacion_tarifas_lbl_grupo_habilitacion_seleccionados}"
+                              styleClass="text-center col-lg-1"
+                              filterBy="#{resumen.gruposHabilitacion}"
+                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                        <h:outputText
+                            value="#{resumen.gruposHabilitacion}" />
+                    </p:column>
+
+                    <p:column headerText="#{i18n.comparacion_tarifas_lbl_servicios_salud_seleccionados}"
+                              styleClass="text-center col-lg-1"
+                              filterBy="#{resumen.serviciosSalud}"
+                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                        <h:outputText
+                            value="#{resumen.serviciosSalud}" />
+                    </p:column>
+
+                    <p:column headerText="#{i18n.comparacion_tarifas_lbl_sedes_comparacion}"
+                              styleClass="text-center col-lg-1"
+                              filterBy="#{resumen.tablaComparacion}"
+                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                        <h:outputText
+                            value="#{resumen.tablaComparacion}" />
+                    </p:column>
+
+                    <p:column headerText="#{i18n.comparacion_tarifas_lbl_tipo_resumen}"
+                              styleClass="text-center col-lg-1"
+                              filterBy="#{resumen.tecnologia}"
+                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                        <h:outputText
+                            value="#{resumen.tecnologia}" />
+                    </p:column>
+                    
+                    <p:column headerText="#{i18n.comparacion_tarifas_lbl_descargar_adjunto}"
+                              styleClass="text-center col-lg-1"
+                              rendered="#{conceptoComiteController.prestadorComite.tipoModalidad.id == 1}">
+                        <p:commandButton id="descargarActa"
+                            rendered="true" icon="fa fa-download"
+                            alt="#{i18n.comparacion_tarifas_lbl_descargar_adjunto}"
+                            title="#{i18n.comparacion_tarifas_lbl_descargar_adjunto}" ajax="false"
+                            actionListener="#{conceptoComiteController.descargarActa(resumen)}"
+                            process="@this">
+                            <p:fileDownload
+                            value="#{conceptoComiteController.documentoAdjunto}" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+            </div>
+        </p:panel>
+        <hr></hr>
+        <h:panelGrid columns="1" style="width:100%" id="pnlGridConcepto">
+            <f:facet name="header">
+                <p:outputLabel value="Concepto Comite"
+                               styleClass="titulo-bold"></p:outputLabel>
+                <div class="separador"></div>
+            </f:facet>
+        
+	        <br/>
+	        
+	        <p:columnGroup>
+		        <div class="form-group">
+		            <div class="row">
+		                <div class="col-lg-2 text-right">
+		                    <h:outputLabel value="Concepto:"/>
+		                </div>
+		                <div class="col-lg-2 text-right">
+		                    <p:selectOneMenu id="tecnologiaSeleccionada"
+		                                     value="#{conceptoComiteController.prestadorComite.estado}"
+		                                     required="true" 
+		                                     requiredMessage="#{i18n.form_label_required}"
+		                                     disabled="#{gestionComiteController.comiteActual.estadoComite eq EstadoComiteEnum.FINALIZADO}">
+		                        <p:ajax update="conceptoComiteDescripcion pnlGridConcepto" listener="#{conceptoComiteController.buscarMotivos()}"/>
+		                        <f:selectItems 
+		                            value="#{conceptoComiteController.estadosPrestadorComite}"
+		                            var="estado" itemLabel="#{estado.descripcion}" itemValue="#{estado}" />
+		                    </p:selectOneMenu>
+		                </div>
+		                <div class="col-lg-2 text-right">
+		                    <h:outputLabel id="lblMotivoRechazo"
+		                    	value="Motivo:"
+		                    	rendered="#{conceptoComiteController.mostrarMotivo}"/>
+		                </div>
+		                <div class="col-lg-2 text-right">
+		                    <p:selectOneMenu id="motivoRechazo"
+		                                     requiredMessage="#{i18n.form_label_required}"
+		                                     value="#{conceptoComiteController.prestadorComite.motivoRechazo}"                                     
+		                                     rendered="#{conceptoComiteController.mostrarMotivo}">
+		                        <f:selectItems
+		                            value="#{conceptoComiteController.motivosRechazoComite}"
+		                            var="motivo" itemLabel="#{motivo.descripcion}" itemValue="#{motivo}" />
+		                    </p:selectOneMenu>
+		                </div>
+		            </div>
+		        </div>
+		    </p:columnGroup>    
+	        <div class="form-group">
+	            <div class="row">
+	                <div class="col-lg-12">
+	                    <p:inputTextarea id="conceptoComiteDescripcion" rows="15"
+	                                     counter="display" maxlength="1000"
+	                                     counterTemplate="{0} caracteres restantes." autoResize="false"
+	                                     class="form-control" style="border:1px solid #ccc"
+	                                     required="#{conceptoComiteController.mostrarMotivo}"
+	                                     requiredMessage="#{i18n.gestionar_comite_val_concepto}" 
+	                                     value="#{conceptoComiteController.prestadorComite.conceptoComite}"/>
+	                    <h:outputText id="display" class="pull-right" />
+	                    <p:message for="conceptoComiteDescripcion" />
+	                </div>
+	            </div>
+	        </div>
+        </h:panelGrid>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <p:commandButton value="#{i18n.form_label_button_guardar}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+						iconPos="left" update="@form"
+						actionListener="#{conceptoComiteController.guardarConcepto()}"
+						rendered="#{gestionComiteController.comiteActual.estadoComite ne EstadoComiteEnum.FINALIZADO}"/>
+                </div>
+            </div>
+        </div>
+    </h:form>
+
+</f:view>

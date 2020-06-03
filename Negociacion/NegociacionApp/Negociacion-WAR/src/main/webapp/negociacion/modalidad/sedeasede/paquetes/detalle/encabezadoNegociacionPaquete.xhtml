@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:o="http://omnifaces.org/ui">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.ArchivosNegociacionEnum" var="ArchivosNegociacionEnum"/>
+    <style type="text/css">
+        .ui-fileupload-buttonbar {
+            margin: 0px 0px 0px 0px !important;
+            padding: 0px 0px 0px 0px !important;
+            border: none;
+        }
+
+        .ui-fileupload {
+            margin: 0px 0px 0px 0px !important;
+            padding: 0px 0px 0px 0px !important;
+            display: inline-block;
+            border: none;
+        }
+
+        .ui-fileupload-content {
+            border: none;
+        }
+
+        .ui-fileupload-choose {
+            background-color: #fda63e !important;
+            color: #ffffff !important;
+            font-family: 'PT Sans', arial, verdana, sans-serif;
+            font-size: 1em;
+            font-weight: normal;
+        }
+
+        span.ui-fileupload-choose > span.ui-icon-plusthick {
+            display: none !important;
+        }
+
+        span.ui-fileupload-choose > span.ui-button-text {
+            padding-left: 1em !important;
+        }
+    </style>
+    <h:form id="encabezadoNegociacionPaqueteForm">
+        <p:panel id="panelDetallePaquete">
+            <div class="form-group">
+                <!-- Inicio Título-->
+                <div class="widget-header">
+					<span class="widget-caption">
+						<p:outputLabel value="#{i18n.paquete_detalle_titulo}" styleClass="titulo-bold"/>
+					</span>
+                </div>
+                <!-- Fin Título-->
+                <h:inputHidden value="#{negociacionPaqueteDetalleSSController.paqueteId}"/>
+                <h:inputHidden value="#{negociacionPaqueteDetalleSSController.negociacionId}"/>
+                <!-- row -->
+                <h:outputText value="&#160;"/>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <p:outputLabel for="sedeNegociacionCodigo"
+                                       value="#{i18n.encabezado_neg_paquete_sede_negociacion_code}"/>
+                        <p:inputText id="sedeNegociacionCodigo"
+                                     styleClass="form-control input-sm col-lg-4" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.sedePrestadorSeleccionada.codigoPrestador}"/>
+                        <p:message for="codigoEpsPaquete"/>
+                    </div>
+                    <div class="col-lg-4">
+                        <p:outputLabel for="sedeNegociacionNombre"
+                                       value="#{i18n.encabezado_neg_paquete_sede_negociacion_nombre}"/>
+                        <p:inputText id="sedeNegociacionNombre"
+                                     styleClass="form-control input-sm col-lg-4" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.sedePrestadorSeleccionada.nombreSede}"/>
+                        <p:message for="descripcionPaquete"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <p:outputLabel for="codigoEpsPaquete"
+                                       value="#{i18n.encabezado_neg_paquete_codigo_emssanar}"/>
+                        <p:inputText id="codigoEpsPaquete"
+                                     styleClass="form-control input-sm col-lg-4" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.paquete.codigoPortafolio}"/>
+                        <p:message for="codigoEpsPaquete"/>
+                    </div>
+                    <div class="col-lg-4">
+                        <p:outputLabel for="descripcionPaquete"
+                                       value="#{i18n.encabezado_neg_paquete_descripcion_cups}"/>
+                        <p:inputText id="descripcionPaquete"
+                                     styleClass="form-control input-sm col-lg-4" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.paquete.descripcion}"/>
+                        <p:message for="descripcionPaquete"/>
+                    </div>
+                    <div class="col-lg-4">
+                        <p:outputLabel for="valorPaquete" value="#{i18n.form_label_valor}"/>
+                        <p:inputText id="valorPaquete"
+                                     styleClass="form-control input-sm col-lg-4" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.paquete.valor}"/>
+                        <p:message for="valorPaquete"/>
+                    </div>
+                </div>
+                <h:outputText value="&#160;"/>
+                <!-- Row -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        <p:outputLabel for="codigoIPSPaquete" value="#{i18n.paquete_label_codigo_ips}"/>
+
+                        <p:inputText id="codigoIPSPaquete" styleClass="form-control input-sm col-lg-4" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.paquete.codigoSedePrestador}"/>
+                        <p:message for="codigoIPSPaquete"/>
+                    </div>
+                    <div class="col-lg-4">
+                        <p:outputLabel for="tipoPaquete" value="#{i18n.encabezado_neg_paquete_pos_cups}"/>
+
+                        <p:inputText id="tipoPaquete" styleClass="form-control input-sm col-lg-4" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.paquete.tipoPaquete}"/>
+                        <p:message for="tipoPaquete"/>
+                    </div>
+                </div>
+
+                <div class="widget-header" style="margin-top: 20px;">
+					<span class="widget-caption">
+						<p:outputLabel value="#{i18n.servicio_label_servicio_habilitacion}" styleClass="titulo-bold"/>
+					</span>
+                </div>
+                <ui:repeat value="#{negociacionPaqueteDetalleSSController.paquete.serviciosSalud}"
+                        var="servicioHabilitacion">
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-lg-1"></div>
+                        <div class="col-lg-11">
+                            <p:outputLabel for="servicioDeHabilitacion"
+                                           value="#{i18n.encabezado_neg_paquete_servicio_habilitacion}"
+                                           styleClass="col-lg-2"/>
+                            <p:inputText id="servicioDeHabilitacion"
+                                         styleClass="input-sm col-lg-6" readonly="true"
+                                         value="#{servicioHabilitacion.codigo}-#{servicioHabilitacion.nombre}"/>
+                        </div>
+                    </div>
+                </ui:repeat>
+
+                <div class="widget-header" style="margin-top: 20px;">
+					<span class="widget-caption">
+						<p:outputLabel value="#{i18n.encabezado_neg_paquete_codigo_origen_paquete}"
+                                       styleClass="titulo-bold"/>
+					</span>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-lg-1"></div>
+                    <div class="col-lg-5" style="#{negociacionPaqueteDetalleSSController.paquete.origen.estado != 1 ? 'color:red;' : 'color:black;'}">
+                        <p:outputLabel for="codigoOrigenTecnologia"
+                                       value="#{i18n.encabezado_neg_paquete_codigo_origen_tecnologia}"
+                                       styleClass="col-lg-4"/>
+                        <p:inputText id="codigoOrigenTecnologia"
+                                     styleClass="input-sm col-lg-7" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.paquete.origen.cups}"/>
+                    </div>
+                    <div class="col-lg-6" style="#{negociacionPaqueteDetalleSSController.paquete.origen.estado != 1 ? 'color:red;' : 'color:black;'}">
+                        <p:outputLabel for="descripcionTecnologia"
+                                       value="#{i18n.encabezado_neg_paquete_descripcion_cups}"
+                                       styleClass="col-lg-2"/>
+
+                        <p:inputText id="descripcionTecnologia"
+                                     styleClass="input-sm col-lg-9" readonly="true"
+                                     value="#{negociacionPaqueteDetalleSSController.paquete.origen.descripcion}"/>
+                    </div>
+                </div>
+                <p:spacer/>
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="col-lg-6">
+                            <h:outputLabel class="col-lg-5" style="padding: 0 3px 2px 0"
+                                           value="#{i18n.form_label_importar_tecnologias}"/>
+                            <p:fileUpload id="btnImportarTecnologias" auto="true" multiple="true"
+                                          allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+                                          accept="xls|xlsx|XLS|XLSX"
+                                          mode="advanced"
+                                          styleClass="btn btn-sm btn-info"
+                                          cancelLabel="#{i18n.form_label_button_cancelar}"
+                                          uploadLabel="#{i18n.form_label_importar}"
+                                          label="#{i18n.form_label_importar}" sizeLimit="5242880"
+                                          invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                                          invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                                          fileUploadListener="#{negociacionPaqueteDetalleSSController.importFiles}"
+                                          update="formTecnologiasTabs, formErrorsImport"
+                                          onstart="PF('statusDialog').show();"
+                                          oncomplete="PF('statusDialog').hide();">
+                                <f:attribute name="foo" value="#{ArchivosNegociacionEnum.TECHNOLOGIES_FILE}"/>
+                            </p:fileUpload>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <h:outputLabel class="col-lg-5" style="padding: 0 6px 11px  3px"
+                                           value="#{i18n.form_label_importar_anexos}"/>
+                            <p:fileUpload id="btnImportarAnexos" auto="true"
+                                          skinSimple="true" allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/" mode="advanced"
+                                          accept="xls|xlsx|XLS|XLSX"
+                                          style="btn btn-sm btn-info"
+                                          cancelLabel="#{i18n.form_label_button_cancelar}"
+                                          uploadLabel="#{i18n.form_label_importar}"
+                                          label="#{i18n.form_label_importar}" sizeLimit="5242880"
+                                          invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                                          invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                                          fileUploadListener="#{negociacionPaqueteDetalleSSController.importFiles}"
+                                          onstart="PF('statusDialog').show();"
+                                          update="pieDePaginaNegociacionPaqueteForm:pieTablaObservacion
+								pieDePaginaNegociacionPaqueteForm:pieTablaCausaRuptura pieDePaginaNegociacionPaqueteForm:pieTablaExclusion 
+								pieDePaginaNegociacionPaqueteForm:pieTablaRequerimientoTecnico 
+								formErrorsImport"
+                                          oncomplete="PF('statusDialog').hide();">
+                                <f:attribute name="foo" value="#{ArchivosNegociacionEnum.ANNEXES_FILE}"/>
+                            </p:fileUpload>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p:panel>
+    </h:form>
+
+    <p:dialog id="errorsImport" width="60%" height="600" closeOnEscape="true" appendTo="@(body)" modal="true"
+              resizable="false" widgetVar="errorsImport">
+        <ui:include src="../../../../detalle/errorsImport.xhtml"/>
+    </p:dialog>
+</f:view>

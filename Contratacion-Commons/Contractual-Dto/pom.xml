@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.conexia.emssanar</groupId>
+        <artifactId>Contratacion-Commons</artifactId>
+        <version>1.1.8.3-SNAPSHOT</version>
+    </parent>
+    <artifactId>Contractual-Dto</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.conexia</groupId>
+            <artifactId>genericsdto</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.conexia.emssanar</groupId>
+            <artifactId>Constants</artifactId>
+            <version>1.1.8.3-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${apache.poi.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <artifactId>JdbcUtils</artifactId>
+            <groupId>com.conexia</groupId>
+            <version>1.1</version>
+        </dependency>
+    </dependencies>
+
+</project>

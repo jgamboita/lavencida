@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Registro Prestador
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="form">
+                <p:panel id="busquedaPrestador">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Gestión de Prestador"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />
+                    <p:dataTable id="prestadores" 
+                                 value="#{gestionPrestadorController.prestadores}"
+                                 var="prestador"
+                                 rows="5"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,20"
+                                 rendered="true"
+                                 emptyMessage="Sin registros...">
+                        <p:column 
+                            filterBy="#{prestador.clasePrestadorEnum.description}"
+                            filterMatchMode="contains"
+                            headerText="Clase Prestador" style="text-align: center">
+                            <h:outputText value="#{prestador.clasePrestadorEnum.description}"/>
+                        </p:column>
+                        <p:column 
+                            filterBy="#{prestador.clasificacionPrestador.descripcion}"
+                            filterMatchMode="contains"
+                            headerText="Categoría Prestador" style="text-align: center">
+                            <h:outputText value="#{prestador.clasificacionPrestador.descripcion}"/>
+                        </p:column>
+                        <p:column 
+                            filterBy="#{prestador.estadoPrestador.descripcion}"
+                            filterMatchMode="contains"
+                            headerText="Estado" style="text-align: center">
+                            <h:outputText value="#{prestador.estadoPrestador.descripcion}"/>
+                        </p:column>
+                        <p:column 
+                            filterBy="#{prestador.nombre}"
+                            filterMatchMode="contains"
+                            headerText="Prestador" 
+                            style="text-align: center">
+                            <h:outputText value="#{prestador.nombre}"/>
+                        </p:column>
+                        <p:column 
+                            filterBy="#{prestador.numeroDocumento}"
+                            filterMatchMode="contains"
+                            headerText="Numero Documento" 
+                            style="text-align: center">
+                            <h:outputText value="#{prestador.numeroDocumento}"/>
+                        </p:column>
+                        <p:column headerText="Correo Electronico" style="text-align: center">
+                            <h:outputText value="#{prestador.correoElectronico}"/>
+                        </p:column>
+                        <p:column headerText="Ver" style="text-align: center">
+                            <p:commandLink title="Gestionar Prestador" 
+                                           actionListener="#{gestionPrestadorController.gestionarPrestador(prestador)}" 
+                                           ajax="false"
+                                           immediate="true">
+                                <i class="fa fa-cog fa-lg"></i>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

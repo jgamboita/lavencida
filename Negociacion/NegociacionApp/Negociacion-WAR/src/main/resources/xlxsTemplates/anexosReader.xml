@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<workbook>
+    <worksheet idx="0">
+        <section startRow="0" endRow="0" />
+       <loop startRow="1" endRow="1" items="tecnologiasOfertadas" var="osm" varType="com.conexia.contratacion.commons.dto.negociacion.AnexosIngresadosDto">
+            <section startRow="1" endRow="1">
+                <mapping row="1" col="0">osm.tipoAnexo</mapping>
+                <mapping row="1" col="1">osm.detalle</mapping>
+            </section>
+            <loopbreakcondition>
+                <rowcheck offset="0">
+                	<cellcheck offset="1"></cellcheck>
+                </rowcheck>
+            </loopbreakcondition>
+        </loop>
+    </worksheet>
+</workbook>
+
+
+
+
+
+
+
+

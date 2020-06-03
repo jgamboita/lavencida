@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+        <ui:composition template="/template/inner.xhtml">
+            <ui:define name="title">
+                    <h:outputLabel value="#{i18n.negociacion_detalle_contrato_anterior}" />
+            </ui:define>
+            <ui:define name="content">
+                <!-- Inicio Título-->
+                <div class="widget-header">
+                    <span class="widget-caption" title="#{i18n.servicio_detalle_titulo}"> #{negociacionProcedimientoContratoController.tituloComparacion}</span>
+                </div>
+                <!-- Fin Título-->
+                <p:panel id="panelTableContratoProcedimientos">
+                    <h:form>
+                        <p:dataTable id="contratoProcedimientos"
+                                var="contratoProcedimiento"
+                                value="#{negociacionProcedimientoContratoController.contratoProcedimientos}"
+                                rowKey="#{contratoProcedimiento.procedimientoId}"
+                                emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                                widgetVar="contratoProcedimientosTable" 
+                                paginator="true"
+                                paginatorPosition="bottom"
+                                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowsPerPageTemplate="5,10,15" 
+                                rowSelectMode="checkbox">
+
+                            <p:ajax event="page" />
+                            <p:ajax event="sort" />
+                            <p:ajax event="rowSelectCheckbox" />
+                            <p:ajax event="rowUnselectCheckbox" />
+                            <p:ajax event="toggleSelect" />                            
+                            
+                                <!-- cups -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.cups}"
+                                    filterMatchMode="contains" 
+                                    filterPosition="bottom"
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_cups}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText value="#{contratoProcedimiento.cups}" />
+                                </p:column>
+
+                                <!-- codigo emssanar -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.codigoCliente}"
+                                    filterMatchMode="contains" 
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_cod_emssanar}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText  value="#{contratoProcedimiento.codigoCliente}" />
+                                </p:column>
+
+                                <!-- Descripcion emssanar -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.descripcionProcedimiento}"
+                                    filterMatchMode="contains" 
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_desc_emssanar}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText  value="#{contratoProcedimiento.descripcionProcedimiento}" />
+                                </p:column>
+
+                                <!-- Complejidad -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.complejidad}"
+                                    filterMatchMode="contains" 
+                                    class="text-center"
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_nvl_complejidad}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText  value="#{contratoProcedimiento.complejidad}" />
+                                </p:column>
+
+                                <!-- Categoria POS -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.categoriaPos}"
+                                    filterMatchMode="contains" 
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_ctg_pos}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText  value="#{contratoProcedimiento.categoriaPos}" />
+                                </p:column>
+
+                                <!-- Tarifario -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.tarifarioDescripcion}"
+                                    filterMatchMode="contains" 
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_tarifario}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText  value="#{contratoProcedimiento.tarifarioDescripcion}" />
+                                </p:column>
+
+                                <!-- Porcentaje Negociado -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.porcentajeNegociacion}"
+                                    filterMatchMode="contains" 
+                                    class="text-right"
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_porc_negociado}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText  value="#{contratoProcedimiento.porcentajeNegociacion}">
+                                        <f:convertNumber maxFractionDigits="6" groupingUsed="false"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <!-- Valor Contratado -->
+                                <p:column
+                                    filterBy="#{contratoProcedimiento.valorContratado}"
+                                    filterMatchMode="contains" class="text-right"
+                                    headerText="#{i18n.negociacion_procedimiento_tbl_vlr}"
+                                    filterStyleClass="anchoInput">
+                                    <h:outputText  value="#{contratoProcedimiento.valorContratado}">
+                                        <f:convertNumber type="currency" currencySymbol="$"	maxFractionDigits="2" />
+                                    </h:outputText>
+                                </p:column>
+
+                        </p:dataTable>                    
+                        <div class="row">
+                            <div class="col-lg-12 text-right">
+                                <p:commandButton value="#{i18n.form_label_button_cerrar}"
+                                    onclick="window.close();"
+                                    styleClass="btn btn-sm btn-danger" icon="fa fa-close"
+                                    iconPos="left" />
+                            </div>
+                        </div>
+                    </h:form>
+                </p:panel>
+            </ui:define>
+        </ui:composition>
+</f:view>

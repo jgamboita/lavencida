@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="procedimientosForm">
+		<p:panel id="panelProcedimientos">
+			<div class="form-group">
+				<div class="row">
+					<p:outputLabel styleClass="col-lg-1" for="modalidadServicio" value="#{i18n.negociacion_prestador_tbl_modalidad}" />
+					<div class="col-lg-2">
+						<h:outputText id="modalidadServicio" value="#{detallePortafolioController.servicioSeleccionado.modalidad}" />
+					</div>
+					<p:outputLabel styleClass="col-lg-1" for="complejidadServicio" value="#{i18n.negociacion_label_complejidad}" />
+					<div class="col-lg-2">
+						<h:outputText id="complejidadServicio" value="#{detallePortafolioController.servicioSeleccionado.complejidad}" />
+					</div>
+				</div>
+			</div>
+			<hr></hr>
+			<div class="form-group">
+				<p:dataTable id="procedimientos" var="procedimiento"
+					value="#{detallePortafolioController.procedimientos}"
+					style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15"
+                                        scrollable="true" widgetVar="procedimientosVar">
+
+					<p:column headerText="#{i18n.form_label_codigo_emssanar}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.procedimiento.codigoCliente}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+                                                    value="#{procedimiento.procedimiento.codigoCliente}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.negociacion_procedimiento_tbl_cups}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.procedimiento.cups}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{procedimiento.procedimiento.cups}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_codigo_ips}"
+						styleClass="text-center col-lg-1"
+                                                filterBy="#{procedimiento.codigoInterno}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+                                                    value="#{procedimiento.codigoInterno}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_descripcion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.procedimiento.descripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{procedimiento.procedimiento.descripcion}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.negociacion_label_complejidad}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.procedimiento.nombreComplejidad}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{procedimiento.procedimiento.nombreComplejidad}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.servicio_label_modalidad}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.modalidad}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{procedimiento.modalidad}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.servicio_label_tarifa_diferencial}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.tarifaDiferencial}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+                                                    value="#{procedimiento.aplicaTarifaDiferencial}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.negociacion_tarifario_titulo}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.tarifario.descripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{procedimiento.tarifario.descripcion}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.negociacion_procedimiento_tbl_porc_negociado}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.porcentajeNegociacion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{procedimiento.porcentajeNegociacion}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.negociacion_procedimiento_tbl_valor}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{procedimiento.valor}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{procedimiento.valor}" />
+					</p:column>
+
+				</p:dataTable>
+			</div>
+		</p:panel>
+	</h:form>
+
+</f:view>

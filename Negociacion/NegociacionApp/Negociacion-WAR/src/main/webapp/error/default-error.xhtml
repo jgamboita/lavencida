@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<o:importConstants
+		type="com.conexia.contractual.utils.exceptions.constants.CodigoMensajeErrorEnum"
+		var="codigoErrorEnum" />
+		
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+            #{i18n.page_error_title}
+        </ui:define>
+		<ui:define name="content">
+			
+			<h:form>
+				#{handlerErrorController.init()}
+				<p:panel id="handles" 
+					header="#{usuarioAplicacion}!#{i18n.page_error_report}  #{i18n.page_error_codigo_error}#{handlerErrorController.codigoError}" style="width: 100%;height: 100%">
+					<p:inputTextarea  cols="50" rows="50"
+						autoResize="false" disabled="disabled" readonly="readonly" 
+						value=" #{i18n.page_error_tipo_error} #{handlerErrorController.tipoError} #{i18n.page_error_url_error} #{handlerErrorController.urlError}
+						#{i18n.page_error_detalle_error} #{handlerErrorController.detalleError}"
+						style="width: 100%;height: 100%;" />
+				</p:panel>
+				<p:resizable for="handles" handles="e,w,n,se,sw,ne,nw" />
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

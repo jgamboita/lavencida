@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Administración de Minutas
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="formConsultaMinutas">
+                <p:panel id="pnlConsultaMinutas">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Consultar Formatos de Minutas"
+                                           styleClass="titulo-bold"></p:outputLabel>
+
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br/>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p:dataTable id="minutas"
+                                             value="#{minutaController.minutas}"
+                                             var="minuta"
+                                             rows="5"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,20"
+                                             emptyMessage="Sin registros...">
+
+
+									<p:ajax event="page" />
+									<p:ajax event="sort" />
+									<p:ajax event="rowSelectCheckbox" />
+									<p:ajax event="filter" />
+									
+									<p:column filterBy="#{minuta.nombre}" filterMatchMode="contains"
+                                  			  filterStyleClass="anchoInput" headerText="Nombre"
+                                  			  styleClass="text-center">
+                                        <h:outputText value="#{minuta.nombre}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterBy="#{minuta.descripcion}" filterMatchMode="contains"
+                                    		  filterStyleClass="anchoInput" headerText="Descripción"
+                                    		  styleClass="text-center">
+                                        <h:outputText value="#{minuta.descripcion}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterBy="#{minuta.modalidad.descripcion}" filterMatchMode="contains"
+                                    		  filterStyleClass="anchoInput" headerText="Modalidad de negociacion"
+                                    		  styleClass="text-center">
+                                        <h:outputText
+                                            value="#{minuta.modalidad.descripcion}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterBy="#{minuta.tramite.descripcion}" filterMatchMode="contains"
+                                    		  filterStyleClass="amchoInput" headerText="Tramite"
+                                    		  styleClass="text-center">
+                                        <h:outputText value="#{minuta.tramite.descripcion}"/>
+                                    </p:column>
+                                    
+                                    <p:column filterBy="#{minuta.estado.descripcion}" filterMatchMode="contains"
+                                    		 filterStyleClass="anchoInput" headerText="Estado"
+                                    		 styleClass="text-center">
+                                        <h:outputText value="#{minuta.estado.descripcion}"/>
+                                    </p:column>
+                                    
+                                    <p:column headerText="Editar" class="text-center">
+                                        <p:commandLink title="Gestionar Minuta" 
+                                                       actionListener="#{minutaController.gestionarMinuta(minuta)}" 
+                                                       ajax="false"
+                                                       immediate="true">
+                                            <i class="fa fa-cog fa-lg"></i>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                                        <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-offset-8 col-lg-4">
+                                <div class="text-right">
+                                    <p:commandButton                                         
+                                        type="submit" styleClass="btn btn-sm btn-info"
+                                        actionListener="#{minutaController.gestionarMinuta(minuta)}"
+                                        value="Crear Minuta">                                    
+                                    </p:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

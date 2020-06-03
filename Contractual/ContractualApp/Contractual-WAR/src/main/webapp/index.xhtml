@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="menu">
+            <ui:include src="/template/menu.xhtml"/>
+        </ui:define>
+        <ui:define name="title">
+            Inicio
+        </ui:define>
+        <ui:define name="content">
+            <div class="jumbotron">
+                <h2>Bienvenido #{usuarioAplicacion}!</h2>
+            </div>
+        </ui:define>
+    </ui:composition>
+</f:view>

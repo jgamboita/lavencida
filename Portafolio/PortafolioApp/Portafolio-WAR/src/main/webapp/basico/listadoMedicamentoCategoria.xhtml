@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="Portafolio" />
+		</ui:define>
+		<ui:define name="content">
+			<h:form>
+				<p:panel>
+					<h:panelGrid columns="1" style="width:100%; margin-bottom: 10px;">
+						<f:facet name="header">
+							<p:outputLabel
+								value="#{listaMedicamentoModel.categoriaMedicamento.categoriaMedicamento.codigo} - #{listaMedicamentoModel.categoriaMedicamento.categoriaMedicamento.nombre}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+
+					<div class="form-group form-group-sm">
+						<p:dataTable id="tblMedicamento" var="mp"
+							value="#{listaMedicamentoModel}" lazy="true"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+							paginator="true" paginatorPosition="bottom"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+							selection="#{listaMedicamentoModel.medicamentoSeleccion}"
+							disabledSelection="#{sedesPrestadorModel.puedeReabrirPortafolio}">
+
+
+							<p:ajax event="rowSelectCheckbox"
+								listener="#{listaMedicamentoModel.seleccionarFila}" />
+
+							<p:ajax event="rowUnselectCheckbox"
+								listener="#{listaMedicamentoModel.deseleccionarFila}" />
+
+							<p:ajax event="toggleSelect"
+								listener="#{listaMedicamentoModel.seleccionMasiva}" />
+
+							<p:column headerText="#{i18n.tb_medicamento_atc}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.atc}"
+								styleClass="col-lg-1 text-center">
+
+								<h:outputText value="#{mp.medicamento.atc}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_medicamento_descripcion_atc}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.descripcionAtc}">
+
+								<h:outputText value="#{mp.medicamento.descripcionAtc}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_medicamento_cum}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.cums}"
+								styleClass="col-lg-1 text-center">
+
+								<h:outputText value="#{mp.medicamento.cums}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_medicamento_principio_activo}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.principioActivo}"
+								styleClass="col-lg-1 text-center">
+
+								<h:outputText value="#{mp.medicamento.principioActivo}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_medicamento_concentracion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.concentracion}"
+								styleClass="col-lg-1 text-center">
+
+								<h:outputText value="#{mp.medicamento.concentracion}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_medicamento_forma_farmaceutica}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.formaFarmaceutica}"
+								styleClass="col-lg-1 text-center">
+
+								<h:outputText value="#{mp.medicamento.formaFarmaceutica}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.tb_medicamento_titular_reg_sanitario}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.titularRegistroSanitario}"
+								styleClass="col-lg-1 text-center">
+
+								<h:outputText value="#{mp.medicamento.titularRegistroSanitario}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_medicamento_reg_sanitario}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.registroSanitario}"
+								styleClass="col-lg-2 text-center">
+
+								<h:outputText value="#{mp.medicamento.registroSanitario}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.tb_medicamento_descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput"
+								filterBy="#{mp.medicamento.descripcion}"
+								styleClass="col-lg-1 text-center">
+
+								<h:outputText value="#{mp.medicamento.descripcion}" />
+							</p:column>
+
+							<p:column selectionMode="multiple"
+								styleClass="text-center col-lg-1">
+								<f:facet name="header">
+									<h:outputText value="Ofertar" />
+								</f:facet>
+							</p:column>
+						</p:dataTable>
+
+						<div class="row" style="margin-top: 10px;">
+							<div class="text-right col-lg-12 form-group form-group-sm">
+								<p:commandButton value="#{i18n.form_label_button_regresar}"
+									styleClass="btn btn-sm btn-warning" icon="fa fa-chevron-left"
+									iconPos="left"
+									action="#{listaMedicamentoModel.regresar}" />
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>
+

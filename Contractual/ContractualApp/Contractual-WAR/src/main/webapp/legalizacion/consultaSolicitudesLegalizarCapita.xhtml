@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Legalización
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="formConsultaSolicitudes">
+                <p:panel id="pnlConsultaSolicitudes">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Consultar solicitudes a Legalizar"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right" >
+                                <h:outputLabel value="No. Negociación: " for="txtNumeroNegociacion"/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:inputText id="txtNumeroNegociacion" value="#{consultaSolicitudesLegalizarController.filtroConsultaSolicitudDto.numeroNegociacion}"
+                                             converterMessage="El número de negociación debe ser númerico."> 
+                                </p:inputText>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="Modalidad de Negociación: "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="modalidadNegociacion" class="anchoInput"
+                                                 value="#{consultaSolicitudesLegalizarController.filtroConsultaSolicitudDto.negociacionModalidad}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaSolicitudesLegalizarController.modalidadesNegociacion}"
+                                                   var="negociacionModalidad"
+                                                   itemLabel="#{negociacionModalidad.descripcion}"
+                                                   itemValue="#{negociacionModalidad}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="Tipo de Identificación: "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="tipoIdentificacion" class="anchoInput"
+                                                 value="#{consultaSolicitudesLegalizarController.filtroConsultaSolicitudDto.tipoIdentificacionDto}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>  
+                                    <f:selectItems value="#{consultaSolicitudesLegalizarController.tipoIdentificacion}"
+                                                   var="tipoIdentificacion"
+                                                   itemLabel="#{tipoIdentificacion.descripcion}"
+                                                   itemValue="#{tipoIdentificacion}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="Identificación: "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:inputText id="txtNumeroIdentificacion" class="anchoInput"
+                                             value="#{consultaSolicitudesLegalizarController.filtroConsultaSolicitudDto.numeroIdentificacion}" > 
+                                </p:inputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="Razón Social: "/>
+                            </div>
+                            <div class="ui-grid-col-9">
+                                <p:inputText id="txtRazonSocial" style="width: 100%"
+                                             value="#{consultaSolicitudesLegalizarController.filtroConsultaSolicitudDto.razonSocial}">
+                                </p:inputText>
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="Estado Solicitud: "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="estadoLegalizacion" class="anchoInput"
+                                                 value="#{consultaSolicitudesLegalizarController.filtroConsultaSolicitudDto.estadoLegalizacionEnum}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaSolicitudesLegalizarController.estadosLegalizacion}"
+                                                   var="estadoLegalizacion"
+                                                   itemLabel="#{estadoLegalizacion.descripcion}"
+                                                   itemValue="#{estadoLegalizacion}"/>
+                                </p:selectOneMenu>
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12 text-right">
+                                <p:commandButton value="Buscar" styleClass="btn btn-sm btn-info"
+                                                 icon="fa fa-search" iconPos="left"
+                                                 update="tblListaSolicitudesPorLegalizar"
+                                                 ajax="false"/>
+                                <p:commandButton value="Limpiar" styleClass="btn btn-sm btn-warning"
+                                                 actionListener="#{consultaSolicitudesLegalizarController.limpiar()}"
+                                                 immediate="true"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12">
+                                <p:dataTable id="tblListaSolicitudesPorLegalizar" lazy="true"
+                                             value="#{consultaSolicitudesLegalizarController}"
+                                             var="solicitudContratacion"
+                                             rows="15"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,20"
+                                             emptyMessage="Sin registros...">
+                                    <p:column headerText="Número de Negociación">
+                                        <h:outputText value="#{solicitudContratacion.numeroNegociacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Razón social">
+                                        <h:outputText value="#{solicitudContratacion.prestadorDto.nombre}"/>
+                                    </p:column>
+                                    <p:column headerText="Número Documento">
+                                        <h:outputText value="#{solicitudContratacion.prestadorDto.numeroDocumento}"/>
+                                    </p:column>
+                                    <p:column headerText="Modalidad de Negociación">
+                                        <h:outputText
+                                            value="#{solicitudContratacion.modalidadNegociacionEnum.descripcion}"/>
+                                    </p:column>
+                                    <p:column headerText="Régimen de Negociación">
+                                        <h:outputText
+                                            value="#{solicitudContratacion.regimenNegociacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Estado Legalización">
+                                        <h:outputText
+                                            value="#{solicitudContratacion.estadoLegalizacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Estado Parametrización">
+                                        <h:outputText
+                                            value="#{solicitudContratacion.estadoParametrizacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Acciones" class="text-center">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <p:commandLink title="Legalizar Solicitud" 
+                                                               action="#{consultaSolicitudesLegalizarController.gestionaSolicitudCapita(solicitudContratacion.idSolicitudContratacion)}"
+                                                               ajax="false" immediate="true">
+                                                    <i class="fa fa-cog fa-lg"></i>
+                                                </p:commandLink>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <p:commandButton id="subirMinuta"
+                                                                 icon="fa fa-upload" alt="Subir Comite"
+                                                                 title="Subir Minuta"
+                                                                 onclick="PF('subirMinutaDlg').show()"
+                                                                 rendered="#{solicitudContratacion.contratoId ne null}"
+                                                                 process="@this">
+                                                    <f:setPropertyActionListener value="#{solicitudContratacion}" 
+                                                                                 target="#{consultaSolicitudesLegalizarController.current}" />
+                                                </p:commandButton>                                                
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <p:commandButton id="descargarMinuta"
+                                                                 rendered="#{solicitudContratacion.nombreArchivo ne null}" icon="fa fa-download"
+                                                                 alt="Descargar Minuta"
+                                                                 title="Descargar Minuta" ajax="false"
+                                                                 actionListener="#{consultaSolicitudesLegalizarController.descargarActa(solicitudContratacion.nombreArchivo, solicitudContratacion.numeroContrato)}"
+                                                                 process="@this">
+                                                    <p:fileDownload
+                                                        value="#{consultaSolicitudesLegalizarController.file}" />
+                                                </p:commandButton>
+                                            </div>
+                                        </div>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+
+                <p:dialog header="Subir Minuta" modal="true"
+                          widgetVar="subirMinutaDlg" width="60%" height="220px">
+                    <p:outputPanel id="invitacionOfertarPanel">
+                        <div class="row">
+                            <div class="col-lg-2"></div>
+                            <div class="col-lg-8">
+                                <p>
+                                    Seleccione el archivo a cargar<br />
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2"></div>
+                            <div class="col-lg-8">
+                                <p:fileUpload
+                                    fileUploadListener="#{consultaSolicitudesLegalizarController.handleFileUpload}"
+                                    mode="advanced" dragDropSupport="true"
+                                    update="messages"
+                                    sizeLimit="10000000" label="Escoger Minuta" uploadLabel="Subir"
+                                    fileLimit="1" multiple="false" cancelLabel="Cancelar"
+                                    invalidFileMessage="Archivo Invalido"
+                                    invalidSizeMessage="El tamaño del archivo supera el limite" 
+                                    fileLimitMessage="Se ha superado el num. máximo de archivos permitidos"
+                                    allowTypes="/(\.|\/)(pdf)$/" immediate="true" process="@this"/>
+                                <p:growl id="messages" showDetail="true" />
+                            </div>
+                        </div>
+                    </p:outputPanel>
+                </p:dialog>
+            </h:form>
+            <script type="text/javascript">
+                function start() {
+                    PF('statusDialog').show();
+                }
+                function stop() {
+                    PF('statusDialog').hide();
+                }
+            </script>
+
+        </ui:define>
+    </ui:composition>
+</f:view>

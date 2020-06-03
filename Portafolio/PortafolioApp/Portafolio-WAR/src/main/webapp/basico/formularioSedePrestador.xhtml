@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	xmlns:pf="http://java.sun.com/jsf/composite/componente">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="Portafolio" />
+		</ui:define>
+		<ui:define name="content">
+			<h:form id="datosNorma">
+				<p:panel>
+					<h:panelGrid columns="1" style="width: 100%;">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.form_title_datos_sede_prestador}"
+								styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+
+					<!-- Primera Fila -->
+					<div class="row">
+						<div>
+							<div class="form-group form-group-sm col-lg-8">
+								<p:outputLabel value="#{i18n.form_lbl_sede_nombre}"
+									styleClass="col-lg-2" />
+								<p:inputText id="sedeNombre" styleClass="col-lg-10 input-sm"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}"
+									value="#{sedePrestador.seleccion.nombreSede}" maxlength="200"/>
+							</div>
+
+							<div class="form-group form-group-sm col-lg-4">
+								<p:outputLabel value="#{i18n.form_lbl_sede_principal}"
+									styleClass="col-lg-4" />
+
+								<p:selectOneMenu id="sedePrincipal" effect="fold"
+									value="#{sedePrestador.seleccion.sedePrincipal}"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}">
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItem itemLabel="Si" itemValue="true"
+										noSelectionOption="false" />
+									<f:selectItem itemLabel="No" itemValue="false"
+										noSelectionOption="false" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div>
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_codigo}" />
+
+								<p:inputText id="sedeHabilitacion"
+									styleClass="col-lg-4 input-sm"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}"
+									value="#{sedePrestador.seleccion.codigoPrestador}"
+									maxlength="50" />
+
+								<p:inputText id="sedeCodigo"
+									styleClass="col-lg-offset-1 col-lg-1 input-sm"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}"
+									value="#{sedePrestador.seleccion.codigoSede}"
+									maxlength="60" />
+							</div>
+
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_nivel_sede}" />
+								<p:inputText id="tx_nombrePres" styleClass="col-lg-3 input-sm"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}" value="Baja" />
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div>
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_departamento}" />
+
+								<p:selectOneMenu id="sedeDepartamento" effect="fold"
+									value="#{sedePrestador.departamento}"
+									converter="omnifaces.SelectItemsConverter"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}"
+									required="true"
+									requiredMessage="El departamento es requerido">
+
+									<p:ajax event="change"
+										listener="#{sedePrestador.actualizarMunicipios}"
+										update="sedeMunicipio" />
+
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									
+									<f:selectItems
+										value="#{sedePrestador.departamentos}"
+										var="departamento"
+										itemValue="#{departamento}"
+										itemLabel="#{departamento.descripcion}" />
+								</p:selectOneMenu>
+							</div>
+							
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_municipio}" />
+						
+								<p:selectOneMenu id="sedeMunicipio" effect="fold"
+									value="#{sedePrestador.seleccion.municipio}"
+									converter="omnifaces.SelectItemsConverter"
+									disabled="#{sedesPrestadorModel.esPrestadorIps or empty sedePrestador.departamentos}"
+									required="true"
+									requiredMessage="El municipio es requerido">
+
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItems
+										value="#{sedePrestador.municipios}"
+										var="municipio"
+										itemValue="#{municipio}"
+										itemLabel="#{municipio.descripcion}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div>
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_zona}" />
+									
+								<p:selectOneMenu id="sedeZona" effect="fold"
+									value="#{sedePrestador.seleccion.zonaId}"
+									converter="omnifaces.SelectItemsConverter"
+									required="true"
+									requiredMessage="La zona es requerida.">
+
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItems
+										value="#{sedePrestador.zonas}"
+										var="zona"
+										itemValue="#{zona.id}"
+										itemLabel="#{zona.descripcion}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_barrio}" />
+								<p:inputText id="sedeBarrio" styleClass="col-lg-8 input-sm"
+									value="#{sedePrestador.seleccion.barrio}"
+									maxlength="50" />
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div>
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_direccion}" />
+								<p:inputText id="sedeDireccion" styleClass="col-lg-8 input-sm"
+									value="#{sedePrestador.seleccion.direccion}"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}" 
+									maxlength="500"/>
+							</div>
+
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_telefono_admon}" />
+								<p:inputText id="sedeTelefonoAdmon"
+									styleClass="col-lg-3 input-sm" maxlength="130"
+									value="#{sedePrestador.seleccion.telefonoAdministrativo}" />
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div>
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_fax}" />
+								<p:inputText id="sedeFax" styleClass="col-lg-3 input-sm"
+									value="#{sedePrestador.seleccion.fax}"
+									maxlength="40" />
+							</div>
+
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_telefono_citas}" />
+								<p:inputText id="sedeTelefonoCitas"
+									value="#{sedePrestador.seleccion.telefonoCitas}"
+									styleClass="col-lg-3 input-sm"
+									maxlength="130" />
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div>
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_correo_electronico}" />
+								<p:inputText id="sedeCorreoElectronico"
+									styleClass="col-lg-8 input-sm" 
+									value="#{sedePrestador.seleccion.correo}" 
+									validatorMessage="El formato de Correo electrónico no es valido"
+									maxlength="150">
+                                    <f:validateRegex pattern="#{i18n.form_validar_correo}" />
+								</p:inputText>	
+							</div>
+
+							<div class="form-group form-group-sm col-lg-6">
+								<p:outputLabel styleClass="col-lg-3"
+									value="#{i18n.form_lbl_sede_responsable}" />
+								<p:inputText id="sedeResponsable" styleClass="col-lg-8 input-sm"
+									value="#{sedePrestador.seleccion.gerente}"
+									maxlength="150"
+									disabled="#{sedesPrestadorModel.esPrestadorIps}" />
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-lg-12 text-right">
+							<p:commandButton id="btnGuardarSede" icon="fa fa-save"
+								iconPos="left" value="#{i18n.form_label_button_guardar}"
+								styleClass="btn btn-sm btn-success" 
+								update="@form"
+								action="#{sedePrestador.guardarInformacionSede}"/>
+						</div>
+					</div>
+				</p:panel>
+
+				<p:panel id="pnlDocumentosAdjuntos" rendered="#{sedePrestador.seleccion.id != null}">
+					<h:panelGrid columns="1" style="width: 100%;">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.form_lbl_sede_title_documentos}"
+								styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+
+					<pf:componenteAdjuntos id="documentosSede"
+						filesUpload="#{sedePrestador.documentosSede}"
+						methodListenerRemoveUploadFile="#{sedePrestador.quitarDocumento}"
+						methodListenerUploadFile="#{sedePrestador.subirDocumentoSede}"
+						targetUploadFile="#{sedePrestador.adjunto}"
+						targetFile="#{archivosAdjuntosController.uploadedFile}"
+						formToUpdate="@form" />
+				</p:panel>
+
+				<p:panel id="pnlDocumentosCapacidadInstalada" rendered="#{sedePrestador.seleccion.id != null}">
+					<h:panelGrid columns="1" style="width: 100%;">
+						<f:facet name="header">
+							<p:outputLabel
+								value="#{i18n.form_lbl_sede_title_documentos_capacidad_instalada}"
+								styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+
+					<p:dataTable class="ui-grid ui-grid-responsive" style="width:100%;"
+						var="adjunto" value="#{sedePrestador.plantillas}" paginator="true"
+						rows="5" paginatorPosition="bottom" paginatorAlwaysVisible="false"
+						emptyMessage="No se relaciono ningúna palntilla">
+
+						<p:column headerText="Plantillas">
+							<h:commandLink
+								actionListener="#{archivosAdjuntosController.prepararDescarga(adjunto)}"
+								value="#{adjunto.nombreOriginal}" immediate="true">
+
+								<p:fileDownload value="#{archivosAdjuntosController.descarga}" />
+							</h:commandLink>
+						</p:column>
+					</p:dataTable>
+					<br />
+					<pf:componenteAdjuntos id="capacidadInstaladaSede"
+						filesUpload="#{sedePrestador.capacidadInstaladaSede}"
+						methodListenerRemoveUploadFile="#{sedePrestador.quitarDocumento}"
+						methodListenerUploadFile="#{sedePrestador.subirDocumentoCapacidadInstalada}"
+						targetUploadFile="#{sedePrestador.adjunto}"
+						targetFile="#{archivosAdjuntosController.uploadedFile}"
+						formToUpdate="@form" />
+				</p:panel>
+
+				<p:panel rendered="#{sedePrestador.seleccion.id != null}">
+					<h:panelGrid columns="1" style="width: 100%;">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.form_title_sede_horario}"
+								styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+
+					<div class="row">
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_lunes}" />
+							<p:calendar id="sedeHorarioLunesDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.lunesFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.lunesFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.lunesInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioLunesHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioLunesHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.lunesInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.lunesInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.lunesInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.lunesFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioLunesDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_viernes}" />
+							<p:calendar id="sedeHorarioViernesDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.viernesFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.viernesFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.viernesInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioViernesHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioViernesHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.viernesInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.viernesInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.viernesInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.viernesFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioViernesDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_martes}" />
+							<p:calendar id="sedeHorarioMartesDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.martesFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.martesFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.martesInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioMartesHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioMartesHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.martesInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.martesInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.martesInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.martesFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioMartesDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_sabado}" />
+							<p:calendar id="sedeHorarioSabadoDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.sabadoFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.sabadoFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.sabadoInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioSabadoHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioSabadoHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.sabadoInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.sabadoInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.sabadoInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.sabadoFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioSabadoDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_miercoles}" />
+							<p:calendar id="sedeHorarioMiercolesDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.miercolesFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.miercolesFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.miercolesInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioMiercolesHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioMiercolesHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.miercolesInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.miercolesInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.miercolesInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.miercolesFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioMiercolesDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_domingo}" />
+							<p:calendar id="sedeHorarioDomingoDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.domingoFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.domingoFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.domingoInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioDomingoHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioDomingoHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.domingoInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.domingoInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.domingoInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.domingoFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioDomingoDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_jueves}" />
+							<p:calendar id="sedeHorarioJuevesDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.juevesFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.juevesFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.juevesInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioJuevesHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioJuevesHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.juevesInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.juevesInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.juevesInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.juevesFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioJuevesDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+
+						<div class="form-group form-group-sm col-lg-6">
+							<p:outputLabel styleClass="col-lg-3"
+								value="#{i18n.form_lbl_sede_horario_festivo}" />
+							<p:calendar id="sedeHorarioFestivoDesde" timeOnly="true"
+								placeholder="Desde" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								maxHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.festivoFinal, 24)}"
+								maxMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.festivoFinal, 60)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.festivoInicial}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioFestivoHasta" />
+							</p:calendar>
+							<p:calendar id="sedeHorarioFestivoHasta" timeOnly="true"
+								disabled="#{sedePrestador.seleccion.horarioAtencion.festivoInicial == null}"
+								placeholder="Hasta" pattern="HH:mm"
+								styleClass="col-lg-4 input-sm"
+								minHour="#{sedePrestador.obtenerHora(sedePrestador.seleccion.horarioAtencion.festivoInicial, 0)}"
+								minMinute="#{sedePrestador.obtenerMinuto(sedePrestador.seleccion.horarioAtencion.festivoInicial, 0)}"
+								value="#{sedePrestador.seleccion.horarioAtencion.festivoFinal}">
+
+								<p:ajax event="dateSelect" update="sedeHorarioFestivoDesde"
+									listener="#{sedePrestador.actualizarHorarioAtencion()}" />
+							</p:calendar>
+						</div>
+					</div>
+				</p:panel>
+
+				<p:panel>
+					<div class="row">
+						<div class="col-lg-12 text-right">
+							<p:commandButton id="btnRegresarSedes" icon="fa fa-chevron-left"
+								iconPos="left" value="#{i18n.form_label_button_regresar}"
+								styleClass="btn btn-sm btn-warning"
+								immediate="true"
+								action="/basico/listadoSedesPrestador.page" />
+						</div>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

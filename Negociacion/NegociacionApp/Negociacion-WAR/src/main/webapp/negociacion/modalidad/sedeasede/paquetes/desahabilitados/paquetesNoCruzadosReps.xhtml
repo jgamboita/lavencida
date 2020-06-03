@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id="paquetesNoCruzadosRepsForm">
+	<h:panelGroup >
+		<div class="row">
+			<div class="col-lg-12">
+					<p:dataTable id="paquetesNoCruzados" var="paquete"
+						value="#{negociacionPaqueteSSController.paquetesSinHabilitacion}"
+						style="margin: 0 auto;" widgetVar="paquetesNoCruzados"
+						emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+						paginator="true" paginatorPosition="bottom" editable="true"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15"
+						scrollable="true">
+
+						<p:column filterBy="#{paquete.servicioSalud.codigo}"
+							headerText="Código Servicio" filterMatchMode="contains">
+							<h:outputText value="#{paquete.servicioSalud.codigo}" />
+						</p:column>
+
+						<p:column
+							headerText="Descripción Servicio" filterMatchMode="contains">
+							<h:outputText value="#{paquete.servicioSalud.nombre}" />
+						</p:column>
+
+						<p:column filterBy="#{paquete.paquetePortafolio.codigoPortafolio}"
+							headerText="Código Paquete" filterMatchMode="contains">
+							<h:outputText value="#{paquete.paquetePortafolio.codigoPortafolio}" />
+						</p:column>
+
+						<p:column
+							headerText="Descripción" filterMatchMode="contains">
+							<h:outputText value="#{paquete.paquetePortafolio.descripcion}" />
+						</p:column>
+
+						<p:column filterBy="#{paquete.sedePrestador.codigoHabilitacion}"
+							headerText="Código Habilitación" filterMatchMode="contains">
+							<h:outputText value="#{paquete.sedePrestador.codigoHabilitacion}" />
+						</p:column>
+
+						<p:column
+							headerText="Nombre Sede" filterMatchMode="contains">
+							<h:outputText value="#{paquete.sedePrestador.nombreSede}" />
+						</p:column>
+                                            
+                                                <p:column
+							headerText="Mensaje Validacion" filterMatchMode="contains">
+                                                    <h:outputText value="#{negociacionPaqueteSSController.resourceBundle.getString(paquete.mensaje)}"/>
+						</p:column>
+
+					</p:dataTable>
+					<h:commandLink title="#{i18n.form_label_file_excel}">
+						<h:outputText class="fa fa-file-excel-o fa-2x success" />
+						<p:dataExporter type="xlsx" target="paquetesNoCruzados"
+							fileName="Paquetes_Sin_Cruzar_Servicio_Habilitacion" />
+					</h:commandLink>
+				</div>
+		</div>
+	</h:panelGroup>
+	</h:form>
+
+</f:view>

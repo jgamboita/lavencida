@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:cnx="http://conexia.com/utils">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" var="NegociacionModalidadEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoNegociacionEnum" var="EstadoNegociacionEnum"/>
+    <!--@elvariable id="controller" type="co.conexia.negociacion.wap.controller.negociacion.modalidad.sedesasede.TecnologiasSSController"-->
+    <!--@elvariable id="form" type="java.lang.String"-->
+    <p:panel>
+        <p:selectBooleanCheckbox id="checkIncentivos"
+                                 disabled="#{not empty controller.incentivos || tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}"
+                                 value="#{controller.aplicaDescuento}">
+            <p:ajax update=":#{form}:panelIncentivos" listener="#{controller.loadIni()}"/>
+        </p:selectBooleanCheckbox>
+        <p:outputLabel value=" Aplican incentivos o modelos a la negociacion?"/>
+        <hr/>
+    </p:panel>
+    <p:panel id="panelIncentivos" widgetVar="panelIncentivosW" closable="true" toggleable="true"
+             collapsed="#{!controller.aplicaDescuento}">
+        <h:form id="incentivosCapitaForm">
+            <div class="row">
+                <br/>
+                <div class="col-lg-4">
+                    <p:outputLabel for="tipoIncentivo" value="Tipo incentivo" styleClass="col-lg-12"/>
+                    <p:selectOneMenu id="tipoIncentivo" styleClass="anchoInput col-lg-12"
+                                     value="#{controller.incentivoNuevo.tipoIncentivo}" effect="fold"
+                                     required="#{controller.aplicaDescuento and controller.incentivoNuevo.tipoIncentivo == null and controller.incentivoNuevo.modelo == null}"
+                                     requiredMessage="#{i18n.form_label_required}"
+                                     disabled="#{controller.incentivoNuevo.modelo != null}">
+                        <p:ajax event="change" update="modeloIncentivo" immediate="true" resetValues="true"/>
+                        <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue=""/>
+                        <!--@elvariable id="tipoIncentivo" type="com.conexia.contratacion.commons.constants.enums.TipoIncentivoEnum"-->
+                        <f:selectItems value="#{controller.tipoIncentivoEnum}" var="tipoIncentivo"
+                                       itemValue="#{tipoIncentivo}" itemLabel="#{i18n[cnx:enum_key(tipoIncentivo)]}">
+                        </f:selectItems>
+                    </p:selectOneMenu>
+                    <p:message for="tipoIncentivo"/>
+                    <br/>
+                    <hr/>
+                    <p:outputLabel for="modeloIncentivo" value="Modelo incentivo" styleClass="col-lg-12"/>
+                    <p:selectOneMenu id="modeloIncentivo" styleClass="anchoInput col-lg-12"
+                                     value="#{controller.incentivoNuevo.modelo}" effect="fold"
+                                     required="#{controller.aplicaDescuento and controller.incentivoNuevo.tipoIncentivo == null and controller.incentivoNuevo.modelo == null}"
+                                     requiredMessage="#{i18n.form_label_required}"
+                                     disabled="#{controller.incentivoNuevo.tipoIncentivo != null}">
+                        <p:ajax event="change" update="tipoIncentivo" immediate="true" resetValues="true"/>
+                        <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue=""/>
+                        <f:selectItems value="#{controller.modeloEnum}" var="modelo" itemValue="#{modelo}"
+                                       itemLabel="Otros"/>
+                    </p:selectOneMenu>
+                    <p:message for="modeloIncentivo"/>
+                </div>
+                <div class="col-lg-4">
+                    <p:outputLabel for="descripcionIncentivo" value="Descripción" styleClass="col-lg-12"/>
+                    <p:inputTextarea id="descripcionIncentivo" rows="5" cols="30"
+                                     maxlength="200" autoResize="true" required="#{controller.aplicaDescuento}"
+                                     requiredMessage="#{i18n.form_label_required}"
+                                     value="#{controller.incentivoNuevo.descripcion}" styleClass="anchoInput"/>
+                    <p:message for="descripcionIncentivo"/>
+                </div>
+                <div class="col-lg-4">
+                    <p:outputLabel for="metaIncentivo" value="Meta" styleClass="col-lg-12"/>
+                    <p:inputTextarea id="metaIncentivo" rows="5" cols="30"
+                                     maxlength="200" autoResize="true" required="#{controller.aplicaDescuento}"
+                                     requiredMessage="#{i18n.form_label_required}"
+                                     value="#{controller.incentivoNuevo.meta}"
+                                     styleClass="anchoInput"/>
+                    <p:message for="metaIncentivo"/>
+                </div>
+            </div>
+            <p:spacer/>
+            <!-- Botones -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div align="right">
+                        <p:commandButton id="btnAgregarIncentivo" actionListener="#{controller.guardarIncentivos()}"
+                                         update="#{form}:panelIncentivos,#{form}:incentivosCapitaForm:tablaIncentivosCapita,#{form}:checkIncentivos"
+                                         value="Agregar" styleClass="btn btn-sm btn-info" process="@form"/>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <p:separator/>
+            <h:panelGroup id="panelIncentivo">
+                <p:dataTable id="tablaIncentivosCapita" var="incentivo" value="#{controller.incentivos}"
+                             emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5" paginator="false"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             paginatorPosition="bottom" rowsPerPageTemplate="5,10,15">
+                    <p:column headerText="Tipo incentivo" styleClass="text-center">
+                        <h:outputText value="#{incentivo.tipoIncentivo}"/>
+                    </p:column>
+                    <p:column headerText="Descripcion" styleClass="text-center">
+                        <h:outputText value="#{incentivo.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Meta" styleClass="text-center">
+                        <h:outputText value="#{incentivo.meta}"/>
+                    </p:column>
+                    <p:column styleClass="col-lg-1 col-md-1 col-sm-1">
+                        <p:commandButton icon="fa fa-ban" styleClass="btn btn-sm" process="@this"
+                                         actionListener="#{controller.eliminarIncentivos(incentivo.id)}"
+                                         update="#{form}:incentivosCapitaForm:tablaIncentivosCapita">
+                            <p:confirm header="Eliminar Incentivo" message="¿Desea eliminar el incentivo seleccionado?"
+                                       icon="fa fa-exclamation-triangle"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup>
+            <p:separator/>
+            <h:panelGroup id="panelModelo">
+                <p:dataTable id="tablaModelosCapita" var="incentivo" value="#{controller.modelos}"
+                             emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5" paginator="false"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             paginatorPosition="bottom" rowsPerPageTemplate="5,10,15">
+                    <p:column headerText="Modelo" styleClass="text-center">
+                        <h:outputText value="#{incentivo.modelo}"/>
+                    </p:column>
+                    <p:column headerText="Descripcion" styleClass="text-center">
+                        <h:outputText value="#{incentivo.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Meta" styleClass="text-center">
+                        <h:outputText value="#{incentivo.meta}"/>
+                    </p:column>
+                    <p:column styleClass="col-lg-1 col-md-1 col-sm-1">
+                        <p:commandButton icon="fa fa-ban" styleClass="btn btn-sm" process="@this"
+                                         actionListener="#{controller.eliminarModelo(incentivo.id)}"
+                                         update="#{form}:incentivosCapitaForm:tablaModelosCapita">
+                            <p:confirm header="Eliminar Modelo" message="¿Desea eliminar el modelo seleccionado?"
+                                       icon="fa fa-exclamation-triangle"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup>
+        </h:form>
+    </p:panel>
+</f:view>

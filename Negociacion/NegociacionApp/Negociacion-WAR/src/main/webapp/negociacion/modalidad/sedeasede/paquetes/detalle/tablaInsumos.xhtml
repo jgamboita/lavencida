@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:panelGroup id="panelInsumos">
+        <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption"> <p:outputLabel
+                    value="#{i18n.tab_insumo_paquete_buscar_ins}"
+                    styleClass="titulo-bold"/>
+			</span>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <p:outputLabel for="codigoTecnologiaEmssanarInsumos" value="#{i18n.tab_insumo_paquete_codigo_emssanar}"
+                               styleClass="col-lg-2"/>
+                <p:inputText id="codigoTecnologiaEmssanarInsumos" styleClass="input-sm col-lg-4"
+                             value="#{negociacionPaqueteDetalleSSController.filtroInsumoDto.codigo}"/>
+                <p:outputLabel for="descripcionTecnologiaEmssanarInsumos"
+                               value="#{i18n.tab_insumo_paquete_descripcion_cups}"
+                               styleClass="col-lg-2"/>
+                <p:inputText id="descripcionTecnologiaEmssanarInsumos" styleClass="input-sm col-lg-4"
+                             value="#{negociacionPaqueteDetalleSSController.filtroInsumoDto.descripcion}"/>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <div class="col-lg-10"></div>
+                <p:commandButton value="#{i18n.form_label_button_buscar}" process="panelInsumos"
+                                 styleClass="btn btn-sm btn-info" icon="fa fa-search" iconPos="left"
+                                 actionListener="#{negociacionPaqueteDetalleSSController.buscarInsumos()}"
+                                 update="insumosPaqueteDlgTabla"/>
+            </div>
+        </div>
+
+        <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption">
+				<p:outputLabel value="#{i18n.tab_insumo_paquete_ins_asociado}" styleClass="titulo-bold"/>
+			</span>
+        </div>
+    </h:panelGroup>
+    <div class="widget-header" style="margin-top: 20px;">
+        <span class="widget-caption">Tecnologías en Paquete Básico</span>
+    </div>
+
+    <p:dataTable id="insumosPaquete" var="paqueteInsumo"
+                 value="#{negociacionPaqueteDetalleSSController.insumosPaquetesPrestador}"
+                 style="margin: 0 auto;"
+                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                 paginator="true" paginatorPosition="bottom"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15">
+
+        <p:columnGroup type="header">
+            <p:row>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_codigo_emssanar}"
+                          styleClass="text-center col-lg-1" filterBy="#{paqueteInsumo.insumo.codigo}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_descripcion_cups}"
+                          styleClass="text-center col-lg-1" filterBy="#{paqueteInsumo.insumo.descripcion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_grupo}"
+                          styleClass="text-center col-lg-1" filterBy="#{paqueteInsumo.insumo.grupoInsumo.descripcion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_categoria}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{paqueteInsumo.insumo.categoriaInsumo.descripcion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_cantidad_maxima}"
+                          styleClass="text-center col-lg-1"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_cantidad_minima}"
+                          styleClass="text-center col-lg-1"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_observacion}"
+                          styleClass="text-center col-lg-1"/>
+                <p:column colspan="3" headerText="#{i18n.tab_tecnologia_paquete_ingreso}"
+                          styleClass="text-center col-lg-3"/>
+                <p:column colspan="3" headerText="#{i18n.tab_tecnologia_paquete_frecuencia}"
+                          styleClass="text-center col-lg-3"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_en_negociacion}"
+                          styleClass="text-center col-lg-1"/>
+            </p:row>
+            <p:row>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_aplica}" colspan="2"
+                          styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}" styleClass="text-center col-lg-2"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_unidad}" colspan="2"
+                          styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}"
+                          styleClass="text-center col-lg-2"/>
+            </p:row>
+        </p:columnGroup>
+
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.codigo}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.descripcion}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.grupoInsumo.descripcion}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.categoriaInsumo.descripcion}"/>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{paqueteInsumo.cantidadMaxima}"
+                         disabled="#{!paqueteInsumo.enNegociacion}"
+                         label="-" maxlength="5" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaInsumo(paqueteInsumo)}"
+                        update="insumosPaquete"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{paqueteInsumo.cantidadMinima}"
+                         disabled="#{!paqueteInsumo.enNegociacion}"
+                         label="-" maxlength="5" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaInsumo(paqueteInsumo)}"
+                        update="insumosPaquete"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{paqueteInsumo.observacion}"
+                         disabled="#{!paqueteInsumo.enNegociacion}"
+                         maxlength="100" validatorMessage="#{i18n.tab_tecnologia_observacion}">
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaInsumo(paqueteInsumo)}"
+                        update="insumosPaquete"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{paqueteInsumo.ingresoAplica}" style="width:100%"
+                             disabled="#{!paqueteInsumo.enNegociacion}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesIngresoAplica}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaInsumo(paqueteInsumo)}"
+                        update="insumosPaquete"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12" value="#{paqueteInsumo.ingresoCantidad}" maxlength="5"
+                            label="-"
+                            disabled="#{!paqueteInsumo.enNegociacion}"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaInsumo(paqueteInsumo)}"
+                        update="insumosPaquete"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{paqueteInsumo.frecuenciaUnidad}" style="width:100%"
+                             disabled="#{!paqueteInsumo.enNegociacion}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesFrecuenciaUnidad}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaInsumo(paqueteInsumo)}"
+                        update="insumosPaquete"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12" value="#{paqueteInsumo.frecuenciaCantidad}" maxlength="5"
+                            label="-"
+                            disabled="#{!paqueteInsumo.enNegociacion}"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaInsumo(paqueteInsumo)}"
+                        update="insumosPaquete"/>
+            </pe:inputNumber>
+        </p:column>
+        <p:column>
+            <p:selectBooleanCheckbox value="#{paqueteInsumo.enNegociacion}">
+                <p:ajax update="formTecnologiasTabs:tecnologiaTabs:insumosPaqueteDlgTabla formTecnologiasTabs:tecnologiaTabs:insumosPaquete"
+                        listener="#{negociacionPaqueteDetalleSSController.gestionarInsumoPaqueteBasico}"
+                        immediate="true"/>
+                <f:attribute name="insumo" value="#{paqueteInsumo}"/>
+            </p:selectBooleanCheckbox>
+        </p:column>
+    </p:dataTable>
+    <p:growl id="growlInsumos" life="2000"/>
+    <div class="widget-header" style="margin-top: 20px;">
+        <span class="widget-caption"> Tecnologías IPS </span>
+    </div>
+
+    <p:dataTable id="insumosPaqueteIps" var="paqueteInsumo"
+                 value="#{negociacionPaqueteDetalleSSController.paqueteInsumoNegociacion}"
+                 style="margin: 0 auto;"
+                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                 paginator="true" paginatorPosition="bottom"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15">
+
+        <p:columnGroup type="header">
+            <p:row>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_codigo_emssanar}"
+                          styleClass="text-center col-lg-1" filterBy="#{paqueteInsumo.insumo.codigo}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_descripcion_cups}"
+                          styleClass="text-center col-lg-2" filterBy="#{paqueteInsumo.insumo.descripcion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_ins_asociado}"
+                          styleClass="text-center col-lg-1" filterBy="#{paqueteInsumo.insumo.grupoInsumo}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_insumo_paquete_categoria}"
+                          styleClass="text-center col-lg-1" filterBy="#{paqueteInsumo.insumo.categoriaInsumo}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_cantidad_maxima}"
+                          styleClass="text-center col-lg-1"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_cantidad_minima}"
+                          styleClass="text-center col-lg-1"/>
+
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_observacion}"
+                          styleClass="text-center col-lg-1"/>
+                <p:column colspan="3" headerText="#{i18n.tab_tecnologia_paquete_ingreso}"
+                          styleClass="text-center col-lg-3"/>
+                <p:column colspan="3" headerText="#{i18n.tab_tecnologia_paquete_frecuencia}"
+                          styleClass="text-center col-lg-3"/>
+                <p:column rowspan="2" headerText="#{i18n.form_label_button_eliminar}"
+                          styleClass="text-center col-lg-1"/>
+            </p:row>
+            <p:row>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_aplica}" colspan="2"
+                          styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}" styleClass="text-center col-lg-2"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_unidad}" colspan="2"
+                          styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}" styleClass="text-center col-lg-2"/>
+            </p:row>
+        </p:columnGroup>
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.codigo}"/>
+        </p:column>
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.descripcion}"/>
+        </p:column>
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.grupoInsumo.descripcion}"/>
+        </p:column>
+        <p:column>
+            <h:outputText value="#{paqueteInsumo.insumo.categoriaInsumo.descripcion}"/>
+        </p:column>
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{paqueteInsumo.cantidadMaxima}"
+                         maxlength="5" label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarInsumoNegociacion(paqueteInsumo)}"
+                        update="insumosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{paqueteInsumo.cantidadMinima}"
+                         maxlength="5" label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarInsumoNegociacion(paqueteInsumo)}"
+                        update="insumosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{paqueteInsumo.observacion}"
+                         maxlength="100" validatorMessage="#{i18n.tab_tecnologia_observacion}">
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarInsumoNegociacion(paqueteInsumo)}"
+                        update="insumosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{paqueteInsumo.ingresoAplica}" style="width:100%">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesIngresoAplica}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarInsumoNegociacion(paqueteInsumo)}"
+                        update="insumosPaqueteIps"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12" value="#{paqueteInsumo.ingresoCantidad}" maxlength="5"
+                            label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarInsumoNegociacion(paqueteInsumo)}"
+                        update="insumosPaqueteIps"/>
+            </pe:inputNumber>
+        </p:column>
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{paqueteInsumo.frecuenciaUnidad}" style="width:100%">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesFrecuenciaUnidad}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarInsumoNegociacion(paqueteInsumo)}"
+                        update="insumosPaqueteIps"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12" value="#{paqueteInsumo.frecuenciaCantidad}" maxlength="5"
+                            label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarInsumoNegociacion(paqueteInsumo)}"
+                        update="insumosPaqueteIps"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column>
+            <p:commandButton icon="ui-icon-trash" title="#{i18n.form_label_button_eliminar}" process="@this"
+                             actionListener="#{negociacionPaqueteDetalleSSController.borrarInsumo}"
+                             update="insumosPaqueteIps">
+                <f:attribute name="insumoBorrar" value="#{paqueteInsumo}"/>
+            </p:commandButton>
+        </p:column>
+    </p:dataTable>
+
+    <p:dialog header="Agregar Insumos" widgetVar="agregarInsumosDlg"
+              modal="true" width="80%" height="80%">
+        <p:dataTable id="insumosPaqueteDlgTabla" var="insumo"
+                     value="#{negociacionPaqueteDetalleSSController.insumosVentanaModal}"
+                     widgetVar="insumosPaqueteTable" style="margin: 0 auto"
+                     emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                     paginator="true" paginatorPosition="bottom" scrollable="true" scrollHeight="250"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,15"
+                     selection="#{negociacionPaqueteDetalleSSController.insumosSeleccionados}"
+                     rowKey="#{insumo.id}">
+            <p:column headerText="#{i18n.tab_insumo_paquete_codigo_emssanar}"
+                      styleClass="text-center col-lg-1" filterBy="#{insumo.codigo}"
+                      filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{insumo.codigo}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_insumo_paquete_descripcion_cups}"
+                      styleClass="text-center col-lg-1" filterBy="#{insumo.descripcion}"
+                      filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{insumo.descripcion}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_insumo_paquete_grupo}"
+                      styleClass="text-center col-lg-1" filterBy="#{insumo.grupoInsumo}"
+                      filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{insumo.grupoInsumo.descripcion}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_insumo_paquete_categoria}"
+                      styleClass="text-center col-lg-1" filterBy="#{insumo.categoriaInsumo}"
+                      filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{insumo.categoriaInsumo.descripcion}"/>
+            </p:column>
+            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+
+            <f:facet name="footer">
+                <p:commandButton icon="ui-icon-plus" value="#{i18n.form_label_agregar}" process="@parent"
+                                 actionListener="#{negociacionPaqueteDetalleSSController.insertarInsumos}"
+                                 update="formTecnologiasTabs:tecnologiaTabs:insumosPaqueteDlgTabla formTecnologiasTabs:tecnologiaTabs:insumosPaquete formTecnologiasTabs:tecnologiaTabs:insumosPaqueteIps"/>
+            </f:facet>
+        </p:dataTable>
+    </p:dialog>
+
+    <p:confirmDialog id="confirmarDeleteAllInsumos" global="true"
+                     showEffect="fade" hideEffect="fade" widgetVar="confirmDeleteAllIns"
+                     header="Confirmar Eliminación de todos los Insumos tecnologías Ips"
+                     message="#{i18n.paquete_msj_confirm_eliminar_ins}">
+        <div class="ui-grid-row text-right" style="margin-top: 5px;">
+            <p:commandButton value="Aceptar" styleClass="ui-confirmdialog-yes" icon="ui-icon-check">
+                <p:ajax event="click" process="@this"
+                        listener="#{negociacionPaqueteDetalleSSController.deleteAllInsumos}"
+                        update="@form" oncomplete="PF('confirmDeleteAllIns').hide()"/>
+            </p:commandButton>
+            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close">
+                <p:ajax event="click" oncomplete="PF('confirmDeleteAllIns').hide()"/>
+            </p:commandButton>
+        </div>
+    </p:confirmDialog>
+</f:view>

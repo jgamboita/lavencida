@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<workbook>
+    <worksheet idx="0">
+        <section startRow="0" endRow="0" />
+        <section startRow="1" endRow="1" />
+        <section startRow="2" endRow="2" />
+        <loop startRow="3" endRow="3" items="tecnologiasOfertadas" var="osm" varType="com.conexia.contratacion.commons.dto.negociacion.MedicamentoNegociacionDto">
+            <section startRow="3" endRow="3">
+                <mapping row="3" col="0">osm.medicamentoDto.cums</mapping>
+                <mapping row="3" col="1">osm.medicamentoDto.descripcion</mapping>
+                <mapping row="3" col="2">osm.valorPropuestoPortafolio</mapping>
+            </section>
+            <loopbreakcondition>
+                <rowcheck offset="0">
+                	<cellcheck offset="2"></cellcheck>
+                </rowcheck>                
+            </loopbreakcondition>
+        </loop>
+    </worksheet>
+</workbook>

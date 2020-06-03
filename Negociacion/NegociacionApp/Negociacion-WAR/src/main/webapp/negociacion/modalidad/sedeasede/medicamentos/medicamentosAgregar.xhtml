@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+    
+	<h:form id="medicamentosAgregarForm">
+
+		<div class="form-group">
+			<div class="row">
+				<div class="col-lg-12">
+					<h:panelGroup id="medicamentoAgregarPanel">
+						<p:dataTable id="medicamentoAgregarTable" var="medicamento"
+							value="#{negociacionMedicamentoSSController.medicamentosAgregar}"
+							rowKey="#{medicamento.id}"
+							selection="#{negociacionMedicamentoSSController.medicamentosAgregarSeleccionados}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+							paginator="true" paginatorPosition="bottom" editable="true"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+							widgetVar="medicamentoAgregarTableWV">
+
+							<p:column filterBy="#{medicamento.atc}"
+								headerText="ATC" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.atc}" />
+							</p:column>
+
+							<p:column filterBy="#{medicamento.descripcionAtc}"
+								headerText="Descripción ATC" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.descripcionAtc}" />
+							</p:column>
+
+							<p:column filterBy="#{medicamento.cums}"
+								headerText="CUM" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.cums}" />
+							</p:column>
+
+							<p:column filterBy="#{medicamento.principioActivo}"
+								headerText="Principio activo" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.principioActivo}" />
+							</p:column>
+							
+							<p:column filterBy="#{medicamento.concentracion}"
+								headerText="Concentración" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.concentracion}" />
+							</p:column>
+							
+							<p:column filterBy="#{medicamento.formaFarmaceutica}"
+								headerText="Forma farmaceútica" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.formaFarmaceutica}" />
+							</p:column>
+							
+							<p:column filterBy="#{medicamento.titularRegistroSanitario}"
+								headerText="Titular registro sanitario" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.titularRegistroSanitario}" />
+							</p:column>
+							
+							<p:column filterBy="#{medicamento.registroSanitario}"
+								headerText="Registro sanitario" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.registroSanitario}" />
+							</p:column>
+							
+							<p:column filterBy="#{medicamento.descripcion}"
+								headerText="Descripción" filterMatchMode="contains">
+								<h:outputText value="#{medicamento.descripcion}" />
+							</p:column>
+
+							<p:column class="text-center" selectionMode="multiple" width="5%" />
+
+						</p:dataTable>
+					</h:panelGroup>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-2 col-lg-offset-10">
+					<p:commandButton id="btnAgregarMedicamento" 
+						value="#{i18n.form_label_agregar}" 
+                                                styleClass="btn btn-sm btn-primary" 
+                                                process="@form"
+                                                update="@([id$=negociacionMedicamentosSS]) "
+                                                onsuccess="PF('negociacionMedicamentosSS').clearFilters()"
+						actionListener="#{negociacionMedicamentoSSController.agregarMedicamentoNegociacion(negociacionMedicamentoSSController.medicamentosAgregarSeleccionados)}" 
+                                                 />
+				</div>
+			</div>
+		</div>
+	</h:form>
+</f:view>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="resumenGestion" pageWidth="572" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="572" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="d2088c51-311a-4332-9f07-c456c5f4f4d8">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="idComite" class="java.lang.Integer"/>
+	<parameter name="texto" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[WITH casos_comites AS (
+        SELECT estado
+          FROM contratacion.prestador_comite
+         WHERE comite_id = $P{idComite}
+           AND estado IN ('APLAZADO', 'APROBADO', 'NEGADO')
+     )
+     ,caso_aplazado AS (
+	SELECT count(estado) AS aplazado
+	  FROM casos_comites
+	 WHERE estado = 'APLAZADO'
+     )
+     ,caso_aprobado AS (
+        SELECT count(estado) AS aprobado
+          FROM casos_comites
+         WHERE estado = 'APROBADO'
+     )
+     ,caso_negado AS (
+        SELECT count(estado) AS negado
+          FROM casos_comites
+         WHERE estado = 'NEGADO'
+     ), total AS (
+	SELECT count(estado) AS total
+	  FROM casos_comites
+     )
+SELECT * FROM caso_aplazado AS a ,caso_aprobado ap, caso_negado n, total]]>
+	</queryString>
+	<field name="numAprobados" class="java.lang.Integer">
+		<fieldDescription><![CDATA[numAprobados]]></fieldDescription>
+	</field>
+	<field name="numAplazados" class="java.lang.Integer">
+		<fieldDescription><![CDATA[numAplazados]]></fieldDescription>
+	</field>
+	<field name="numNegados" class="java.lang.Integer">
+		<fieldDescription><![CDATA[numNegados]]></fieldDescription>
+	</field>
+	<field name="numTotalCasos" class="java.lang.Integer">
+		<fieldDescription><![CDATA[numTotalCasos]]></fieldDescription>
+	</field>
+	<field name="texto" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="210" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" mode="Transparent" x="0" y="15" width="572" height="164" uuid="091d1890-f1de-4a45-a253-8b4f712a15b0"/>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="rtf">
+					<font fontName="SansSerif" size="11" isBold="false" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{texto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="227" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

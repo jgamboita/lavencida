@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:o="http://omnifaces.org/ui">
+    <h:form id="descargarAnexoForm">
+        <h:panelGroup layout="block"
+                    rendered="#{consultaContratosAnexosTarifarioController.tieneProcedimientos()}">
+            <span style="float: left">Procedimientos</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton
+                    id="btnDescargarAnexoProcedimientos"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{consultaContratosAnexosTarifarioController.descargarAnexoExcelEvento('procedimientos')}" >
+                    <p:fileDownload
+                        value="#{consultaContratosAnexosTarifarioController.file}" />
+                </p:commandButton>
+            </span>
+            <div style="clear: both"></div>
+        </h:panelGroup>
+        <h:panelGroup layout="block"
+                    rendered="#{consultaContratosAnexosTarifarioController.tieneAnexosSinTarifarioProcedimientos()
+                    and not consultaContratosAnexosTarifarioController.negociacionEsCapita}">
+            <span style="float: left">Procedimientos sin tarifario</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton 
+                    id="btnDescargarAnexoProcedimientosSinDetalles"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{consultaContratosAnexosTarifarioController.descargarAnexoExcelEvento('procedimientosSinDetalles')}">
+                    <p:fileDownload
+                        value="#{consultaContratosAnexosTarifarioController.file}" />
+                </p:commandButton>
+            </span>
+            <div style="clear: both"></div>
+        </h:panelGroup>
+        <h:panelGroup layout="block"
+                    rendered="#{consultaContratosAnexosTarifarioController.tieneMedicamentos()}">
+            <span style="float: left">Medicamentos</span>
+            <span style="float: right; width: 50%">
+            <p:commandButton 
+                id="btnDescargarAnexoMedicamentos"
+                alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                icon="fa fa-file-excel-o"
+                actionListener="#{consultaContratosAnexosTarifarioController.descargarAnexoExcelEvento('medicamentos')}">
+                <p:fileDownload
+                    value="#{consultaContratosAnexosTarifarioController.file}" />
+            </p:commandButton>
+            </span>
+            <div style="clear: both"></div>
+        </h:panelGroup>
+        <h:panelGroup layout="block"
+                    rendered="#{consultaContratosAnexosTarifarioController.tienePaquetes()}">
+            <span style="float: left">Paquetes</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton 
+                    id="btnDescargarAnexoPaquetes"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{consultaContratosAnexosTarifarioController.descargarAnexoExcelEvento('paquetes')}">
+                    <p:fileDownload
+                        value="#{consultaContratosAnexosTarifarioController.file}" />
+                </p:commandButton>
+                
+            </span>
+        </h:panelGroup>
+		<h:panelGroup layout="block"
+			rendered="#{consultaContratosAnexosTarifarioController.tienePoblacion()}">
+			<span style="float: left">Poblacion</span>
+			<span style="float: right; width: 50%"> 
+			<p:commandButton
+					id="btnDescargarAnexoPoblacion"
+					alt="#{i18n.negociacion_btn_alt_des_anexo}"
+					title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+					icon="fa fa-file-excel-o"
+					actionListener="#{consultaContratosAnexosTarifarioController.descargarAnexoExcelEvento('poblacion')}" />
+			</span>
+		</h:panelGroup>
+	</h:form>
+</f:view>

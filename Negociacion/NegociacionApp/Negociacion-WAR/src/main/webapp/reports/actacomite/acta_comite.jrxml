@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="acta_comite" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="30c3d881-f300-4bd6-85a9-d2f28c4035c3">
+	<property name="ireport.zoom" value="1.464100000000001"/>
+	<property name="ireport.x" value="212"/>
+	<property name="ireport.y" value="349"/>
+	<property name="net.sf.jasperreports.export.pdf.force.linebreak.policy" value="true"/>
+	<parameter name="comiteId" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="imgStream" class="java.io.InputStream" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select
+	acc.comite_contratacion_id,
+	acc.lugar,
+	acc.fecha_acta,
+	acc.coordinador,
+	acc.cargo,
+	acc.objetivos,
+	acc.desarrollo_reunion,
+	acc.lectura_acta_anterior
+ from contratacion.acta_comite_contratacion acc
+ where acc.comite_contratacion_id = $P{comiteId}]]>
+	</queryString>
+	<field name="lugar" class="java.lang.String">
+		<fieldDescription><![CDATA[lugar]]></fieldDescription>
+	</field>
+	<field name="fechaActa" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaActa]]></fieldDescription>
+	</field>
+	<field name="cordinador" class="java.lang.String">
+		<fieldDescription><![CDATA[cordinador]]></fieldDescription>
+	</field>
+	<field name="cargo" class="java.lang.String">
+		<fieldDescription><![CDATA[cargo]]></fieldDescription>
+	</field>
+	<field name="objetivos" class="java.lang.String">
+		<fieldDescription><![CDATA[objetivos]]></fieldDescription>
+	</field>
+	<field name="desarrolloReunion" class="java.lang.String">
+		<fieldDescription><![CDATA[desarrolloReunion]]></fieldDescription>
+	</field>
+	<field name="lecturaActaAnterior" class="java.lang.String">
+		<fieldDescription><![CDATA[lecturaActaAnterior]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.Long">
+		<fieldDescription><![CDATA[id]]></fieldDescription>
+	</field>
+	<field name="participantes" class="java.util.Collection">
+		<fieldDescription><![CDATA[participantes]]></fieldDescription>
+	</field>
+	<field name="solicitudesComite" class="java.util.Collection">
+		<fieldDescription><![CDATA[solicitudesComite]]></fieldDescription>
+	</field>
+	<field name="resumen" class="java.lang.Object">
+		<fieldDescription><![CDATA[resumen]]></fieldDescription>
+	</field>
+	<field name="compromisos" class="java.util.List">
+		<fieldDescription><![CDATA[compromisos]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="40">
+			<image>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="100" height="40" uuid="8587f84e-b9ad-4bf5-acdd-99e507d1b5d8"/>
+				<imageExpression><![CDATA[$P{imgStream}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="0" y="0" width="572" height="15" uuid="091d1890-f1de-4a45-a253-8b4f712a15b0"/>
+				<box leftPadding="2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ACTA COMIT\u00C9 CONTRATACI\u00D3N DE RED DE SERVICIOS COMIT\u00C9 " + $P{comiteId}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="22" width="152" height="20" forecolor="#000000" uuid="a1b2437c-822b-4105-99dd-f21e3f96e561"/>
+				<box topPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[COORDINADOR REUNIÓN]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="152" y="22" width="164" height="20" uuid="ad6cee89-875d-4356-be35-98c582b8aeff"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{cordinador}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="329" y="22" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="c9200a89-69d4-4311-97ea-cc3f6cfe271c"/>
+				<box topPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[CARGO]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="429" y="22" width="143" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="4c8da00a-3488-4cf7-9abe-e5d7277dd665"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="329" y="0" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="589e5c63-7bd0-402f-a132-70d591b84ee0"/>
+				<box topPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[FECHA Y HORA]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="152" y="0" width="164" height="20" uuid="e0eb2a06-f605-4f76-a277-6bf612b8a9bf"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lugar}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="152" height="20" forecolor="#000000" uuid="64be90fc-af1c-49f1-b69d-399f998ff56d"/>
+				<box topPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LUGAR]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="429" y="0" width="143" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="a2a49354-03c7-40ed-9586-a34bc396f670"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaActa}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="55" splitType="Stretch">
+			<subreport>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="572" height="50" uuid="4677fa83-1505-4b68-9e73-a9baf55e2906"/>
+				<subreportParameter name="comiteId">
+					<subreportParameterExpression><![CDATA[$P{comiteId}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{participantes})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "participantesComite.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="35">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="15" width="572" height="16" uuid="c1dfa7e8-0ea4-4d96-b3f1-a8823479e851"/>
+				<box topPadding="4" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+				<textElement textAlignment="Justified"/>
+				<textFieldExpression><![CDATA[$F{objetivos}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="572" height="15" forecolor="#000000" backcolor="#CCCCCC" uuid="d50f0902-f705-4c48-87ff-5d79aa150433"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[OBJETIVOS]]></text>
+			</staticText>
+		</band>
+		<band height="35">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="15" width="572" height="16" uuid="e89ac23e-ca4e-4203-b580-0b3b7a373943"/>
+				<box topPadding="4"/>
+				<textElement textAlignment="Justified"/>
+				<textFieldExpression><![CDATA[$F{desarrolloReunion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="572" height="15" forecolor="#000000" backcolor="#CCCCCC" uuid="457b3a7c-c4e5-475e-be3f-2f6088a661d9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[DESARROLLO DE LA REUNIÓN]]></text>
+			</staticText>
+		</band>
+		<band height="35">
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="572" height="15" forecolor="#000000" backcolor="#CCCCCC" uuid="bace473a-aec0-4382-92f8-36f3f3f03fb4"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[LECTURA DEL ACTA ANTERIOR]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="15" width="572" height="16" uuid="e4880287-40c7-4822-8e48-74a9e94c9335"/>
+				<box topPadding="4"/>
+				<textElement textAlignment="Justified"/>
+				<textFieldExpression><![CDATA[$F{lecturaActaAnterior}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="55">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="572" height="50" uuid="d1d251d1-83f8-4913-b94f-cbcd1ba3b9d5"/>
+				<subreportParameter name="idComite">
+					<subreportParameterExpression><![CDATA[$P{comiteId}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{solicitudesComite})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "solicitudes_comite.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="55">
+			<subreport>
+				<reportElement x="0" y="0" width="572" height="50" uuid="e62a2890-ffa1-40d0-95e1-0611737a9dc8"/>
+				<subreportParameter name="idComite">
+					<subreportParameterExpression><![CDATA[$P{comiteId}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(
+    Collections.singletonList($F{resumen}))]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "resumenGestion.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="55">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="572" height="50" uuid="29d3fb0c-a74a-4e86-82cc-a7c688f66f89"/>
+				<subreportParameter name="comiteId">
+					<subreportParameterExpression><![CDATA[$P{comiteId}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{compromisos})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "compromisos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="12" splitType="Stretch">
+			<textField>
+				<reportElement x="486" y="0" width="76" height="12" uuid="6dc3d19a-8449-4b4b-8f84-7fc4c8eda446"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["P\u00E1gina " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="562" y="0" width="10" height="12" uuid="06aa916f-ec03-44b3-ba36-ad34d208283b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

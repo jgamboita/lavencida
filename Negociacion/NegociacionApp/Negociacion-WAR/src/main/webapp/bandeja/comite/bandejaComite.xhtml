@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+	<script type="text/javascript">
+		PrimeFaces.locales['es'] = {
+			closeText : 'Cerrar',
+			prevText : 'Anterior',
+			nextText : 'Siguiente',
+			monthNames : [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
+					'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+					'Noviembre', 'Diciembre' ],
+			monthNamesShort : [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+					'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+			dayNames : [ 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves',
+					'Viernes', 'Sábado' ],
+			dayNamesShort : [ 'Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab' ],
+			dayNamesMin : [ 'D', 'L', 'M', 'X', 'J', 'V', 'S' ],
+			weekHeader : 'Semana',
+			firstDay : 1,
+			isRTL : false,
+			showMonthAfterYear : false,
+		};
+	</script>
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="#{i18n.bandeja_comite_title}" />
+
+		</ui:define>
+		<ui:define name="content">
+
+			<!-- Pop-up de Crear nuevo comité -->
+			<p:dialog header="#{i18n.bandeja_comite_nuevo_title_dialog}"
+				modal="true" widgetVar="nuevoComiteDlg" width="45%" height="50%">
+				<ui:include src="./../../comite/nuevoComitePopUp.xhtml"></ui:include>
+			</p:dialog>
+			<h:form id="formComite">
+				<p:panel id="panelBotonesComite">
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="Comites" styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+					<!-- Tabla de comites -->
+					<div class="form-group">
+						<div class="row">
+							<div class="col-lg-12">
+								<p:dataTable id="tablaComitesGral" widgetVar="tablaComitesGral"
+									var="comite" value="#{bandejaComiteController.comites}"
+									emptyMessage="#{i18n.form_label_datatable_noregistros}"
+									rows="15" paginator="true" paginatorPosition="bottom"
+									paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="5,10,15">
+									<p:ajax event="page" />
+									<p:ajax event="sort" />
+									<p:ajax event="rowSelectCheckbox" />
+									<p:ajax event="filter" />
+
+									<p:column filterBy="#{comite.id}" filterMatchMode="contains"
+										filterStyleClass="anchoInput"
+										headerText="#{i18n.bandeja_comite_tabla_col_codigo_comite}"
+										styleClass="text-center">
+										<h:outputText value="#{comite.id}" />
+									</p:column>
+
+									<p:column filterBy="#{comite.fechaComite}"
+										filterMatchMode="contains" filterStyleClass="anchoInput"
+										headerText=" #{i18n.bandeja_comite_tabla_col_fecha_comite}"
+										styleClass="text-center">
+                                                                            <h:outputText value="#{comite.fechaComite}">
+                                                                                <f:convertDateTime type="date" pattern="yyyy/MM/dd"/>
+                                                                            </h:outputText>										
+									</p:column>
+
+									<p:column filterBy="#{comite.fechaLimitePrestadores}"
+										filterMatchMode="contains" filterStyleClass="anchoInput"
+										headerText="#{i18n.bandeja_comite_tabla_col_fecha_limite_comite}"
+										styleClass="text-center">
+
+										<p:calendar value="#{comite.fechaLimitePrestadores}"
+											pattern="yyyy/MM/dd" showOn="button" size="10" locale="es"
+											readonlyInput="true" autocomplete="false"
+											mindate="#{bandejaComiteController.fechaActual}"
+											rendered="#{bandejaComiteController.puedeProgramarComite}"
+											disabled="#{bandejaComiteController.validarEstadoComite(comite)}">
+											<p:ajax event="dateSelect"
+												listener="#{bandejaComiteController.reProgramarFechaLimitePrestadores(comite, component.value)}"
+												update="formComite:tablaComitesGral" />
+										</p:calendar>
+									</p:column>
+
+									<p:column filterBy="#{comite.cantidadPrestadores}"
+										filterMatchMode="contains" filterStyleClass="anchoInput"
+										headerText="#{i18n.bandeja_comite_tabla_col_cant_prestadores}"
+										styleClass="text-center">
+										<h:outputText value="#{comite.cantidadPrestadores}" />
+									</p:column>
+
+									<p:column filterBy="#{comite.limitePrestadores}"
+										filterMatchMode="contains" filterStyleClass="anchoInput"
+										headerText="#{i18n.bandeja_comite_tabla_col_cant_limit_prestadores}"
+										styleClass="text-center">
+										<h:outputText value="#{comite.limitePrestadores}" />
+									</p:column>
+
+									<p:column filterBy="#{comite.estadoComite}"
+										filterMatchMode="contains" filterStyleClass="anchoInput"
+										headerText="#{i18n.bandeja_comite_tabla_col_estado_comite}"
+										styleClass="text-center">
+										<h:outputText
+											value="#{i18n[cnx:enum_key(comite.estadoComite)]}" />
+									</p:column>
+
+									<!-- Acciones -->
+									<p:column headerText="" styleClass="text-center">
+										<div class="row">
+											<div class="col-lg-3">
+												<p:commandButton id="btnVerNegociaciones"
+													rendered="#{bandejaComiteController.puedeGestionarComite}"
+													actionListener="#{bandejaComiteController.loadViewVerComite(comite)}"
+													icon="fa fa-users"
+													alt="#{i18n.bandeja_comite_title_btn_gestionar_comite}"
+													title="#{i18n.bandeja_comite_title_btn_gestionar_comite}"
+													update="formComite" process="@this" />
+											</div>
+											<div class="col-lg-3">
+												<p:commandButton id="subirActa"
+													rendered="#{bandejaComiteController.renderSubirActa(comite)}"
+													icon="fa fa-upload" alt="#{i18n.acta_comite_subir_acta}"
+													title="#{i18n.acta_comite_subir_acta}"
+													actionListener="#{bandejaComiteController.verSubirActa(comite)}"
+													update="tablaComitesGral" process="@this">
+												</p:commandButton>
+											</div>
+											<div class="col-lg-3">
+												<p:commandButton id="descargarActa"
+													rendered="#{comite.isActaCargada}" icon="fa fa-download"
+													alt="#{i18n.acta_comite_descargar_acta}"
+													title="#{i18n.acta_comite_descargar_acta}" ajax="false"
+													update="tablaComitesGral"
+													actionListener="#{bandejaComiteController.descargarActa(comite)}"
+													process="@this">
+													<p:fileDownload
+														value="#{bandejaComiteController.actaComite}" />
+												</p:commandButton>
+											</div>
+
+											<div class="col-lg-3">
+												<p:commandButton id="historicoComite" icon="fa fa-clock-o"
+													alt="#{i18n.bandeja_comite_title_btn_historico}"
+													title="#{i18n.bandeja_comite_title_btn_historico}"
+													action="#{bandejaComiteController.cargarHistorico(comite)}"
+													oncomplete="PF('historicoComiteDialog').show()"
+													update="formComite:historicoComiteDialog"
+													process="@this">
+												</p:commandButton>												
+											</div>
+										</div>
+									</p:column>
+								</p:dataTable>
+								
+								<p:dialog widgetVar="historicoComiteDialog" id="historicoComiteDialog"
+									header="#{i18n.bandeja_comite_title_dialog_historico}"
+									modal="true" appendTo="@form" width="80%">
+									
+									<p:dataTable
+										value="#{bandejaComiteController.historicoComite}"
+										var="historico" type="definition" 
+										emptyMessage="#{i18n.bandeja_comite_title_dialog_historico_empty}"
+										rows="10" 
+										style="font-weight: normal !important; font-size: 10px;">
+										
+                                                                            <p:column headerText="#{i18n.historico_comite_fecha_modificacion}" styleClass="col-lg-1">													
+								        	<h:outputText 
+								        		value="#{historico.fechaModificacion}">	
+								        			<f:convertDateTime pattern="dd/MM/yyyy kk:mm"/>				        		
+								        	</h:outputText>	
+								        </p:column>	
+								        
+								        <p:column headerText="#{i18n.historico_comite_descripcion_cambio}" styleClass="col-lg-2">													
+								        	<h:outputText 
+								        		value="#{historico.descripcion}"/>
+								        </p:column>
+								        
+								        <p:column headerText="#{i18n.historico_comite_detalle_anterior}" styleClass="col-lg-4">
+								        	<h:outputText 
+								        		value="#{historico.valorAnterior}"/>
+								        </p:column>
+								        		
+								        <p:column headerText="#{i18n.historico_comite_detalle_actual}" styleClass="col-lg-4">
+								        	<h:outputText 
+								        		value="#{historico.valorNuevo}"/>
+								        </p:column>
+								        		
+								        <p:column headerText="#{i18n.historico_comite_usuario_modificador}" styleClass="col-lg-1">
+								        	<h:outputText 
+								        		value="#{historico.usuario}"/>
+								        </p:column>
+								        		
+								    </p:dataTable>
+								</p:dialog>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-md-offset-8 col-lg-4">
+								<div class="text-right">
+									<p:commandButton
+										value="#{i18n.bandeja_comite_label_btn_nuevo_comite}"
+										process="@this" update="formComite"
+										actionListener="#{bandejaComiteController.crearNuevoComite}"
+										styleClass="btn btn-sm btn-info" icon="fa fa-calendar"
+										iconPos="left"
+										rendered="#{bandejaComiteController.puedeProgramarComite}">
+									</p:commandButton>
+								</div>
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</h:form>
+			<script type="text/javascript">
+				function start() {
+					PF('statusDialog').show();
+				}
+				function stop() {
+					PF('statusDialog').hide();
+				}
+			</script>
+
+
+			<!-- Pop-up de Invitación a Negociar -->
+			<p:dialog header="#{i18n.acta_comite_subir_acta}" modal="true"
+				widgetVar="subirActaDlg" width="60%" height="220px">
+				<h:form id="subirActaForm">
+					<p:outputPanel id="invitacionOfertarPanel">
+						<div class="row">
+							<div class="col-lg-2"></div>
+							<div class="col-lg-8">
+								<p>
+									#{i18n.acta_comite_mensaje_cargue_archivo} <br />
+								</p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-2"></div>
+							<div class="col-lg-8">
+								<p:fileUpload
+									fileUploadListener="#{bandejaComiteController.handleFileUpload}"
+									mode="advanced" dragDropSupport="true"
+									update="messages,formComite:panelBotonesComite, formComite:tablaComitesGral"
+									sizeLimit="10000000" label="Escoger Acta" uploadLabel="Subir"
+									fileLimit="1" multiple="false" cancelLabel="Cancelar"
+									invalidFileMessage="#{i18n.acta_comite_archivo_invalido}"
+									invalidSizeMessage="#{i18n.acta_comite_archivo_limite_superado}"
+									fileLimitMessage="#{i18n.acta_comite_archivo_limite_archivos_superado}"
+									allowTypes="/(\.|\/)(pdf)$/" />
+								<p:growl id="messages" showDetail="true" />
+								<br /> #{i18n.acta_comite_formatos_validos}
+							</div>
+						</div>
+					</p:outputPanel>
+				</h:form>
+			</p:dialog>
+		</ui:define>
+	</ui:composition>
+</f:view>
+

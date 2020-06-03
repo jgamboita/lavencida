@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:c="http://java.sun.com/jstl/core"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoAsignacionTarifaServicioEnum" var="TipoAsignacionTarifaServicioEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.ArchivosNegociacionEnum" var="ArchivosNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoNegociacionEnum" var="EstadoNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" var="NegociacionModalidadEnum"/>
+    <style type="text/css">
+        .ui-fileupload-buttonbar {
+            margin: 0px 0px 0px 0px !important;
+            padding: 0px 0px 0px 0px !important;
+            border: none;
+        }
+
+        .ui-fileupload {
+            margin: 0px 0px 0px 0px !important;
+            padding: 0px 0px 0px 0px !important;
+            display: inline-block;
+            border: none;
+        }
+
+        .ui-fileupload-content {
+            border: none;
+        }
+
+        .ui-fileupload-choose {
+            background-color: #fda63e !important;
+            color: #ffffff !important;
+            font-family: 'PT Sans', arial, verdana, sans-serif;
+            font-size: 1em;
+            font-weight: normal;
+        }
+
+        span.ui-fileupload-choose > span.ui-icon-plusthick {
+            display: none !important;
+        }
+
+        span.ui-fileupload-choose > span.ui-button-text {
+            padding-left: 1em !important;
+        }
+
+        /**INICIO style modal Grupos Etareos**/
+        .grupos {
+            width: 500px !important;
+        }
+
+        .grupos th {
+            font-size: 14px !important;
+        }
+
+        .grupos .data-total {
+            font-size: 13px !important;
+            background-color: #fff !important;
+            border-style: none !important;
+            border-right: 1px solid #cccccc !important;
+            font-weight: normal !important;
+        }
+
+        /**FIN style modal Grupos Etareos tablaRias**/
+        .inputPorcenDescuento .pe-inputNumber {
+            width: 60px !important;
+        }
+
+        .icon-plus-etareos {
+            width: 36px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+    </style>
+    <pe:masterDetail id="master" showBreadcrumb="false"
+                     rendered="#{tecnologiasSSController.mostrarTablaRutasCapitaGrEtareo}">
+        <p:growl id="eliminarMessages" widgetVar="eliminarMessages" showDetail="true" life="2000"/>
+        <pe:masterDetailLevel level="1" id="niveluno">
+            <div class="form-group">
+                <div class="col-lg-3">
+                    <p:outputLabel value="#{i18n.form_label_rias_titulo}"
+                                   styleClass="titulo-bold"/>
+                </div>
+            </div>
+            <div class="col-lg-3" style="border: 1px solid #E5E5E5;">
+                <h:outputLabel value="#{i18n.form_label_importar_medicamentos_desde_archivo}"/>
+                <p:fileUpload id="btnImportarMedicamentos" auto="true"
+                              skinSimple="true" allowTypes="/(\.|\/)(xlsx)$/" mode="advanced"
+                              styleClass="btn btn-sm btn-info" multiple="true"
+                              cancelLabel="#{i18n.form_label_button_cancelar}"
+                              uploadLabel="#{i18n.form_label_importar}"
+                              label="#{i18n.form_label_importar}" sizeLimit="5242880"
+                              invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                              invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                              fileUploadListener="#{negociacionRiaCapitaSSController.importarMedicamentos}"
+                              onstart="PF('statusDialog').show();" update="@([id$=tablaRias])"
+                              oncomplete="PF('statusDialog').hide();">
+                    <f:attribute name="foo" value="#{ArchivosNegociacionEnum.MEDICINE_RIAS_CAPITA}"/>
+                </p:fileUpload>
+            </div>
+            <div class="col-lg-3" style="border: 1px solid #E5E5E5;">
+                <h:outputLabel value="#{i18n.form_label_importar_servicios_desde_archivo}"/>
+                <p:fileUpload id="btnImportarServicios" auto="true"
+                              skinSimple="true" allowTypes="/(\.|\/)(xlsx)$/" mode="advanced"
+                              styleClass="btn btn-sm btn-info"
+                              cancelLabel="#{i18n.form_label_button_cancelar}"
+                              uploadLabel="#{i18n.form_label_importar}"
+                              label="#{i18n.form_label_importar}" sizeLimit="5242880"
+                              invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                              invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                              fileUploadListener="#{negociacionRiaCapitaSSController.importarProcedimientos}"
+                              onstart="PF('statusDialog').show();"
+                              oncomplete="PF('statusDialog').hide();">
+                    <f:attribute name="foo" value="#{ArchivosNegociacionEnum.PROCEDURE_RIAS_CAPITA}"/>
+                </p:fileUpload>
+            </div>
+            <div class="col-lg-12">
+                <div class="separador"></div>
+            </div>
+            <div class="col-lg-12">
+                <p:toolbar>
+                    <p:toolbarGroup align="right">
+                        <div class="col-lg-11">
+                            <p:outputLabel class="col-lg-7 text-right" for="gestionRutasSeleccionadas"
+                                           value="#{i18n.form_label_combo_rutas}"/>
+                            <div class="col-lg-3">
+                                <p:selectOneMenu id="gestionRutasSeleccionadas"
+                                                 value="#{tecnologiasSSController.gestionSeleccionada}">
+                                    <f:selectItem itemLabel="#{i18n.form_label_seleccionar}" itemValue=""/>
+                                    <f:selectItems
+                                            value="#{negociacionRiaCapitaSSController.gestionTecnologiasNegociacion}"
+                                            var="tipoGestionRc" itemValue="#{tipoGestionRc}"
+                                            itemLabel="#{i18n[cnx:enum_key(tipoGestionRc)]}"/>
+                                    <p:ajax listener="#{tecnologiasSSController.gestionarComboRutas}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                <p:confirmDialog widgetVar="dgDeltecnologiasRutas"
+                                 header="#{i18n.form_label_button_delete_tecnologias_rutas}"
+                                 message="#{i18n.message_dialog_delete_tecnologias_rutas}" showEffect="fade"
+                                 hideEffect="fade">
+                    <p:commandButton value="#{i18n.form_label_button_aceptar}" styleClass="btn btn-sm btn-info"
+                                     icon="fa fa-check-circle-o"
+                                     onclick="PF('dgDeltecnologiasRutas').hide()" immediate="true"
+                                     update="tablaRias, @([id$=totalNegociacion]), @([id$=opcionGestionTecnologiasRutas]) "
+                                     resetValues="true"
+                                     actionListener="#{negociacionRiaCapitaSSController.eliminarTecnologiasRutasSeleccionadas}"/>
+                    <p:commandButton value="#{i18n.form_label_button_cancelar}" type="button"
+                                     styleClass="btn btn-sm btn-warning"
+                                     icon="fa fa-close" onclick="PF('dgDeltecnologiasRutas').hide()"/>
+                </p:confirmDialog>
+            </div>
+            <h:panelGroup id="panelTotalPorRia">
+                <div class="ui-grid ui-grid-responsive">
+                    <div class="ui-grid-row">
+                        <!--@elvariable id="riaVar" type="com.conexia.contratacion.commons.dto.negociacion.NegociacionRiaRangoPoblacionDto"-->
+                        <p:dataTable id="tablaRias" var="riaVar" widgetVar="riasRCTable"
+                                     value="#{tecnologiasSSController.listaNegRiaRangoPobl}"
+                                     emptyMessage="#{i18n.negociacion_pgp_sin_ruta_seleccionada}"
+                                     selection="#{tecnologiasSSController.riasSeleccionadas}"
+                                     rowSelectMode="checkbox"
+                                     rowKey="#{riaVar.id}">
+                            <p:ajax update="@this" event="rowSelectCheckbox"
+                                    listener="#{tecnologiasSSController.selectCheckboxRuta}"/>
+                            <p:ajax update="@this" event="rowUnselectCheckbox"
+                                    listener="#{tecnologiasSSController.unSelectCheckboxRuta}"/>
+                            <p:ajax update="@this" event="toggleSelect"/>
+                            <p:column class="text-center"
+                                      style="width:50px; text-align:center">
+                                <p:commandButton icon="ui-icon-plus" title="Actividades"
+                                                 actionListener="#{tecnologiasSSController.mostrarActividades(riaVar)}"
+                                                 immediate="true" process="@this" update="@form">
+                                </p:commandButton>
+                            </p:column>
+                            <p:column headerText="#{i18n.tab_th_ruta}" style="width:140px;">
+                                <h:outputText
+                                        value="#{riaVar.negociacionRia.ria.descripcion} - #{riaVar.rangoPoblacion.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="#{i18n.tab_th_peso_porcen_referente}"
+                                      class="text-center">
+                                <h:outputText value="#{riaVar.pesoPorcentualReferente}">
+                                    <f:convertNumber type="number" maxFractionDigits="3"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n.tab_th_valor_referente}" class="text-center">
+                                <h:outputText value="#{riaVar.valorReferente}">
+                                    <f:convertNumber currencySymbol="$" type="currency" maxFractionDigits="3"/>
+                                </h:outputText>
+                            </p:column>
+                            <c:if
+                                    test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                                <!--Inicio Nuevas columnas para Rias etareos-->
+                                <p:column headerText="#{i18n.tab_th_upc_ruta}" class="text-center">
+                                    <h:outputText value="#{riaVar.upc}">
+                                        <f:convertNumber currencySymbol="$" type="currency"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n.tab_th_porcen_descuento}" class="text-center">
+                                    <pe:inputNumber value="#{riaVar.porcentajeDescuento}"
+                                                    class="inputPorcenDescuento" id="inputPorcenDescuento"
+                                                    label="Error" decimalPlaces="3" minValue="-100"
+                                                    maxValue="100">
+                                        <p:ajax event="change"
+                                                update="tablaRias, @([id$=guardarObservaciones]), @([id$=totalNegociacion]) "
+                                                listener="#{negociacionRiaCapitaSSController.calcularUpcNegociada(riaVar)}"/>
+                                    </pe:inputNumber>
+                                </p:column>
+                                <p:column headerText="#{i18n.tab_th_upc_negociada}" class="text-center">
+                                    <h:outputText value="#{riaVar.upcNegociada}">
+                                        <f:convertNumber currencySymbol="$" type="currency"/>
+                                    </h:outputText>
+                                </p:column>
+                                <!--Fin Nuevas columnas para Rias etareos -->
+                            </c:if>
+                            <p:column headerText="#{i18n.tab_th_peso_porcen_negociado}"
+                                      id="pesoPorcentualCl" class="text-center">
+                                <p:inputText value="#{riaVar.pesoPorcentualNegociado}" style="width:90px"
+                                             id="inputPesoPorcentualCl" label="Error">
+                                    <p:ajax event="change"
+                                            listener="#{negociacionRiaCapitaSSController.aplicarValor(riaVar)}"
+                                            process="@this"
+                                            update="tablaRias, @([id$=totallabelNegociacion]), @([id$=totalNegociacion]"
+                                            validatorMessage="El valor ingresado esta fuera del rango de 0 a 100"/>
+                                    <f:convertNumber maxFractionDigits="3"/>
+                                    <f:validateLongRange minimum="0" maximum="100"/>
+                                    <f:attribute name="ria" value="#{riaVar}"/>
+                                </p:inputText>
+                            </p:column>
+                            <p:column headerText="#{i18n.tab_th_valor_negociado_percapita}"
+                                      class="text-center">
+                                <h:outputText value="#{riaVar.valorNegociado}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="#{i18n.tab_th_poblacion_especifica}" class="text-center">
+                                <h:inputText value="#{riaVar.poblacion}" label="Error"
+                                             disabled="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}"
+                                             style="width:90px">
+                                    <p:ajax event="change"
+                                            listener="#{negociacionRiaCapitaSSController.cambiarPoblacion}"
+                                            process="@this" update="tablaRias, @([id$=totalNegociacion])"
+                                            validatorMessage="La población debe ser mínimo 1"/>
+                                    <f:convertNumber maxFractionDigits="0"/>
+                                    <f:validateLongRange minimum="1"/>
+                                    <f:attribute name="ria" value="#{riaVar}"/>
+                                </h:inputText>
+                            </p:column>
+                            <p:column headerText="#{i18n.tab_th_valor_total_tbruta}" class="text-center">
+                                <h:outputText
+                                        value="#{riaVar.valorNegociado * riaVar.poblacion}">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column class="text-center"
+                                      style="width:50px; text-align:center">
+                                <p:commandButton
+                                        actionListener="#{negociacionRiaCapitaSSController.cargarProcedimientos(riaVar)}"
+                                        icon="ui-icon-search" title="Detalle"
+                                        oncomplete="PF('procedimientosRCTable').clearFilters();"
+                                        immediate="true" process="@this" update="@form">
+                                    <pe:selectDetailLevel step="1"/>
+                                </p:commandButton>
+                            </p:column>
+                            <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                                <!-- Nuevas columnas para Rias etareos -->
+                                <p:column headerText="#{i18n.tab_th_grupos_etareos}" class="text-center"
+                                          style="width:62px; text-align:center">
+                                    <p:commandLink title="#{i18n.tab_button_title_grupos_etareos}"
+                                                   actionListener="#{negociacionCapitaGrupoEtareoController.mostrarGruposEtareos(riaVar)}"
+                                                   immediate="true" process="@this"
+                                                   update="tecnologiasSSForm:gruposEtareosDialog">
+                                        <img class="icon-plus-etareos" src="../resources/img/plus-icon.png" alt="Icono plus"/>
+                                    </p:commandLink>
+                                </p:column>
+                                <!-- Fin columnas para Rias etareos -->
+                            </c:if>
+                            <p:column selectionMode="multiple" style="width:40px;text-align:center"/>
+                        </p:dataTable>
+                    </div>
+                </div>
+                <div id="totales" class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-12 ui-widget-content ui-state-default">
+                            <div class="text-right form-group form-group-sm"
+                                 style="margin-top: 10px;">
+                                <p:outputLabel for="totalNegociacion" value="Total Negociación: "/>
+                                <h:outputText id="totalNegociacion" widgetVar="totalNegociacion"
+                                               value="#{negociacionRiaCapitaSSController.valorTotalNegociacion}"
+                                               style="padding-right:5px">
+                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                </h:outputText>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </pe:masterDetailLevel>
+        <pe:masterDetailLevel level="2">
+            <p:panel>
+                <h:panelGrid columns="1" style="width:100%">
+                    <f:facet name="header">
+                        <p:outputLabel value="#{i18n.negociacion_asignacion_masiva_titulo}"
+                                       styleClass="titulo-bold"/>
+                        <div class="separador"></div>
+                    </f:facet>
+                </h:panelGrid>
+                <br/>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-5" style="border: 1px solid #E5E5E5;">
+                            <p:outputLabel
+                                    value="#{negociacionRiaCapitaSSController.rutaSeleccionada}"/>
+                            <h:panelGroup id="opcionesMasivoPxRiaCapita" layout="block"
+                                          styleClass="radioButtonSpaceLeft" border="0">
+                                <p:selectOneRadio id="opcionesMasivoRC" columns="1"
+                                                  converter="omnifaces.SelectItemsConverter"
+                                                  value="#{negociacionRiaCapitaSSController.tipoAsignacionSeleccionado}">
+                                    <f:selectItem
+                                            itemLabel="#{i18n.negociacion_procedimiento_asigna_referente}"
+                                            itemValue="#{TipoAsignacionTarifaServicioEnum.APLICAR_REFERENTE}"/>
+                                    <p:ajax update="@this"/>
+                                </p:selectOneRadio>
+                                <br/>
+                                <br/>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-3">
+                                        <!--@elvariable id="tablaProcedimientoRC" type="java.lang.String"-->
+                                        <p:commandButton id="btnAsignacionTarifaRC"
+                                                         value="#{i18n.form_label_button_aceptar}" process="@this"
+                                                         actionListener="#{negociacionRiaCapitaSSController.asignarTarifasProcedimiento(tablaProcedimientoRC)}"
+                                                         styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                                         update="tablaProcedimientoRC"/>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p:toolbar>
+                        <p:toolbarGroup align="right">
+                            <div class="col-lg-11">
+                                <p:outputLabel class="col-lg-6 text-right"
+                                               for="gestionProcedimientosRC"
+                                               value="#{i18n.negociacion_gestionar_procedimientos}"/>
+                                <div class="col-lg-3">
+                                    <p:selectOneMenu id="gestionProcedimientosRC"
+                                                     value="#{negociacionRiaCapitaSSController.gestionSeleccionada}">
+                                        <f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+                                                      itemValue=""/>
+                                        <f:selectItems
+                                                value="#{negociacionRiaCapitaSSController.gestionTecnologiasNegociacion}"
+                                                var="tipoGestionRc" itemValue="#{tipoGestionRc}"
+                                                itemLabel="#{i18n[cnx:enum_key(tipoGestionRc)]}"/>
+                                        <p:ajax
+                                                listener="#{negociacionRiaCapitaSSController.gestionarProcedimientoRiaCapita('procedimientosRCTable','tecnologiasSSForm:gestionProcedimientosRC')}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                    <div class="form-group">
+                        <div class="row">
+                            <p:outputPanel id="deleteProd" layout="block">
+                                <p:confirmDialog widgetVar="cdDeleteProd" showEffect="fade"
+                                                 header="#{i18n.negociacion_procedimiento_titulo_eliminar}"
+                                                 icon="fa fa-warning">
+                                    <f:facet name="message">
+                                        <p:outputPanel>
+                                            <h:outputFormat
+                                                    value="#{i18n.negociacion_procedimiento_borrar_ria_msj}"/>
+                                        </p:outputPanel>
+                                        <p:selectOneRadio id="btnOpcionBorrado"
+                                                          value="#{negociacionRiaCapitaSSController.eliminarTecnologia}"
+                                                          required="true" columns="1" layout="grid"
+                                                          requiredMessage="#{i18n.negociacion_procedimiento_borrar_ria_req_msj}">
+                                            <f:selectItem
+                                                    itemLabel="#{i18n.negociacion_procedimiento_borrar_ria_individual_msj}"
+                                                    itemValue="RI"/>
+                                            <f:selectItem
+                                                    itemLabel="#{i18n.negociacion_procedimiento_borrar_ria_actividades_msj}"
+                                                    itemValue="RA"/>
+                                            <f:selectItem
+                                                    itemLabel="#{i18n.negociacion_procedimiento_borrar_ria_todo_msj}"
+                                                    itemValue="RT"/>
+                                            <p:ajax update="@this"/>
+                                        </p:selectOneRadio>
+
+                                    </f:facet>
+                                    <p:commandButton value="#{i18n.form_label_button_aceptar}"
+                                                     actionListener="#{negociacionRiaCapitaSSController.eliminarProcedimientos()}"
+                                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                                     onclick="PF('cdDeleteProd').hide()" process="@this"
+                                                     oncomplete="PF('procedimientosRCTable').filter();">
+                                    </p:commandButton>
+                                    <p:commandButton value="#{i18n.form_label_button_cancelar}"
+                                                     type="button" styleClass="btn btn-sm btn-warning"
+                                                     icon="fa fa-close" onclick="PF('cdDeleteProd').hide()"/>
+                                </p:confirmDialog>
+                            </p:outputPanel>
+                        </div>
+                    </div>
+                    <!--@elvariable id="procedimientoRC" type="com.conexia.contratacion.commons.dto.negociacion.ProcedimientoNegociacionDto"-->
+                    <p:dataTable id="tablaProcedimientoRC" var="procedimientoRC"
+                                 binding="#{tablaProcedimientoRC}" rows="15" paginator="true"
+                                 paginatorPosition="bottom"
+                                 value="#{negociacionRiaCapitaSSController.procedimientos}"
+                                 rowKey="#{procedimientoRC.hashCode()}_#{procedimientoRC.servicio}_#{procedimientoRC.procedimientoDto.codigoCliente}"
+                                 rowSelectMode="checkbox" scrollable="true" scrollHeight="500"
+                                 selection="#{negociacionRiaCapitaSSController.procedimientosSeleccionados}"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" emptyMessage="Sin registros..."
+                                 widgetVar="procedimientosRCTable">
+                        <p:ajax event="page" update="@this"/>
+                        <p:ajax event="sort" update="@this"/>
+                        <p:ajax event="rowSelectCheckbox" update="@this"
+                                listener="#{negociacionRiaCapitaSSController.selectCkeckbox}"/>
+                        <p:ajax event="rowUnselectCheckbox" update="@this"
+                                listener="#{negociacionRiaCapitaSSController.unSelectCheckbox}"/>
+                        <p:ajax event="toggleSelect" update="@this"/>
+                        <p:ajax event="filter" update="@this" ignoreAutoUpdate="true"/>
+                        <p:column headerText="Tema" filterStyleClass="anchoInput"
+                                  filterMatchMode="contains"
+                                  filterBy="#{procedimientoRC.actividad.descripcion}">
+                            <h:outputText value="#{procedimientoRC.actividad.descripcion}"/>
+                        </p:column>
+                        <p:column headerText="Servicio de Habilitación"
+                                  filterStyleClass="anchoInput" filterMatchMode="contains"
+                                  filterBy="#{procedimientoRC.servicioDescripcion}">
+                            <h:outputText value="#{procedimientoRC.servicioDescripcion}"/>
+                        </p:column>
+                        <p:column headerText="Código Tecnología Emssanar"
+                                  filterStyleClass="anchoInput" filterMatchMode="contains"
+                                  filterBy="#{procedimientoRC.procedimientoDto.codigoCliente}">
+                            <h:outputText
+                                    value="#{procedimientoRC.procedimientoDto.codigoCliente}"/>
+                        </p:column>
+                        <p:column headerText="Descripción Tecnología"
+                                  filterStyleClass="anchoInput" filterMatchMode="contains"
+                                  filterBy="#{procedimientoRC.procedimientoDto.descripcion}">
+                            <h:outputText
+                                    value="#{procedimientoRC.procedimientoDto.descripcion}"/>
+                        </p:column>
+                        <p:column headerText="Negociación"
+                                  style="width:80px; text-align:center">
+                            <p:selectBooleanCheckbox value="#{procedimientoRC.negociado}"
+                                                     rendered="#{procedimientoRC.id ne 0}">
+                                <p:ajax event="change"
+                                        listener="#{negociacionRiaCapitaSSController.marcarNegociado}"
+                                        update="tablaProcedimientoRC"/>
+                                <f:attribute name="procedimiento" value="#{procedimientoRC}"/>
+                            </p:selectBooleanCheckbox>
+                        </p:column>
+                        <p:column headerText="Peso Porcentual Referente">
+                            <h:outputText value="#{procedimientoRC.porcentajeReferente}"
+                                          rendered="#{procedimientoRC.id ne 0}">
+                                <f:convertNumber maxFractionDigits="3"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Valor Referente">
+                            <h:outputText value="#{procedimientoRC.valorReferente}"
+                                          rendered="#{procedimientoRC.id ne 0}">
+                                <f:convertNumber maxFractionDigits="3" type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Peso Porcentual Negociado">
+                            <p:inputText id="pesoPorcentualNegociado"
+                                         value="#{procedimientoRC.porcentajeNegociado}"
+                                         style="width:100px" rendered="#{procedimientoRC.id ne 0}"
+                                         validatorMessage="El valor ingresado esta fuera del rango de 0 a 100">
+                                <p:ajax event="change"
+                                        listener="#{negociacionRiaCapitaSSController.actualizarValorNegociado}"
+                                        update="tablaProcedimientoRC"/>
+                                <f:convertNumber maxFractionDigits="3"/>
+                                <f:validateLongRange minimum="0" maximum="100"/>
+                                <f:attribute name="procedimiento" value="#{procedimientoRC}"/>
+                            </p:inputText>
+                        </p:column>
+                        <p:column headerText="Valor Negociado"
+                                  rendered="#{procedimientoRC.id ne 0}">
+                            <h:outputText id="valorNegociado" value="#{procedimientoRC.valorNegociado}">
+                                <f:convertNumber maxFractionDigits="3" type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Diferencia Peso Porcentual"
+                                  rendered="#{procedimientoRC.id ne 0}">
+                            <h:outputText
+                                    value="#{procedimientoRC.diferenciaPorcentajeContratado}">
+                                <f:convertNumber maxFractionDigits="3"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Diferencia en Valor"
+                                  rendered="#{procedimientoRC.id ne 0}">
+                            <h:outputText value="#{procedimientoRC.diferenciaValorContratado}">
+                                <f:convertNumber maxFractionDigits="3"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="#{i18n.form_label_seleccionado}"
+                                  selectionMode="multiple" style="width:50px; text-align:center"
+                                  rendered="#{procedimientoRC.id ne 0}"/>
+                    </p:dataTable>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-offset-8 col-lg-4">
+                                    <div class="text-right">
+                                        <p:commandButton value="Regresar" process="@this"
+                                                         action="#{FacesUtils.urlRedirect('/sedesasede/detalle')}"
+                                                         icon="ui-icon-arrowthick-1-w" immediate="true"
+                                                         update="@form,@([id$=panelTotalPorRia]),@([id$=tablaRias]),@([id$=inputPesoPorcentualCl])"
+                                                         styleClass="btn btn-sm btn-warning"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p:panel>
+        </pe:masterDetailLevel>
+    </pe:masterDetail>
+    <p:dialog header="Temas" closable="true"
+              widgetVar="mostrarActividadesDlg" modal="true" width="70%"
+              height="500px" id="actividadesDialogId">
+        <p:dataTable var="actividadVar"
+                     value="#{tecnologiasSSController.listaActividades}">
+            <p:column headerText="Tema" colspan="5">
+                <h:outputText value="#{actividadVar.actividad.descripcion}"/>
+            </p:column>
+            <p:column headerText="Meta" colspan="1">
+                <p:inputText value="#{actividadVar.meta}" type="number"
+                             maxlength="3" validatorMessage="La meta debe estar entre 0 y 100"
+                             disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                    <f:validateLongRange minimum="0" maximum="100"/>
+                </p:inputText>
+            </p:column>
+        </p:dataTable>
+        <div class="ui-grid ui-grid-responsive">
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-12  text-right">
+                    <p:commandButton value="#{i18n.form_label_button_regresar}"
+                                     onclick="PF('mostrarActividadesDlg').hide()" process="@this"
+                                     styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left"
+                                     iconPos="left"/>
+                    <p:commandButton value="Guardar" styleClass="btn btn-sm btn-yellow"
+                                     actionListener="#{tecnologiasSSController.guardarActividades()}"
+                                     rendered="#{tecnologiasSSController.negociacion.estadoNegociacion != EstadoNegociacionEnum.FINALIZADA and (tecnologiasSSController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.RIAS_CAPITA
+									and tecnologiasSSController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO)}">
+                    </p:commandButton>
+                </div>
+            </div>
+        </div>
+    </p:dialog>
+    <c:if
+            test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+
+        <!--inicio Alert dialog Grupos Etareos-->
+        <p:dialog header="#{i18n.mod_header_poblacion_ria}"
+                  widgetVar="mostrarGruposEtareosDlg" id="gruposEtareosDialog"
+                  modal="true" closable="true" width="600px">
+
+            <p:dataTable var="sale" value="" styleClass="grupos">
+                <p:columnGroup type="header">
+                    <p:row>
+                        <p:column rowspan="2"
+                                  headerText="#{negociacionCapitaGrupoEtareoController.currentNegociacionRiaRangoPoblacion.negociacionRia.ria.descripcion} - #{negociacionCapitaGrupoEtareoController.currentNegociacionRiaRangoPoblacion.rangoPoblacion.descripcion}"
+                                  styleClass="data-total"/>
+                        <p:column headerText="#{i18n.tab_th_upc_ruta_poblacion}" style="width:100px"/>
+                        <p:column headerText="#{i18n.tab_th_poblacion_rutra}" style="width:100px"/>
+                    </p:row>
+                </p:columnGroup>
+                <p:column styleClass="data-total"/>
+                <p:column styleClass="data-total" class="text-center">
+                    <h:outputText
+                            value="#{negociacionCapitaGrupoEtareoController.currentNegociacionRiaRangoPoblacion.upc}">
+                        <f:convertNumber type="currency" currencySymbol="$"/>
+                    </h:outputText>
+                </p:column>
+                <p:column styleClass="data-total" class="text-center">
+                    <h:outputText
+                            value="#{negociacionCapitaGrupoEtareoController.currentNegociacionRiaRangoPoblacion.poblacion}"/>
+                </p:column>
+            </p:dataTable>
+
+            <p:dataTable var="grupoEtario"
+                         value="#{negociacionCapitaGrupoEtareoController.gruposEtariosRuta}"
+                         styleClass="grupos" emptyMessage="#{i18n.tab_mensaje_sin_datos}">
+
+                <p:column headerText="#{i18n.tab_th_grupo_edad}" colspan="3">
+                    <h:outputText value="#{grupoEtario.descripcion}"/>
+                </p:column>
+                <p:column headerText="#{i18n.tab_th_upc_poblacion}" colspan="3" class="text-center">
+                    <h:outputText value="#{grupoEtario.upc}">
+                        <f:convertNumber type="currency" currencySymbol="$"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="#{i18n.tab_th_valor_mensual}" colspan="2" class="text-center">
+                    <h:outputText value="#{grupoEtario.upcMensual}">
+                        <f:convertNumber type="currency" currencySymbol="$"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="#{i18n.tab_th_poblacion}" colspan="2" class="text-center">
+                    <h:outputText value="#{grupoEtario.poblacion}"/>
+                </p:column>
+            </p:dataTable>
+
+            <div class="ui-grid ui-grid-responsive grupos">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-12  text-right">
+                        <p:commandButton value="#{i18n.form_label_button_cerrar}"
+                                         styleClass="btn btn-warning btn-md" style="font-weight:bold"
+                                         process="@this" onclick="PF('mostrarGruposEtareosDlg').hide()">
+                        </p:commandButton>
+                    </div>
+                </div>
+            </div>
+
+        </p:dialog>
+        <!--FIN Alert dialog Grupos Etareos-->
+    </c:if>
+    <p:dialog header="#{i18n.title_no_procesados}" widgetVar="noProcesadosMxRiaCapitaW" modal="true" height="400" width="90%">
+        <h:commandLink title="#{i18n.form_label_file_excel}" ajax="false" immediate="true">
+            <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+            <p:dataExporter type="xlsx" target="erroresMxRiaCapita" fileName="Medicamentos_Ria_Capita_No_Procesados"/>
+        </h:commandLink>
+        <p:dataTable id="erroresMxRiaCapita" var="registroMx" scrollable="true"
+                     value="#{negociacionRiaCapitaSSController.listadoErroresMx}" rows="10"
+                     dynamic="true" styleClass="paginated" paginator="true"
+                     paginatorPosition="bottom" widgetVar="erroresMxRCTablaW"
+                     rowsPerPageTemplate="5,10,20"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     emptyMessage="#{i18n.form_label_datatable_noregistros}">
+            <p:column headerText="#{i18n.form_label_error}">
+                <h:outputText value="#{registroMx.codigo} - #{registroMx.mensaje}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_codigo_sede}">
+                <h:outputText value="#{registroMx.codigoHabilitacionSede}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_ria}">
+                <h:outputText value="#{registroMx.ruta}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_rango_poblacion}">
+                <h:outputText value="#{registroMx.rangoPoblacion}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_tema}">
+                <h:outputText value="#{registroMx.tema}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_cum}">
+                <h:outputText value="#{registroMx.codigoMedicamento}"/>
+            </p:column>
+            <p:column headerText="#{i18n.form_label_linea}">
+                <h:outputText value="#{registroMx.lineaArchivo}"/>
+            </p:column>
+        </p:dataTable>
+    </p:dialog>
+    <p:dialog header="#{i18n.title_no_procesados}" widgetVar="noProcesadosPxRiaCapitaW" modal="true" height="400"
+              width="90%">
+        <p:ajax event="close" listener="#{tecnologiasSSController.postConstruct()}" update="@([id$=tablaRias])"/>
+        <h:commandLink title="#{i18n.form_label_file_excel}" ajax="false" immediate="true">
+            <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+            <p:dataExporter type="xlsx" target="erroresPxRiaCapita" fileName="Procedimientos_Ria_Capita_No_Procesados"/>
+        </h:commandLink>
+        <p:dataTable id="erroresPxRiaCapita" var="registroPx" scrollable="true"
+                     value="#{negociacionRiaCapitaSSController.listadoErroresPx}" rows="10"
+                     dynamic="true" styleClass="paginated" paginator="true"
+                     paginatorPosition="bottom" widgetVar="erroresPxRCTablaW"
+                     rowsPerPageTemplate="5,10,20"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     emptyMessage="#{i18n.form_label_datatable_noregistros}">
+            <p:column headerText="#{i18n.form_label_error}">
+                <h:outputText value="#{registroPx.codigo} - #{registroPx.mensaje}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_ria}">
+                <h:outputText value="#{registroPx.ruta}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_rango_poblacion}">
+                <h:outputText value="#{registroPx.rangoPoblacion}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_tema}">
+                <h:outputText value="#{registroPx.tema}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_codigo_servicio}">
+                <h:outputText value="#{registroPx.codigoServicio}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_no_proces_codigo_emssanar}">
+                <h:outputText value="#{registroPx.codigoEmssanar}"/>
+            </p:column>
+            <p:column headerText="#{i18n.form_label_linea}">
+                <h:outputText value="#{registroPx.lineaArchivo}"/>
+            </p:column>
+        </p:dataTable>
+    </p:dialog>
+</f:view>

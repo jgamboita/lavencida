@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:cnx="http://conexia.com/utils" xmlns:o="http://omnifaces.org/ui">
+
+  <style type="text/css">
+    .ui-fileupload-buttonbar {
+      margin: 0px 0px 0px 0px !important;
+      padding: 0px 0px 0px 0px !important;
+      border: none;
+    }
+
+    .ui-fileupload {
+      margin: 0px 0px 0px 0px !important;
+      padding: 0px 0px 0px 0px !important;
+      display: inline-block;
+      border: none;
+    }
+
+    .ui-fileupload-content {
+      border: none;
+    }
+
+    .ui-fileupload-choose {
+      background-color: #fda63e !important;
+      color: #ffffff !important;
+      font-family: 'PT Sans', arial, verdana, sans-serif;
+      font-size: 1em;
+      font-weight: normal;
+    }
+
+    span.ui-fileupload-choose>span.ui-icon-plusthick {
+      display: none !important;
+    }
+
+    span.ui-fileupload-choose>span.ui-button-text {
+      padding-left: 1em !important;
+    }
+  </style>
+
+  <ui:composition template="/template/inner.xhtml">
+
+    <ui:define name="title">
+      <h:outputLabel value="Referente PGP" />
+    </ui:define>
+
+    <ui:define name="content">
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" />
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.ArchivosNegociacionEnum" />
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.EstadoReferentePgpEnum" />
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.FiltroReferentePgpEnum"	var="filtroReferentePgpEnum" />
+
+      	<p:dialog header="Sedes del prestador" closable="true"
+			widgetVar="modalSedesPrestadorPgp" modal="true" height="200px"
+			width="40%">
+			<p:dataTable id="detalleSedesPrestadorPgp" var="sede"
+				paginatorAlwaysVisible="false"
+				value="#{gestionReferentePgpController.referentePrestador}" rows="10"
+				dynamic="true" styleClass="paginated" paginator="true"
+				paginatorPosition="bottom" widgetVar="detalleSedesPrestadorPgpW"
+				rowsPerPageTemplate="5,10,20"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}">
+				<p:column headerText="Sede">
+					<h:outputText value="#{sede.sedePrestador.nombreSede}" />
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+
+		<p:dialog header="Capítulos del referente" closable="true"
+			widgetVar="modalCapitulosReferentePgp" modal="true" height="300px"
+			width="50%">
+			<p:dataTable id="detalleCapitulosReferentePgp" var="capto"
+				paginatorAlwaysVisible="false"
+				value="#{gestionReferentePgpController.listCapitulos}" rows="10"
+				dynamic="true" styleClass="paginated" paginator="true"
+				paginatorPosition="bottom" widgetVar="detalleCapitulosReferentePgpW"
+				rowsPerPageTemplate="5,10,20"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}">
+				<p:column headerText="Código">
+					<h:outputText value="#{capto.codigo}" />
+				</p:column>
+				<p:column headerText="Capítulo">
+					<h:outputText value="#{capto.descripcion}" />
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+
+		<p:dialog header="Categorías del referente" closable="true"
+			widgetVar="modalCategoriasReferentePgp" modal="true" height="300px"
+			width="50%">
+			<p:dataTable id="detalleCategoriasReferentePgp" var="categoria"
+				paginatorAlwaysVisible="false"
+				value="#{gestionReferentePgpController.listCategorias}" rows="10"
+				dynamic="true" styleClass="paginated" paginator="true"
+				paginatorPosition="bottom" widgetVar="detalleCategoriasReferentePgpW"
+				rowsPerPageTemplate="5,10,20"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}">
+				<p:column headerText="Código">
+					<h:outputText value="#{categoria.codigo}" />
+				</p:column>
+				<p:column headerText="Categoria">
+					<h:outputText value="#{categoria.descripcion}" />
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+
+
+      <h:form id="formGestionReferente">
+        <p:panel id="panelReferente">
+          <h:panelGrid columns="1" style="width:100%">
+            <f:facet name="header">
+              <p:outputLabel value="Referente" styleClass="titulo-bold">
+              </p:outputLabel>
+              <div class="separador"></div>
+            </f:facet>
+          </h:panelGrid>
+          <br />
+          <div class="row">
+            <div class="ui-grid-row">
+              <div class="ui-grid-col-2 text-right">
+                <h:outputLabel value="Referente PGP: " />
+              </div>
+              <div class="ui-grid-col-2">
+                <p:inputText class="anchoInput" required="true"
+                  requiredMessage="Por favor ingrese el nombre del referente"
+                  value="#{gestionReferentePgpController.referente.descripcion}" />
+              </div>
+              <div class="ui-grid-col-2  text-right">
+                <p:outputLabel value="Regimen" />
+              </div>
+               <div class="ui-grid-col-2">
+
+                  <p:selectOneMenu id="listRegimen" styleClass="anchoInput"
+                    label="Seleccionar..."
+                    value="#{gestionReferentePgpController.referente.regimen}"
+                    converter="omnifaces.SelectItemsConverter" required="true"
+                    requiredMessage="Por favos seleccione un regimen"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">
+
+                    <f:selectItem itemLabel="Seleccionar..." />
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.regimenes}"
+                      var="regimen" itemLabel="#{regimen}" itemValue="#{regimen}" />
+
+                  </p:selectOneMenu>
+
+                </div>
+
+              <div class="col-lg-offset-1 ui-grid-col-3">
+                <p:commandButton value="Crear" style="width:150px"
+                  styleClass="btn btn-sm btn-success" icon="fa fa-tasks"
+                  actionListener="#{gestionReferentePgpController.crearReferente}"
+                  iconPos="left" update="@form"
+                  rendered="#{gestionReferentePgpController.referente.descripcion == null}"/>
+              </div>
+            </div>
+          </div>
+          <p:separator />
+          <h:panelGroup
+            rendered="#{gestionReferentePgpController.referente.descripcion != null}">
+            <div class="form-group">
+              <h:panelGroup id="panelFiltros">
+                <p:outputLabel value="Filtros:" styleClass="titulo-bold" />
+                <br />
+
+                <br />
+                <div class="col-lg-offset-2 col-lg-10">
+                  <p:selectOneRadio id="filtro" style="width:100%"
+                    value="#{gestionReferentePgpController.referente.filtroReferente}"
+                    columns="2"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente  == EstadoReferentePgpEnum.FINALIZADO}">
+
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.filtroReferentePgpEnum}"
+                      var="filtroReferente" itemValue="#{filtroReferente}"
+                      itemLabel="#{i18n[cnx:enum_key(filtroReferente)]}" />
+                    <p:ajax process="@this" update="@form" listener="#{gestionReferentePgpController.loadTipoReferente()}"/>
+                  </p:selectOneRadio>
+                </div>
+              </h:panelGroup>
+            </div>
+            <br />
+            <br />
+            <h:panelGroup id="panelUbicacion"
+              rendered="#{gestionReferentePgpController.referente.filtroReferente == filtroReferentePgpEnum.POR_UBICACION}">
+              <div class="row">
+
+                <div class="col-lg-2">
+
+                  <p:outputLabel value="Regional" />
+
+                  <p:selectOneMenu id="listRegional" styleClass="anchoInput"
+                    converter="omnifaces.SelectItemsConverter"
+                    value="#{gestionReferentePgpController.referenteUbicacion.regional}"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">
+
+                    <p:ajax update="@([id$=listDepartamento]),@([id$=listZona]) "
+                      listener="#{gestionReferentePgpController.listarDepartamentos}" />
+
+                    <f:selectItem
+						itemLabel="#{i18n.form_label_combo_seleccione}" />
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.regionales}"
+                      var="regional" itemLabel="#{regional.descripcion}"
+                      itemValue="#{regional}" />
+
+                  </p:selectOneMenu>
+
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-2">
+
+                  <p:outputLabel value="Departamento" />
+
+                  <p:selectOneMenu id="listDepartamento" styleClass="anchoInput"
+                    converter="omnifaces.SelectItemsConverter"
+                    value="#{gestionReferentePgpController.referenteUbicacion.departamento}"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">
+                    <p:ajax update="listZona,listMunicipio"
+                      listener="#{gestionReferentePgpController.listarZonas}" />
+                    <f:selectItem itemLabel="Seleccionar..." />
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.departamentos}"
+                      var="departamento" itemLabel="#{departamento.descripcion}"
+                      itemValue="#{departamento}" />
+                  </p:selectOneMenu>
+
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-2">
+
+                  <p:outputLabel value="Zona" />
+
+                  <p:selectOneMenu id="listZona" styleClass="anchoInput"
+                    converter="omnifaces.SelectItemsConverter"
+                    value="#{gestionReferentePgpController.referenteUbicacion.zonaMunicipio}"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">
+
+                    <f:selectItem itemLabel="Seleccionar..." />
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.zonasMunicipio}"
+                      var="zona" itemLabel="#{zona.descripcion}"
+                      itemValue="#{zona}" />
+                  </p:selectOneMenu>
+
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-2">
+
+                  <p:outputLabel value="Municipio" />
+
+                  <p:selectOneMenu id="listMunicipio" styleClass="anchoInput"
+                    converter="omnifaces.SelectItemsConverter"
+                    value="#{gestionReferentePgpController.referenteUbicacion.municipio}"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">
+
+                    <f:selectItem itemLabel="Seleccionar..." />
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.municipios}"
+                      var="municipio" itemLabel="#{municipio.descripcion}"
+                      itemValue="#{municipio}" />
+                  </p:selectOneMenu>
+
+                </div>
+              </div>
+            </h:panelGroup>
+            <br />
+
+            <h:panelGroup id="panelPrestador"
+              rendered="#{gestionReferentePgpController.referente.filtroReferente == filtroReferentePgpEnum.POR_PRESTADOR}">
+
+              <p:outputLabel id="nombrePrestador"
+                value="#{gestionReferentePgpController.prestador.nombre}" />
+
+              <div class="row">
+
+                <div class="col-lg-3">
+
+                  <p:outputLabel value="Numero Documento:" />
+                  <p:inputText id="numeroDocumento" maxlength="12"
+                    styleClass="form-control input-sm"
+                    validatorMessage="#{i18n.form_label_validar_caracteres_msg}"
+                    value="#{gestionReferentePgpController.prestador.numeroDocumento}"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">
+
+                    <!-- Validación de caracteres especiales -->
+                    <f:validateRegex
+                      pattern="#{i18n.form_label_validar_caracteres}" />
+                  </p:inputText>
+
+                  <p:message for="numeroDocumento" />
+
+                  <br />
+
+                  <p:commandButton value="Buscar"
+                    styleClass="btn btn-sm btn-info" icon="fa fa-search"
+                    iconPos="left"
+                    process="@this, @([id$=numeroDocumento]),@([id$=nombrePrestador])"
+                    actionListener="#{gestionReferentePgpController.obtenerSedesVigentesDelPrestador()}"
+                    update="@([id$=listSedes]),@([id$=nombrePrestador])"
+                    rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}" />
+
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-7">
+
+                  <p:outputLabel value="Sedes:" />
+                  <p:selectCheckboxMenu id="listSedes" styleClass="anchoInput"
+                    value="#{gestionReferentePgpController.referentePrestadorSeleccionado}"
+                    label="Seleccione las sedes..."
+                    converter="omnifaces.SelectItemsConverter" filter="true"
+                    filterMatchMode="startsWith"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">
+
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.referentePrestador}"
+                      var="sede"
+                      itemLabel="#{sede.sedePrestador.codigoHabilitacion} #{sede.sedePrestador.nombreSede}"
+                      itemValue="#{sede}" />
+
+                  </p:selectCheckboxMenu>
+
+                  <p:commandButton id="detalleSedesPrestadorPgp"
+                    styleClass="btn btn-sm btn-info" icon="fa fa-eye"
+                    iconPos="left"
+                    actionListener="#{gestionReferentePgpController.obtenerSedesVigentesDelPrestador()}"
+                    immediate="true"
+					onclick="PF('modalSedesPrestadorPgp').show();"
+                    update="@([id$=detalleSedesPrestadorPgp])"
+                    rendered="#{gestionReferentePgpController.referente.estadoReferente eq EstadoReferentePgpEnum.FINALIZADO}" />
+
+                </div>
+
+              </div>
+            </h:panelGroup>
+
+            <br />
+
+            <h:panelGroup id="panelGeneral">
+
+              <div class="separador"></div>
+              <div class="row">
+                <div class="col-lg-2">
+                  <p:outputLabel value="Tecnologia:  " />
+                  <p:selectBooleanCheckbox itemLabel="Procedimientos"
+                    styleClass="anchoInput"
+                    value="#{gestionReferentePgpController.referente.esProcedimiento}">
+                    <p:ajax event="change" update="@([id$=panelCategoriaCups])" />
+                  </p:selectBooleanCheckbox>
+                  <p:selectBooleanCheckbox itemLabel="Medicamentos"
+                    styleClass="anchoInput"
+                    value="#{gestionReferentePgpController.referente.esMedicamento}">
+                  </p:selectBooleanCheckbox>
+                </div>
+
+				<div class="col-lg-offset-1 col-lg-2">
+					<p:outputLabel value="Tipo de Fecha" />
+                 	<p:selectOneMenu id = "listTipoFecha" styleClass="anchoInput"
+                 		value="#{gestionReferentePgpController.referente.filtroReferenteFecha}"
+                 		required="true"
+                 		requiredMessage="Por favor seleccione el tipo de fecha ha filtrar">
+                 	 <f:selectItem itemLabel="Seleccionar..."/>
+                 	 <f:selectItems
+                      value="#{gestionReferentePgpController.filtroReferentePgpFechasEnum}"
+                      var="filtroReferenteFecha" itemValue="#{filtroReferenteFecha}"
+                      itemLabel="#{i18n[cnx:enum_key(filtroReferenteFecha)]}" />
+                      <p:ajax event="change" update="@([id$=panelFechaPrestacion]), @([id$=panelFechaRadicacion])" />
+                 	</p:selectOneMenu>
+				</div>
+
+                 <div class="col-lg-offset-1 col-lg-2">
+                 	<p:outputLabel value="Modalidad" />
+                 	<p:selectCheckboxMenu   styleClass="anchoInput"
+                 		value="#{gestionReferentePgpController.referente.modalidad}"
+                 		required="true" requiredMessage="Por favor seleccione las modalidades"
+                 		readonly="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}">>
+                      <f:selectItems  value="#{gestionReferentePgpController.modalidades}"
+                         var="modalidad" itemValue="#{modalidad.descripcion}"
+                         itemLabel="#{modalidad}" />
+                 	</p:selectCheckboxMenu>
+                 </div>
+
+                 <div class="col-lg-offset-1 col-lg-2">
+                 	<p:outputLabel value="Tipo Contrato" />
+                 	<p:selectCheckboxMenu   styleClass="anchoInput"
+                 	value="#{gestionReferentePgpController.tipoContratoSeleccionados}">
+                   	<f:selectItems  value="#{gestionReferentePgpController.tipoContrato}"
+                         var="contrato" itemValue="#{contrato}"
+                         itemLabel="#{contrato}" />
+                 	</p:selectCheckboxMenu>
+                 </div>
+
+              </div>
+
+            </h:panelGroup>
+
+            <br />
+            <h:panelGroup id="panelCategoriaCups">
+              <div class="separador"></div>
+              <div class="row">
+
+                <div class="col-lg-5">
+
+                  <p:outputLabel value="Capítulo"
+                    rendered="#{gestionReferentePgpController.referente.esProcedimiento}" />
+
+                  <p:selectCheckboxMenu id="listCapitulos"
+                    styleClass="anchoInput"
+                    value="#{gestionReferentePgpController.capitulosSeleccionados}"
+                    label="Seleccione los capitulos..."
+                    converter="omnifaces.SelectItemsConverter" filter="true"
+                    filterMatchMode="startsWith"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}"
+                    rendered="#{gestionReferentePgpController.referente.esProcedimiento}">
+                    <p:ajax update="listCategoria"
+                      listener="#{gestionReferentePgpController.listarCategorias}" />
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.listCapitulos}"
+                      var="capitulo"
+                      itemLabel="#{capitulo.codigo} - #{capitulo.descripcion}"
+                      itemValue="#{capitulo}" />
+                  </p:selectCheckboxMenu>
+
+                  <p:commandButton id="detalleCapitulosReferentePgp"
+	                    styleClass="btn btn-sm btn-info" icon="fa fa-eye"
+	                    iconPos="left"
+	                    actionListener="#{gestionReferentePgpController.obtenerSedesVigentesDelPrestador()}"
+	                    immediate="true"
+						onclick="PF('modalCapitulosReferentePgp').show();"
+	                    update="@([id$=detalleCapitulosReferentePgp])"
+	                    rendered="#{gestionReferentePgpController.referente.estadoReferente eq EstadoReferentePgpEnum.FINALIZADO}" />
+
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-5">
+
+                  <p:outputLabel value="Categoria"
+                    rendered="#{gestionReferentePgpController.referente.esProcedimiento}" />
+
+                  <p:selectCheckboxMenu id="listCategoria"
+                    styleClass="anchoInput"
+                    value="#{gestionReferentePgpController.categoriasSeleccionadas}"
+                    label="Seleccione las categorias..." panelStyle="width:450px"
+                    converter="omnifaces.SelectItemsConverter" filter="true"
+                    filterMatchMode="startsWith"
+                    disabled="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}"
+                    rendered="#{gestionReferentePgpController.referente.esProcedimiento}">
+                    <f:selectItems
+                      value="#{gestionReferentePgpController.listCategorias}"
+                      var="categoria"
+                      itemLabel="#{categoria.codigo} - #{categoria.descripcion}"
+                      itemValue="#{categoria}" />
+                  </p:selectCheckboxMenu>
+
+                  <p:commandButton id="detalleCategoriasReferentePgp"
+	                    styleClass="btn btn-sm btn-info" icon="fa fa-eye"
+	                    iconPos="left"
+	                    actionListener="#{gestionReferentePgpController.obtenerSedesVigentesDelPrestador()}"
+	                    immediate="true"
+						onclick="PF('modalCategoriasReferentePgp').show();"
+	                    update="@([id$=detalleCategoriasReferentePgp])"
+	                    rendered="#{gestionReferentePgpController.referente.estadoReferente eq EstadoReferentePgpEnum.FINALIZADO}" />
+
+                </div>
+
+              </div>
+              <br />
+
+
+            </h:panelGroup>
+
+            <br />
+			<div class="separador"></div>
+            <h:panelGroup id="panelFechaPrestacion">
+              <p:outputLabel value="Rango de fechas prestación"
+              	rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_PRESTACION}" />
+              <div class="row">
+                <div class="col-lg-3">
+
+                  <p:outputLabel value="Fecha Inicio:"
+                  	rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_PRESTACION}"/>
+                  <br />
+                  <p:calendar id="clFechaInicio" showOn="button"
+                    pattern="dd/MM/yyyy" locale="es"
+                    maxdate="#{gestionReferentePgpController.referente.fechaFin}"
+                    value="#{gestionReferentePgpController.referente.fechaInicio}"
+                    required="true"
+                    requiredMessage="Ingrese la fecha inicial del referente"
+                    readonly="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}"
+                    rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_PRESTACION}">
+                    <p:ajax event="dateSelect" update="@([id$=clFechaFin])" listener="#{gestionReferentePgpController.validarRangoFechas()}"/>
+                  </p:calendar>
+
+                </div>
+
+                <div class="col-lg-offset-3 col-lg-3">
+
+                  <p:outputLabel value="Fecha Fin"
+                  	rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_PRESTACION}"/>
+                  <br />
+                  <p:calendar id="clFechaFin" showOn="button"
+                  	widgetVar="clFechaFinW"
+                    styleClass="anchoInput"
+                    value="#{gestionReferentePgpController.referente.fechaFin}"
+                    pattern="dd/MM/yyyy" locale="es" required="true"
+                    maxdate="today"
+                    requiredMessage="Ingrese la fecha final del referente"
+                    readonly="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}"
+                    rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_PRESTACION}">
+                    <p:ajax event="dateSelect" update="@this" listener="#{gestionReferentePgpController.validarRangoFechas()}"/>
+                   </p:calendar>
+                </div>
+
+              </div>
+            </h:panelGroup>
+
+             <h:panelGroup id="panelFechaRadicacion">
+              <p:outputLabel value="Rango de fechas radicación"
+              rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_RADICACION}"/>
+              <div class="row">
+                <div class="col-lg-3">
+
+                  <p:outputLabel value="Fecha Inicio:"
+                  	rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_RADICACION}"/>
+                  <br />
+                  <p:calendar id="clFechaInicioRad" showOn="button"
+                    pattern="dd/MM/yyyy" locale="es"
+                    maxdate="#{gestionReferentePgpController.referente.fechaFin}"
+                    value="#{gestionReferentePgpController.referente.fechaInicio}"
+                    required="true"
+                    requiredMessage="Ingrese la fecha inicial del referente"
+                    readonly="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}"
+                    rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_RADICACION}">
+                    <p:ajax event="dateSelect" update="@([id$=clFechaFinRad])" listener="#{gestionReferentePgpController.validarRangoFechas()}"/>
+                  </p:calendar>
+
+                </div>
+
+                <div class="col-lg-offset-3 col-lg-3">
+
+                  <p:outputLabel value="Fecha Fin"
+                  	rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_RADICACION}"/>
+                  <br />
+                  <p:calendar id="clFechaFinRad" showOn="button"
+                  	widgetVar="clFechaFinW"
+                    styleClass="anchoInput"
+                    value="#{gestionReferentePgpController.referente.fechaFin}"
+                    pattern="dd/MM/yyyy" locale="es" required="true"
+                    maxdate="today"
+                    requiredMessage="Ingrese la fecha final del referente"
+                    readonly="#{gestionReferentePgpController.referente.estadoReferente == EstadoReferentePgpEnum.FINALIZADO}"
+                    rendered="#{gestionReferentePgpController.referente.filtroReferenteFecha == filtroReferentePgpEnum.FECHA_RADICACION}">
+                    <p:ajax event="dateSelect" update="@this" listener="#{gestionReferentePgpController.validarRangoFechas()}"/>
+                   </p:calendar>
+                </div>
+
+              </div>
+            </h:panelGroup>
+             <div class="ui-grid ui-grid-responsive">
+                  <div class="ui-grid-row">
+                <div class="ui-grid-col-11 text-right">
+                   <p:commandButton value="Generar"
+                   styleClass="btn btn-sm btn-info" icon="fa fa-bullseye"
+                   actionListener="#{gestionReferentePgpController.crearContenidoReferente}"
+                   update="@form" iconPos="left"
+                   rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}" />
+                 </div>
+               </div>
+             </div>
+          </h:panelGroup>
+
+          <h:panelGroup
+            rendered="#{gestionReferentePgpController.referente.descripcion != null}"
+            id="pnlTecnologias">
+            <p:tabView id="tabsTecnologias" widgetVar="tabsTecnologias"
+								dynamic="true" cache="false"
+								activeIndex="#{gestionReferentePgpController.tabIndex}">
+
+              <p:tab title="#{i18n.enum_tipotecnologiaenum_procedimientos}" id="tabProcedimientosPgp">
+
+                <div class="ui-grid ui-grid-responsive">
+                  <div class="ui-grid-row">
+                    <div class="ui-grid-col-2 text-right">
+
+                      <p:fileUpload id="btnImportarProcedimientosRef" auto="true"
+                        multiple="true" allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+                        accept="xls|xlsx|XLS|XLSX" mode="advanced"
+                        cancelLabel="#{i18n.form_label_button_cancelar}"
+                        uploadLabel="#{i18n.form_label_importar}"
+                        label="#{i18n.form_label_importar}" sizeLimit="5242880"
+                        invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                        invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                        fileUploadListener="#{gestionReferentePgpController.importFiles}"
+                        update="tablaCapituloReferente,tablaProcedimientosRefente,errorsImportReferente"
+                        onstart="PF('statusDialog').show();"
+                        oncomplete="PF('statusDialog').hide();"
+                        icon="fa fa-arrow-circle-down"
+                        rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}">
+                        <f:attribute name="foo"
+                          value="#{ArchivosNegociacionEnum.PROCEDURE_REF_FILE}" />
+                      </p:fileUpload>
+
+                      <p:commandButton value="Exportar" ajax="false"
+                        styleClass="btn btn-sm btn-info"
+                        icon="fa fa-arrow-circle-down" iconPos="left"
+                        actionListener="#{gestionReferentePgpController.ExportarTecnologiasReferentePGP('procedimientos')}" />
+                    </div>
+                  </div>
+                </div>
+
+                <br />
+
+                <ui:include
+                  src="./procedimientos/procedimientosReferentePgp.xhtml" />
+              </p:tab>
+
+
+              <p:tab id="tabMedicamentosPgp"
+                title="#{i18n.enum_tipotecnologiaenum_medicamentos}">
+                <div class="ui-grid ui-grid-responsive">
+                  <div class="ui-grid-row">
+                    <div class="ui-grid-col-2 text-right">
+
+                      <p:fileUpload id="btnImportarMedicamentosRef" auto="true"
+                        multiple="true" allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+                        accept="xls|xlsx|XLS|XLSX" mode="advanced"
+                        style="btn-sm btn-info"
+                        cancelLabel="#{i18n.form_label_button_cancelar}"
+                        uploadLabel="#{i18n.form_label_importar}"
+                        label="#{i18n.form_label_importar}" sizeLimit="5242880"
+                        invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                        invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                        fileUploadListener="#{gestionReferentePgpController.importFiles}"
+                        update="tablaCategoriasMedicamento,tablaMedicamentosReferente,errorsImportReferente"
+                        onstart="PF('statusDialog').show();"
+                        oncomplete="PF('statusDialog').hide();"
+                        rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}">
+                        <f:attribute name="foo"
+                          value="#{ArchivosNegociacionEnum.MEDICINE_REF_FILE}" />
+                      </p:fileUpload>
+
+                      <p:commandButton value="Exportar" ajax="false"
+                        styleClass="btn btn-sm btn-info"
+                        icon="fa fa-arrow-circle-down" iconPos="left"
+                        actionListener="#{gestionReferentePgpController.ExportarTecnologiasReferentePGP('medicamentos')}" />
+                    </div>
+                  </div>
+                </div>
+                <ui:include src="./medicamentos/medicamentosReferentePgp.xhtml" />
+              </p:tab>
+            </p:tabView>
+
+            <br />
+
+            <div class="ui-grid ui-grid-responsive">
+              <div class="ui-grid-row">
+                <div class="ui-grid-col-12 text-right">
+                  <p:commandButton value="Finalizar Referente"
+                    style="width:150px" styleClass="btn btn-sm btn-info"
+                    immediate="true" process="@this" update="@form"
+                    actionListener="#{gestionReferentePgpController.finalizarReferente}"
+                    rendered="#{gestionReferentePgpController.referente.estadoReferente != EstadoReferentePgpEnum.FINALIZADO}" />
+                  <p:commandButton value="Regresar" style="width:100px"
+                    styleClass="btn btn-sm btn-warning" immediate="true"
+                    action="#{FacesUtils.urlRedirect('/bandejaReferentePgp')}" />
+                </div>
+              </div>
+            </div>
+
+          </h:panelGroup>
+
+        </p:panel>
+      </h:form>
+
+      <p:dialog id="errorsImportReferente" width="60%" height="600"
+        closeOnEscape="true" appendTo="@(body)" modal="true"
+        resizable="false" widgetVar="errorsImportReferente">
+        <ui:include src="errorsImportReferente.xhtml"></ui:include>
+      </p:dialog>
+
+
+    </ui:define>
+
+  </ui:composition>
+
+</f:view>
+

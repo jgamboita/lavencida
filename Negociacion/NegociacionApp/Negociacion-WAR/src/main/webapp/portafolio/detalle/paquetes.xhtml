@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="paquetesForm">
+		<p:panel id="panelPaquetes">
+			<div class="form-group">
+				<p:dataTable id="paquetes" var="paquete"
+					value="#{detallePortafolioController.paquetes}"
+					style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15"
+					widgetVar="paquetesVar">
+					
+					<p:column
+						headerText="#{i18n.form_label_codigo}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{paquete.codigoPortafolio}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{paquete.codigoPortafolio}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.paquete_label_codigo_ips}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{paquete.codigoSedePrestador}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{paquete.codigoSedePrestador}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.form_label_descripcion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{paquete.descripcion}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{paquete.descripcion}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.paquete_label_num_servicios}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{paquete.numServicios}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{paquete.numServicios}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.form_label_valor}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{paquete.valor}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{paquete.valor}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.form_label_estado}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{paquete.estado}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{paquete.estado}" />
+					</p:column>
+					
+					<p:column styleClass="text-center col-lg-1">
+						<p:commandLink styleClass="fa fa-gear"
+							actionListener="#{detallePortafolioController.verDetallePaquetes(paquete)}"
+							update="dialogDetallePaquete, detallePaquetesForm"
+							oncomplete="PF('dialogDetallePaqueteW').show();"							 
+							process="@this" />
+					</p:column>
+						
+
+						
+				</p:dataTable>
+			</div>
+		</p:panel>
+	</h:form>
+
+</f:view>

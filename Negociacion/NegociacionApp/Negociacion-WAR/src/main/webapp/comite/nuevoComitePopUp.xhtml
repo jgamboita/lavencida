@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    
+    <script type="text/javascript">
+        PrimeFaces.locales['es'] = {
+            closeText: 'Cerrar',
+            prevText: 'Anterior',
+            nextText: 'Siguiente',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+            dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+            weekHeader: 'Semana',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+        };
+    </script>
+    
+    <h:form id="nuevoComiteForm">
+        <p:outputPanel id="nuevoComitePanel">
+            <div class="row">
+                <div class="col-lg-10">
+                	<div class="col-lg-4">
+                		<p:outputLabel for="fechaComiteInput" value="#{i18n.bandeja_comite_nuevo_form_label_fecha_comite}" />
+                	</div>
+                    <div class="col-lg-5">
+                        <p:calendar id="fechaComiteInput"
+                                    value="#{bandejaComiteController.fechaComiteNuevo}"
+	                       	pattern="yyyy/MM/dd"
+	                       	showOn="button"
+	                       	size="10"
+	                       	locale="es"
+	                       	readonlyInput="true"
+	                       	autocomplete="false"
+	                       	mindate="#{bandejaComiteController.fechaActual}"
+	                       	required="true" requiredMessage="#{i18n.form_label_required}"
+                                />
+                        <p:message for="fechaComiteInput" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-10">   
+                	<div class="col-lg-4">
+                		<p:outputLabel for="fechaLimitePresInput" value="#{i18n.bandeja_comite_nuevo_form_label_fecha_limit_comite}" />
+                        </div>
+                        <div class="col-lg-5">
+                            <p:calendar id="fechaLimitePresInput"
+                                        value="#{bandejaComiteController.fechaLimitePrestadoresNuevo}"
+                                        pattern="yyyy/MM/dd"
+                                        showOn="button"
+                                        size="10"
+                                        locale="es"
+                                        readonlyInput="true"
+                                        autocomplete="false"
+                                        mindate="#{bandejaComiteController.fechaActual}"
+                                        required="true" requiredMessage="#{i18n.form_label_required}"
+                                        />
+                            <p:message for="fechaLimitePresInput" />
+                        </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-10">  
+                	<div class="col-lg-4">
+                		<p:outputLabel for="cantidadLimitePresInput" value="#{i18n.bandeja_comite_nuevo_form_label_cantidad_limitepres}" />
+                	</div> 
+                	<div class="col-lg-5">
+                		<p:inputText id="cantidadLimitePresInput" value="#{bandejaComiteController.limiteCantidadPrestadores}"
+							required="true" requiredMessage="#{i18n.form_label_required}"
+							maxlength="12" style="width:90px; height:28px"
+							styleClass="form-control input-sm" validatorMessage="#{i18n.form_label_validar_caracteres_msg}">
+							<f:convertNumber pattern="#0" integerOnly="true" maxFractionDigits="0"/>	
+						<p:message for="cantidadLimitePresInput" />
+					</p:inputText>
+                	</div>					
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-12 text-right">
+                    <p:commandButton
+                        value="#{i18n.form_label_button_guardar}"
+                        styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+                        actionListener="#{bandejaComiteController.guardarNuevoComite()}"
+                        iconPos="left" update="formComite:tablaComitesGral"/>
+                </div>
+            </div>
+        </p:outputPanel>
+    </h:form>
+
+</f:view>

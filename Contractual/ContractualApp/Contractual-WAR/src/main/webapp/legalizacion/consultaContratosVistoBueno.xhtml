@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:cnx="http://conexia.com/utils"
+		xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+	 <o:importConstants
+        type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum"  var="EstadoLegalizacionEnum"/>
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Legalización
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="formConsultaContratos">
+                <p:panel id="pnlConsultaContratos">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Consultar contratos para emitir visto bueno"
+                                           styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right"  >
+                                <h:outputLabel value="No. Contrato: " for="txtNumeroContrato"/>
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:inputText id="txtNumeroContrato" value="#{consultaContratosVistoBuenoController.filtroConsultaSolicitudDto.numeroContrato}"
+                                             converterMessage="El número de negociación debe ser númerico.">
+                                </p:inputText>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="Modalidad: "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:selectOneMenu id="modalidadNegociacion" class="anchoInput"
+                                                 value="#{consultaContratosVistoBuenoController.filtroConsultaSolicitudDto.negociacionModalidad}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaContratosVistoBuenoController.modalidadesNegociacion}"
+                                                   var="negociacionModalidad"
+                                                   itemLabel="#{negociacionModalidad.descripcion}"
+                                                   itemValue="#{negociacionModalidad}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Tipo de Identificación: "/>
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="tipoIdentificacion" class="anchoInput"
+                                                 value="#{consultaContratosVistoBuenoController.filtroConsultaSolicitudDto.tipoIdentificacionDto}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaContratosVistoBuenoController.tipoIdentificacion}"
+                                                   var="tipoIdentificacion"
+                                                   itemLabel="#{tipoIdentificacion.descripcion}"
+                                                   itemValue="#{tipoIdentificacion}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-grid-col-3 text-right">
+                                <h:outputLabel value="Identificación: "/>
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:inputText id="txtNumeroIdentificacion" class="anchoInput"
+                                             value="#{consultaContratosVistoBuenoController.filtroConsultaSolicitudDto.numeroIdentificacion}" >
+                                </p:inputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Razón Social: "/>
+                            </div>
+                            <div class="ui-grid-col-8">
+                                <p:inputText id="txtRazonSocial" style="width: 100%"
+                                             value="#{consultaContratosVistoBuenoController.filtroConsultaSolicitudDto.razonSocial}">
+                                </p:inputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Estado Contrato: "/>
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="estadoLegalizacion" class="anchoInput"
+                                                 value="#{consultaContratosVistoBuenoController.filtroConsultaSolicitudDto.estadoLegalizacionEnum}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaContratosVistoBuenoController.estadosLegalizacion}"
+                                                   var="estadoLegalizacion"
+                                                   itemLabel="#{estadoLegalizacion.descripcion}"
+                                                   itemValue="#{estadoLegalizacion}"/>
+                                </p:selectOneMenu>
+                            </div>
+							<div class="ui-grid-col-3 text-right">
+								<h:outputLabel value="No. Negociación: "
+									for="txtNumeroNegociacion" />
+							</div>
+							<div class="ui-grid-col-3">
+								<p:inputText id="txtNumeroNegociacion" class="anchoInput"
+									value="#{consultaContratosVistoBuenoController.filtroConsultaSolicitudDto.numeroNegociacion}"
+									converterMessage="El número de negociación debe ser númerico.">
+								</p:inputText>
+							</div>
+						</div>
+
+					</div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12 text-right">
+                                <p:commandButton value="Buscar" styleClass="btn btn-sm btn-info"
+                                                 icon="fa fa-search" iconPos="left"
+                                                 update="tblListaContratosPorVistoBueno"/>
+                                <p:commandButton value="Limpiar" styleClass="btn btn-sm btn-warning"
+                                                 actionListener="#{consultaContratosVistoBuenoController.limpiar()}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12">
+                            <p:scrollPanel mode="native" style="width:100%;height:100%">
+                                <p:dataTable id="tblListaContratosPorVistoBueno" lazy="true"
+                                             value="#{consultaContratosVistoBuenoController}"
+                                             var="contratoVistoBueno"
+                                             rows="15"
+                                             paginator="true"
+                                             scrollable="true" scrollWidth="2000"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,20"
+                                             emptyMessage="Sin registros...">
+                                    <f:facet name="header">
+                            			Bandeja Contratos Visto Bueno
+		                            	<p:commandButton id="toggler" type="button"
+													value="Columnas" icon="ui-icon-calculator" />
+										<p:columnToggler datasource="tblListaContratosPorVistoBueno"
+											trigger="toggler">
+											<p:ajax event="toggle"
+												listener="#{consultaContratosVistoBuenoController.onToggle}"
+												update="@([id$=tblListaContratosPorVistoBueno])" />
+										</p:columnToggler>
+									</f:facet>
+									<p:ajax event="page" />
+									<p:ajax event="sort" />
+									<p:ajax event="rowSelectCheckbox" />
+									<p:ajax event="filter" />
+                                    <p:column headerText="Número de Negociación"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.numeroNegociacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contratoVistoBueno.numeroNegociacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Número de Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.contrato.numeroContrato}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contratoVistoBueno.contrato.numeroContrato}"/>
+                                    </p:column>
+                                    <p:column headerText="Razón Social Sede Firma Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.prestadorDto.nombre}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contratoVistoBueno.prestadorDto.nombre}"/>
+                                    </p:column>
+                                    <p:column headerText="Número Documento"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.prestadorDto.numeroDocumento}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{contratoVistoBueno.prestadorDto.numeroDocumento}"/>
+                                    </p:column>
+
+                                     <p:column headerText="Tipo Contrato"
+                                     	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.contrato.tipoContratoEnum}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.contrato.tipoContratoEnum}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Regional"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.regional}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.regional}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Modalidad de Negociación"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.modalidadNegociacionEnum.descripcion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contratoVistoBueno.modalidadNegociacionEnum.descripcion}"/>
+                                    </p:column>
+                                    <p:column headerText="Régimen de Negociación"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.regimenNegociacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contratoVistoBueno.regimenNegociacion}"/>
+                                    </p:column>
+                                     <p:column headerText="Tipo de Subsidio"
+                                     	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.contrato.tipoSubsidiado}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.contrato.tipoSubsidiado}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Fecha Inicio"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.contrato.fechaInicioVigencia}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.contrato.fechaInicioVigencia}">
+                                    		<f:convertDateTime pattern="dd/MM/yyyy" />
+                                    	</h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Fecha Fin"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.contrato.fechaFinVigencia}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.contrato.fechaFinVigencia}">
+                                    		<f:convertDateTime pattern="dd/MM/yyyy" />
+                                    	</h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Nivel Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.contrato.nivelContrato}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.contrato.nivelContrato}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Tipo de Minuta"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.minuta.descripcion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.minuta.descripcion}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Responsable Creación"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.responsableCreacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.responsableCreacion}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Población"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.poblacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{contratoVistoBueno.poblacion}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Estado Legalización"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.estadoLegalizacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput"><!-- Estado legalizacion -->
+                                        <h:outputText
+                                            value="#{contratoVistoBueno.estadoLegalizacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Fecha de Legalización"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.fechaElaboracion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput"><!-- Fecha corresponde a la fecha elaboracion contrato -->
+                                        <h:outputText
+                                            value="#{contratoVistoBueno.fechaElaboracion}">
+                                        	<f:convertDateTime pattern="dd/MM/yyyy" />
+                                        </h:outputText>
+                                    </p:column>
+                                     <p:column headerText="Estado Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{contratoVistoBueno.contrato.estadoContrato}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{contratoVistoBueno.contrato.estadoContrato}"/>
+                                    </p:column>
+                                    <p:column headerText="Acciones" class="text-center" style="width:100px;">
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <p:commandLink title="Asignar Visto Bueno"
+                                                			  action="#{consultaContratosVistoBuenoController.gestionaVistoBueno(contratoVistoBueno.numeroNegociacion,contratoVistoBueno.idSolicitudContratacion)}"
+                                                               ajax="false" immediate="true">
+                                                    <i class="fa fa-check-square-o"></i>
+                                                </p:commandLink>
+                                            </div>
+                                         </div>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:scrollPanel>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+         </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

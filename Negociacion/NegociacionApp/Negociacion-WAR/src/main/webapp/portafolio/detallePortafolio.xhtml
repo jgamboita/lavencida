@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:of="http://omnifaces.org/ui"
+	xmlns:c="http://java.sun.com/jstl/core">
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="#{i18n.detalle_portafolio_titulo}" />
+
+		</ui:define>
+
+		<ui:define name="content">
+
+			<!-- Sección datos del prestador -->
+			<h:form>
+				<!-- Inicio Título-->
+				<div class="widget-header">
+					<span class="widget-caption">#{i18n.negociacion_prestador_label_datos_generales}:
+						#{detallePortafolioController.prestadorSeleccionado.nombre}</span>
+				</div>
+				<!-- Fin Título-->
+
+				<p:panel id="panelDatosPrestador">
+					<div class="form-group">
+						<!-- Primera Columna -->
+						<div class="col-lg-4">
+							<div class="row">
+								<p:outputLabel
+									value="#{i18n.negociacion_prestador_label_naturaleza_juridica}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.naturalezaJuridica}" />
+							</div>
+							<br />
+
+							<div class="row">
+								<p:outputLabel value="#{i18n.form_label_correo}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.correoElectronico}" />
+							</div>
+							<br />
+
+							<div class="row">
+								<p:outputLabel value="#{i18n.form_label_tipdocumento_extendido}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.tipoIdentificacionCod}" />
+							</div>
+							<br />
+						</div>
+
+
+						<!-- Segunda Columna -->
+						<div class="col-lg-4">
+							<div class="row">
+								<p:outputLabel value="#{i18n.negociacion_prestador_label_clase}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.clasePrestador}" />
+							</div>
+							<br />
+
+							<div class="row">
+								<p:outputLabel value="#{i18n.negociacion_prestador_label_ese}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.ese}" />
+							</div>
+							<br />
+
+							<div class="row">
+								<p:outputLabel value="#{i18n.form_label_nrodocumento}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.numeroDocumento}" />
+							</div>
+							<br />
+						</div>
+
+						<!-- Tercera Columna -->
+						<div class="col-lg-4">
+							<div class="row">
+								<p:outputLabel
+									value="#{i18n.negociacion_prestador_label_nivel_atencion}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.nivelAtencion}" />
+							</div>
+							<br />
+
+							<div class="row">
+								<p:outputLabel value="#{i18n.form_label_persona_contacto}" />
+							</div>
+							<div class="row">
+								<h:outputText style="text-transform: capitalize;"
+									value="#{detallePortafolioController.prestadorSeleccionado.contactoNegociacion}" />
+							</div>
+							<br />
+
+							<div class="row">
+								<p:outputLabel value="#{i18n.negociacion_prestador_label_tipo}" />
+							</div>
+							<div class="row">
+								<h:outputText
+									value="#{detallePortafolioController.prestadorSeleccionado.tipoPrestador}" />
+							</div>
+							<br />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12"></div>
+					</div>
+				</p:panel>
+			</h:form>
+
+			<!-- Sección tabla de sedes -->
+			<h:form id="sedesPrestadorForm">
+				<p:panel id="panelSedesPrestadorDetalle">
+					<div class="form-group">
+
+						<div class="widget-caption" align="right">
+							<p:commandLink id="documentosPrestador"
+								value="#{i18n.negociacion_prestador_label_descargar_documentos}"
+								actionListener="#{detallePortafolioController.descargarDocumentosPrestador()}"
+								styleClass="fa fa-download" ajax="false" />
+						</div>
+						<hr></hr>
+
+
+						<p:dataTable id="sedesPrestador" var="sede"
+							value="#{detallePortafolioController.sedesPrestador}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+							paginator="true" paginatorPosition="bottom"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15">
+
+							<p:column headerText="#{i18n.sede_prestador_label_nombre}"
+								styleClass="text-center col-lg-1" filterBy="#{sede.nombreSede}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{sede.nombreSede}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.sede_prestador_label_codigo_habilitacion}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{sede.codigoHabilitacion}" filterMatchMode="contains"
+								filterStyleClass="anchoInput">
+								<h:outputText value="#{sede.codigoHabilitacion}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.comparacion_tarifas_tbl_departamento}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{sede.municipio.departamento}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{sede.municipio.departamento}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.comparacion_tarifas_tbl_municipio}"
+								styleClass="text-center col-lg-1"
+								filterBy="#{sede.municipio.descripcion}"
+								filterMatchMode="contains" filterStyleClass="anchoInput">
+								<h:outputText value="#{sede.municipio.descripcion}" />
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.sede_prestador_label_servicio_habilitacion}"
+								styleClass="text-center col-lg-1">
+
+								<p:commandLink styleClass="fa fa-gear"
+									actionListener="#{detallePortafolioController.verTecnologia(sede,1)}"
+									rendered="#{sede.tieneServicios}"
+									oncomplete="PF('dialogServiciosHabilitacionW').show();"
+									update="dialogServiciosHabilitacion,serviciosHabilitacionForm:serviciosHabilitacion" />
+
+
+								<p:commandLink styleClass="fa fa-times-circle"
+									rendered="#{!sede.tieneServicios}" />
+
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.enum_tipotecnologiaenum_medicamentos}"
+								styleClass="text-center col-lg-1">
+
+								<p:commandLink styleClass="fa fa-gear"
+									actionListener="#{detallePortafolioController.verTecnologia(sede,2)}"
+									rendered="#{sede.tieneMedicamentos}"
+									oncomplete="PF('dialogMedicamentosW').show();"
+									update="dialogMedicamentos,medicamentosForm" />
+
+
+								<p:commandLink styleClass="fa fa-times-circle"
+									rendered="#{!sede.tieneMedicamentos}" />
+
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.sede_prestador_label_servicio_propio}"
+								styleClass="text-center col-lg-1">
+
+								<p:commandLink styleClass="fa fa-gear"
+									actionListener="#{detallePortafolioController.verTecnologia(sede,3)}"
+									rendered="#{sede.tieneServPropios}"
+									oncomplete="PF('dialogServiciosPropiosW').show();"
+									update="dialogServiciosPropios,serviciosPropiosForm" />
+
+
+								<p:commandLink styleClass="fa fa-times-circle"
+									rendered="#{!sede.tieneServPropios}" />
+
+							</p:column>
+
+							<p:column headerText="#{i18n.enum_tipotecnologiaenum_paquetes}"
+								styleClass="text-center col-lg-1">
+
+								<p:commandLink styleClass="fa fa-gear"
+									actionListener="#{detallePortafolioController.verTecnologia(sede,4)}"
+									rendered="#{sede.tienePaquetes}"
+									update="dialogPaquetes, paquetesForm" 
+									oncomplete="PF('dialogPaquetesW').show();"/>
+
+
+								<p:commandLink styleClass="fa fa-times-circle"
+									rendered="#{!sede.tienePaquetes}" />
+
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.enum_tipotecnologiaenum_transportes}"
+								styleClass="text-center col-lg-1">
+
+								<p:commandLink styleClass="fa fa-gear"
+									actionListener="#{detallePortafolioController.verTecnologia(sede,5)}"
+									update="dialogTraslados"
+									oncomplete="PF('dialogTrasladosW').show();"
+									rendered="#{sede.tieneTraslados}" />
+
+
+								<p:commandLink styleClass="fa fa-times-circle"
+									rendered="#{!sede.tieneTraslados}" />
+
+							</p:column>
+
+							<p:column headerText="" styleClass="text-center col-lg-1">
+								<p:commandLink styleClass="fa fa-download"
+									actionListener="#{detallePortafolioController.descargarDocumentosSede(sede)}"
+									ajax="false" />
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+				</p:panel>
+			</h:form>
+
+			<!-- Dialog Servicios -->
+			<p:dialog id="dialogServiciosHabilitacion"
+				header="#{i18n.sede_prestador_label_servicio_habilitacion} - #{detallePortafolioController.sedeSeleccionada.nombreSede}"
+				widgetVar="dialogServiciosHabilitacionW" width="75%" height="500" onShow="PF('serviciosHabilitacionVar').filter()"
+				onHide="PF('serviciosHabilitacionVar').clearFilters()">
+				<ui:include src="./detalle/serviciosHabilitacion.xhtml" />
+			</p:dialog>
+			
+			<!-- Dialog Procedimientos -->
+			<p:dialog id="dialogProcedimientos"
+				header="#{i18n.servicio_label_detalle} - #{detallePortafolioController.servicioSeleccionado.servicioSalud.nombre}"
+				widgetVar="dialogProcedimietosW" width="75%" height="500" onShow="PF('procedimientosVar').filter()"
+				onHide="PF('procedimientosVar').clearFilters()">
+				<ui:include src="./detalle/procedimientos.xhtml" />
+			</p:dialog>
+
+			<!-- Dialog Medicamentos -->
+			<p:dialog id="dialogMedicamentos"
+				header="#{i18n.medicamento_label_sedes_perteneciente} - #{detallePortafolioController.sedeSeleccionada.nombreSede}"
+				widgetVar="dialogMedicamentosW" width="75%" height="500" onShow="PF('medicamentosVar').filter()"
+				onHide="if (PF('medicamentosVar')) PF('medicamentosVar').clearFilters()">
+				<p:ajax event="close" listener="#{detallePortafolioController.limpiarMedicamentos}" />
+				<ui:include src="./detalle/medicamentos.xhtml" />
+			</p:dialog>
+
+			<!-- Dialog Servicios Propios -->
+			<p:dialog id="dialogServiciosPropios"
+				header="#{i18n.sede_prestador_label_servicio_propio} - #{detallePortafolioController.sedeSeleccionada.nombreSede}"
+				widgetVar="dialogServiciosPropiosW" width="75%" height="500" onShow="PF('serviciosPropiosVar').filter()"
+				onHide="PF('serviciosPropiosVar').clearFilters()">
+				<ui:include src="./detalle/serviciosPropios.xhtml" />
+			</p:dialog>
+			
+			<!-- Dialog Paquetes -->
+			<p:dialog id="dialogPaquetes" closable="true"
+				header="#{i18n.enum_tipotecnologiaenum_paquetes} - #{detallePortafolioController.sedeSeleccionada.nombreSede}"
+				widgetVar="dialogPaquetesW" width="75%" height="500" onShow="if (PF('paquetesVar')) PF('paquetesVar').filter()"
+				onHide="if (PF('paquetesVar')) PF('paquetesVar').clearFilters()">
+				<ui:include src="./detalle/paquetes.xhtml" />
+			</p:dialog>
+			
+			<!-- Dialog Traslados -->
+			<p:dialog id="dialogTraslados"
+				header="#{i18n.enum_tipotecnologiaenum_transportes} - #{detallePortafolioController.sedeSeleccionada.nombreSede}"
+				widgetVar="dialogTrasladosW" width="75%" height="500" onShow="if (PF('trasladosVar')) PF('trasladosVar').filter()"
+				onHide="if (PF('trasladosVar')) PF('trasladosVar').clearFilters()">
+				<p:ajax event="close" listener="#{detallePortafolioController.limpiarTraslados}" />
+				<ui:include src="./detalle/traslados.xhtml" />
+			</p:dialog>
+			
+			<!-- Dialog Detalle Paquetes -->
+			<p:dialog id="dialogDetallePaquete" closable="false" modal="true" closeOnEscape="true"
+				header="#{i18n.paquete_label_detalle_paquete} - #{detallePortafolioController.paqueteSeleccionado.descripcion}"
+				widgetVar="dialogDetallePaqueteW" width="75%" height="500" onShow="if (PF('diagnosticosVar')) PF('diagnosticosVar').filter();"
+				onHide="if (PF('diagnosticosVar')) PF('diagnosticosVar').clearFilters();" >
+				<ui:include src="./detalle/detallePaquete/detallePaquete.xhtml" />
+			</p:dialog>
+
+		</ui:define>
+	</ui:composition>
+</f:view>

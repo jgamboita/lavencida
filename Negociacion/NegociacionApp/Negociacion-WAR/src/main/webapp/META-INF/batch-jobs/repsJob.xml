@@ -1,0 +1,9 @@
+<job id="repsJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+    <step id="cargaStep" >
+        <chunk item-count="3">
+            <reader ref="leerBaseItemReader"/>
+            <processor ref="procesarBaseItemProcessor"/>
+            <writer ref="escribirBaseItemWriter"/>
+        </chunk>
+    </step>
+</job>

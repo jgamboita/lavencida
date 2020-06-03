@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<script type="text/javascript">
+        function  ValidarPunto(text)
+        {
+            if (text.value.match('[,]'))
+            {
+                text.value = '';
+            }
+        }
+    </script>
+	
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoAsignacionTarifaMedEnum" var="TipoAsignacionTarifaMedEnum" />
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" />
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel
+				value="#{i18n.negociacion_detalle_titulo} #{tecnologiasSSController.negociacion.id}"/>
+		</ui:define>
+		<ui:define name="content">
+
+			<h:form id="negociacionMedicamentoPGPForm">
+			<p:panel>
+					<div class="row">
+						<div class="col-lg-12">
+							<p:outputLabel
+								value="#{i18n.negociacion_prestador_label_datos_generales}:
+                               		#{gestionNegociacionController.prestadorSeleccionado.nombre} 
+                                	#{gestionNegociacionController.prestadorSeleccionado.numeroDocumento}"
+								styleClass="titulo-bold">
+							</p:outputLabel>
+						</div>
+						<p:outputLabel
+							value="#{i18n.negociacion_detalle_titulo}: #{tecnologiasSSController.negociacion.id}"
+							styleClass="titulo-bold col-lg-7" />
+						<p:outputLabel id="negociacionModalidadLabel"
+							value="Modalidad negociacion: #{tecnologiasSSController.negociacion.tipoModalidadNegociacion.descripcion} "
+							styleClass="titulo-bold col-lg-3" />
+					</div>
+					<div class="separador"></div>
+				</p:panel>
+				<p:panel id="panelMedicametosPGP">
+					<h:panelGrid columns="1" style="width:100%">
+					    <f:facet name="header">
+					         <p:outputLabel value="Grupo terapéutico: #{negociacionMedicamentosPgpSSController.grupoTerapeutico.categoriaMedicamento.codigo}-#{negociacionMedicamentosPgpSSController.grupoTerapeutico.categoriaMedicamento.nombre}"
+					                               styleClass="titulo-bold">
+					         </p:outputLabel>
+					         <p:separator></p:separator>
+					    </f:facet>
+					</h:panelGrid>
+					<br></br>
+					<p:accordionPanel id="accordionOpciones">
+						<p:tab id="tabOpcionesMasivoGrid" 
+							title="#{i18n.negociacion_asignacion_masiva_titulo}">
+							   <div class="form-group">
+							        <div class="row">
+							        	<div class="col-lg-6">
+							            					            
+							            <!-- Panel Grip de PGP -->		
+							           <h:form id="negociacionMedicamentosPGPForm"> 								
+											<h:panelGroup id="opcionesMasivoMedicamentosGridPGP" layout="block"
+														styleClass="radioButtonSpaceLeft" border="0">
+												<p:selectOneRadio id="opcionesMasivoMedicamentosPGP" layout="custom"
+													columns="1" converter="omnifaces.SelectItemsConverter"
+													value="#{negociacionMedicamentosPgpSSController.tipoAsignacionSeleccionado}">
+													<f:selectItems
+														value="#{negociacionMedicamentosPgpSSController.tipoAsignacionTarifaMedicamentoEnum}"
+														var="tipoAsignacionMedicamento" itemValue="#{tipoAsignacionMedicamento}"
+														itemLabel="#{i18n[cnx:enum_key(tipoAsignacionMedicamento)]}" />
+												</p:selectOneRadio>
+												<h:panelGrid >
+													<p:row>
+														<p:radioButton id="optMed1" for="opcionesMasivoMedicamentosPGP"
+														itemIndex="0" />
+														<h:outputLabel for="optMed1"
+															value="#{i18n.negociacion_medicamento_asigna_referente}" />
+														<h:outputLabel />
+													</p:row>
+														
+													<p:row>
+														<p:radioButton id="optMed2" for="opcionesMasivoMedicamentosPGP"
+														itemIndex="1" />
+														<h:outputLabel for="optMed2"
+															value="#{i18n.negociacion_medicamentos_asigna_franja_riesgo}" />
+														<h:outputLabel />
+													</p:row>	
+														
+													<p:row>
+														<h:outputLabel for="optMed2"
+															value="#{i18n.negociacion_masivo_franja_inicio}" />
+														<h:outputLabel />
+														<pe:inputNumber 
+														id="inputFranjaInicio"
+														value="#{negociacionMedicamentosPgpSSController.franjaInicio}"
+														decimalSeparator=","
+														thousandSeparator="."
+														decimalPlaces="2"
+														validatorMessage="#{i18n.negociacion_pgp_valor_minimo}"
+														placeholder="0">                            
+														<f:validateDoubleRange minimum="0" maximum="1000" />
+														</pe:inputNumber>
+														
+														<h:outputLabel for="optMed2"
+															value="#{i18n.negociacion_masivo_franja_fin}" />
+														<h:outputLabel />
+														<pe:inputNumber 
+															id="inputFranjaFin"
+															value="#{negociacionMedicamentosPgpSSController.franjaFin}"
+															decimalSeparator=","
+															thousandSeparator="."
+															decimalPlaces="2"
+															validatorMessage="#{i18n.negociacion_pgp_valor_minimo}"
+															placeholder="1000">                            
+															<f:validateDoubleRange minimum="0" maximum="1000" />
+														</pe:inputNumber>
+													</p:row>	
+														
+												</h:panelGrid>
+												
+													<br></br>
+													<br></br>
+													<br></br>
+													<div class="col-lg-12">
+														<div class="col-lg-3">
+															<p:commandButton id="btnAsignacionTarifasMedicamentosPGP"
+																styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+																value="#{i18n.form_label_button_aceptar}"
+																rendered="#{negociacionMedicamentosPgpSSController.tecnologiasController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+																update="@([id$=negociacionMedicamentosPGP]},
+																	@([id$=inputFranjaInicio]), @([id$=inputFranjaFin]), @([id$=opcionesMasivoGruposPGP])"
+																process="negociacionMedicamentosPGPForm"
+																actionListener="#{negociacionMedicamentosPgpSSController.asignarTarifasMedicamento}"/>
+														</div>
+													</div>
+											</h:panelGroup>
+										</h:form>							
+							            </div>
+							        </div>
+							        <br />
+							    </div>
+					 		</p:tab>
+						</p:accordionPanel>
+					    <br/>
+					    <div class="form-group">
+					        <p:toolbar>
+					            <p:toolbarGroup align="right">
+					                <div class="col-lg-12">
+					                    <p:outputLabel class="col-lg-6 text-right"
+					                                   for="gestionMedicamentosPGP"
+					                                   value="#{i18n.negociacion_medicamento_gestionar_medicamentos}" />
+					                    <div class="col-lg-2">
+					                        <p:selectOneMenu id="gestionMedicamentosPGP"
+					                                         value="#{negociacionMedicamentosPgpSSController.gestionSeleccionada}">
+					                            <f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+					                                          itemValue="" noSelectionOption="true" />
+					                            <f:selectItems
+					                                value="#{negociacionMedicamentosPgpSSController.gestionTecnologiasNegociacion}"
+					                                var="tipoGestion" itemValue="#{tipoGestion}"
+					                                itemLabel="#{i18n[cnx:enum_key(tipoGestion)]}" />
+					                            <p:ajax
+					                                listener="#{negociacionMedicamentosPgpSSController.gestionarMedicamentos('negociacionMedicamentosPGP','negociacionMedicamentoPGPForm:gestionMedicamentosPGP')}" />
+					                        </p:selectOneMenu>
+					                    </div>
+					                </div>
+					            </p:toolbarGroup>
+					        </p:toolbar>
+					        <p:outputPanel id="deleteMedPGP" layout="block">
+					            <p:confirmDialog widgetVar="cdDeleteMed" showEffect="fade"
+					                             header="Confirmar Eliminar Medicamentos" icon="fa fa-warning">
+					
+					                <f:facet name="message">
+					                    <p:outputPanel>
+					                        <h:outputFormat
+					                            value="#{i18n.medicamentos_mensaje_confirm_eliminar}" />
+					                    </p:outputPanel>
+					                </f:facet>
+					
+					                <p:commandButton value="#{i18n.form_label_button_aceptar}"
+					                                 actionListener="#{negociacionMedicamentosPgpSSController.eliminarMedicamentosMasivo('negociacionMedicamentosPGP')}"
+					                                 styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+					                                 onclick="PF('cdDeleteMed').hide()"
+					                                 update="negociacionMedicamentosPGP"
+					                                 immediate="true" />
+					
+					                <p:commandButton value="#{i18n.form_label_button_cancelar}"
+					                                 type="button" styleClass="btn btn-sm btn-warning"
+					                                 icon="fa fa-close" onclick="PF('cdDeleteMed').hide()" />
+					            </p:confirmDialog>
+					        </p:outputPanel>
+					        <p:remoteCommand name="onRepintarTabla"
+					                         update="negociacionMedicamentosPGP" />
+					        <p:dataTable id="negociacionMedicamentosPGP"
+					                     binding="#{negociacionMedicamentosPGP}" var="medicamentoPGPNegociacion"
+					                     value="#{negociacionMedicamentosPgpSSController.medicamentosNegociacion}"
+					                     rowKey="#{medicamentoPGPNegociacion.medicamentoDto.id}"
+					                     selection="#{negociacionMedicamentosPgpSSController.medicamentosNegociacionSeleccionados}"
+					                     emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					                     widgetVar="negociacionMedicamentosPGP" paginator="true"
+					                     paginatorPosition="bottom" scrollable="true"
+					                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					                     rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+					                     rowStyleClass="#{empty medicamentoNegociacion.valorNegociado ? 'noNegociado' : null}">
+
+							        	<p:ajax event="page" update="@this"/>
+							            <p:ajax event="sort" update="@this"/>
+							            <p:ajax event="rowSelectCheckbox" update="@this"/>
+							            <p:ajax event="rowUnselectCheckbox" update="@this"/>
+							            <p:ajax event="toggleSelect" update="@this"/>
+							            <p:ajax event="filter" update="@this"/>     
+							            
+							    <p:columnGroup type="header" >
+									<p:row>
+										<p:column colspan="1" />
+										<p:column colspan="1" headerText="Medicamento" style="width:12%;" />
+										<p:column colspan="1" style="width:8%;"/>
+										<p:column colspan="3" headerText="#{i18n.referente_pgp_title}"  />						
+										<p:column colspan="7" headerText="#{i18n.negociacion_emmsanar_header}" style="width:55%;"/>
+									</p:row>
+									
+									<p:row>
+<!-- 										cum -->
+							            <p:column filterBy="#{medicamentoPGPNegociacion.medicamentoDto.cums}"
+							                filterMatchMode="contains"
+							                headerText="#{i18n.medicamento_label_cum}"
+							                filterStyleClass="anchoInput"  />
+							
+<!-- 							            nombre producto -->
+							            <p:column
+							                filterBy="#{medicamentoPGPNegociacion.medicamentoDto.descripcion}"
+							                filterMatchMode="contains"
+							                headerText="#{i18n.medicamento_label_descripcion}"
+							                filterStyleClass="anchoInput"/>
+							                
+<!-- 							            titular registro sanitario -->
+							            <p:column
+							                filterBy="#{medicamentoPGPNegociacion.medicamentoDto.titularRegistroSanitario}"
+							                filterMatchMode="contains" 
+							                headerText="#{i18n.medicamento_label_titular_reg_sanitario}"
+							                styleClass="not-show-at-start" filterStyleClass="anchoInput"/>
+							                
+<!-- 								        Frecuencia referente -->
+										<p:column headerText="#{i18n.negociacion_pgp_frecuencia}" class="text-center"
+											filterStyleClass="anchoInput" />
+<!-- 										Costo Medio Usuario referente -->
+										<p:column headerText="#{i18n.negociacion_pgp_costo_medio_usuario}" class="text-center"
+											filterStyleClass="anchoInput" />
+<!-- 										Valor Referente -->
+										<p:column headerText="#{i18n.negociacion_pgp_valor_referente}" class="text-center"
+											filterStyleClass="anchoInput" />
+										
+										<!-- Franja inicio -->
+										<p:column class="text-center"
+											headerText="#{i18n.negociacion_pgp_franja_inicio}"
+											filterStyleClass="anchoInput" />
+											
+										<!-- Franja fin -->
+										<p:column class="text-center"
+											headerText="#{i18n.negociacion_pgp_franja_fin}"
+											filterStyleClass="anchoInput" />
+										
+<!-- 										frecuencia negociado -->
+										<p:column class="text-center"
+											headerText="#{i18n.negociacion_pgp_frecuencia}"
+											filterStyleClass="anchoInput" />	
+										
+<!-- 										Costo medio usuario negociado -->
+										<p:column class="text-right"
+											headerText="#{i18n.negociacion_pgp_costo_medio_usuario}"
+											filterStyleClass="anchoInput" />						
+<!-- 										valor negociado -->
+										<p:column class="text-center"
+											headerText="#{i18n.negociacion_pgp_valor_negociado}"
+											filterStyleClass="anchoInput" />
+						
+<!-- 							            check negociado -->
+							            <p:column headerText="#{i18n.negociacion_medicamento_negociado}"
+							                      styleClass="text-center" />
+							
+<!-- 							            check seleccion -->
+							            <p:column class="text-center" selectionMode="multiple"
+							                      headerText="#{i18n.negociacion_medicamento_seleccionado}"
+							                      id="col17" />
+									</p:row>
+																		
+								</p:columnGroup>								
+					
+						            <!-- cum -->
+						            <p:column filterBy="#{medicamentoPGPNegociacion.medicamentoDto.cums}"
+						                      filterMatchMode="contains"
+						                      headerText="#{i18n.medicamento_label_cum}"
+						                      filterStyleClass="anchoInput"  >
+						                <h:outputText value="#{medicamentoPGPNegociacion.medicamentoDto.cums}" />
+						            </p:column>
+
+						            <!-- nombre producto -->
+						            <p:column
+						                filterBy="#{medicamentoPGPNegociacion.medicamentoDto.descripcion}"
+						                filterMatchMode="contains"
+						                headerText="#{i18n.medicamento_label_descripcion}"
+						                filterStyleClass="anchoInput">
+						                <h:outputText
+						                    value="#{medicamentoPGPNegociacion.medicamentoDto.descripcion}"  />
+						            </p:column>
+						            
+						            <!-- titular registro sanitario -->
+						            <p:column
+						                filterBy="#{medicamentoPGPNegociacion.medicamentoDto.titularRegistroSanitario}"
+						                filterMatchMode="contains"
+						                headerText="#{i18n.medicamento_label_titular_reg_sanitario}"
+						                styleClass="not-show-at-start" filterStyleClass="anchoInput">
+						                <h:outputText
+						                    value="#{medicamentoPGPNegociacion.medicamentoDto.titularRegistroSanitario}" />
+						            </p:column>
+				
+								
+									<!-- Frecuencia referente-->
+									<p:column headerText="#{i18n.negociacion_pgp_frecuencia}" class="text-center"
+										filterStyleClass="anchoInput">
+										<h:outputText value="#{medicamentoPGPNegociacion.frecuenciaReferente}" >
+											<f:convertNumber pattern="###,###.######" />
+										</h:outputText>
+									</p:column>
+									<!-- Costo Medio Usuario referente-->
+									<p:column headerText="#{i18n.negociacion_pgp_costo_medio_usuario}" class="text-center"
+										filterStyleClass="anchoInput" >
+										<h:outputText value="#{medicamentoPGPNegociacion.costoMedioUsuarioReferente}" >
+											<f:convertNumber locale="es_CO" />
+										</h:outputText>
+									</p:column>
+									<!-- Valor Referente -->
+									<p:column headerText="#{i18n.negociacion_pgp_valor_referente}" class="text-center"
+										filterStyleClass="anchoInput" >
+										<h:outputText value="#{medicamentoPGPNegociacion.valorReferente}" >
+											<f:convertNumber locale="es_CO" />
+										</h:outputText>
+									</p:column>
+									
+									<!-- franja inicio-->
+									<p:column class="text-center"
+										headerText="#{i18n.negociacion_pgp_franja_inicio}"
+										filterStyleClass="anchoInput" >
+										<pe:inputNumber value="#{medicamentoPGPNegociacion.franjaInicio}"
+											decimalSeparator=","
+											thousandSeparator="."
+											decimalPlaces="2"
+											validatorMessage="#{i18n.negociacion_pgp_valor_minimo}">                            
+											<f:validateDoubleRange minimum="0" maximum="1000"/>
+	                            			<p:ajax event="change"
+	                                    		listener="#{negociacionMedicamentosPgpSSController.guardarFranjaMedicamento(medicamentoPGPNegociacion, 1)}"
+	                             				update="@form"/>                    
+										</pe:inputNumber>
+									</p:column>	
+									
+									<!-- franja fin -->
+									<p:column class="text-center"
+										headerText="#{i18n.negociacion_pgp_franja_fin}"
+										filterStyleClass="anchoInput" >
+										<pe:inputNumber value="#{medicamentoPGPNegociacion.franjaFin}"
+											decimalSeparator=","
+											thousandSeparator="."
+											decimalPlaces="2"
+											validatorMessage="#{i18n.negociacion_pgp_franja_fin}">                            
+											<f:validateDoubleRange minimum="0" maximum="1000"/>
+	                            			<p:ajax event="change"
+	                                    		listener="#{negociacionMedicamentosPgpSSController.guardarFranjaMedicamento(medicamentoPGPNegociacion, 2)}"
+	                             				update="@form"/>                    
+										</pe:inputNumber>
+									</p:column>	
+									
+									<!-- frecuencia negociado -->
+									<p:column class="text-center"
+										headerText="#{i18n.negociacion_pgp_frecuencia}"
+										filterStyleClass="anchoInput" >
+										<pe:inputNumber value="#{medicamentoPGPNegociacion.frecuencia}"
+											decimalSeparator=","
+											thousandSeparator="."
+											decimalPlaces="6"
+											validatorMessage="#{i18n.negociacion_pgp_valor_minimo}">                            
+											<f:validateDoubleRange minimum="0" />
+	                            			<p:ajax event="change"
+	                                    		listener="#{negociacionMedicamentosPgpSSController.guardarValorMedicamento(medicamentoPGPNegociacion)}"
+	                             				update="@form"/>                    
+										</pe:inputNumber>
+									</p:column>			
+									
+									<!-- Costo medio usuario negociado -->
+									<p:column class="text-right"
+										headerText="#{i18n.negociacion_pgp_costo_medio_usuario}"
+										filterStyleClass="anchoInput" >
+										<pe:inputNumber value="#{medicamentoPGPNegociacion.costoMedioUsuario}"
+											decimalSeparator=","
+											thousandSeparator="."
+											decimalPlaces="3"
+											validatorMessage="#{i18n.negociacion_pgp_valor_minimo}">                            
+											<f:validateDoubleRange minimum="0" />
+	                            			<p:ajax event="change"
+	                                    		listener="#{negociacionMedicamentosPgpSSController.guardarValorMedicamento(medicamentoPGPNegociacion)}"
+	                             				update="@form"/>                    
+										</pe:inputNumber>
+									</p:column>		
+															
+									<!-- valor negociado -->
+									<p:column class="text-center"
+										headerText="#{i18n.negociacion_pgp_valor_negociado}"
+										filterStyleClass="anchoInput" >
+										<p:outputLabel value="#{medicamentoPGPNegociacion.valorNegociado}" >
+					                		<f:convertNumber locale="es_CO" />
+										</p:outputLabel>
+									</p:column>
+					
+					            <!-- check negociado-->
+					            <p:column headerText="#{i18n.negociacion_medicamento_negociado}"
+					                      styleClass="text-center" >
+					                <p:selectBooleanCheckbox id="col15"
+					                                         value="#{medicamentoPGPNegociacion.negociado}">
+					                </p:selectBooleanCheckbox>
+					                <h:outputText id="prueba" />
+					            </p:column>
+					
+					            <!-- check seleccion -->
+					            <p:column class="text-center" selectionMode="multiple"
+					                      headerText="#{i18n.negociacion_medicamento_seleccionado}"
+					                      id="col16" />
+					        </p:dataTable>
+					        
+					        <!-- Fin Tabla de Procedimientos -->
+							<p:spacer></p:spacer>
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="col-lg-10">
+										<p:commandButton value="#{i18n.form_label_button_regresar}"
+											actionListener="#{negociacionMedicamentosPgpSSController.volverAMedicamentos()}"
+											styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left"
+											iconPos="left" process="@this" />
+	
+									</div>
+								</div>
+							</div>
+					        
+					    </div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

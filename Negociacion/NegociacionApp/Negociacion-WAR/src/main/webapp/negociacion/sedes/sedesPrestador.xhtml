@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <h:form id="sedesPrestadorForm">
+        <p:outputPanel rendered="#{negociacionController.mostrarSedesTipoCobertura or negociacionController.mostrarSedesZonasCobertura}">
+            <h:panelGroup layout="block" id="agrupadorPopupTecnologiasNegociar"
+                          rendered="#{not empty negociacionController.negociacion.id}">
+                <div class="widget-header">
+                <span class="widget-caption">
+					<p:outputLabel value="#{i18n.sede_neg_prestador_title}"/>
+				</span>
+                </div>
+            </h:panelGroup>
+            <p:panel id="panelSedesPrestador">
+                <div class="form-group">
+                    <p:remoteCommand name="updateDataTable" update="sedesNegociacion"/>
+                    <!--@elvariable id="sedePrestador" type="com.conexia.contratacion.commons.dto.contractual.parametrizacion.SedePrestadorDto"-->
+                    <p:dataTable id="sedesNegociacion" widgetVar="sedesNegociacion" var="sedePrestador"
+                                 value="#{negociacionController.sedesPrestador}"
+                                 style="margin: 0 auto;" emptyMessage="#{i18n.form_label_datatable_noregistros}"
+                                 rows="15" rowIndexVar="sedesNegociacionRowIndex"
+                                 paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="5,10,15"
+                                 rowSelectMode="checkbox" rowKey="#{sedePrestador.id}"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 selection="#{negociacionController.sedesPrestadorSeleccionadas}">
+
+                        <p:ajax event="page" update="@this"/>
+                        <p:ajax event="sort" update="@this"/>
+                        <p:ajax event="toggleSelect"
+                                listener="#{negociacionController.adicionarSedeNegociacion}"
+                                update="@this, btnInvitar,sedesPrestadorForm:panelSeleccionSedePrincipal,sedesPrestadorForm, @this"
+                                process="@([id$=sedesNegociacion])"/>
+                        <p:ajax event="rowSelectCheckbox"
+                                listener="#{negociacionController.adicionarSedeNegociacion}"
+                                update=" @this, btnInvitar,sedesPrestadorForm:panelSeleccionSedePrincipal,sedesPrestadorForm"
+                                process="@([id$=sedesNegociacion])"/>
+                        <p:ajax event="rowUnselectCheckbox"
+                                listener="#{negociacionController.adicionarSedeNegociacion}"
+                                update="@this, btnInvitar,sedesPrestadorForm:panelSeleccionSedePrincipal,sedesPrestadorForm"
+                                process="@([id$=sedesNegociacion])"/>
+
+                        <p:column headerText="#{i18n.sede_neg_tbl_codigo_sede}" styleClass="text-center col-lg-1"
+                                  filterBy="#{sedePrestador.codigoSede}" filterMatchMode="contains" width="105">
+                            <h:outputText value="#{sedePrestador.codigoSede}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n.sede_neg_tbl_nombre_sede}" styleClass="text-center col-lg-4"
+                                  filterBy="#{sedePrestador.nombreSede}" filterMatchMode="contains">
+                            <h:outputText value="#{fn:toUpperCase(sedePrestador.nombreSede)}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n.form_label_departamento}" styleClass="text-center col-lg-1"
+                                  filterBy="#{sedePrestador.municipio.departamento}" filterMatchMode="contains"
+                                  width="90">
+                            <h:outputText value="#{fn:toUpperCase(sedePrestador.municipio.departamento)}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n.sede_neg_tbl_municipio}" styleClass="text-center col-lg-1"
+                                  filterBy="#{sedePrestador.municipio.descripcion}" filterMatchMode="contains">
+                            <h:outputText value="#{fn:toUpperCase(sedePrestador.municipio.descripcion)}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n.form_label_zona}" styleClass="text-center col-lg-1"
+                                  filterBy="#{sedePrestador.zonaDescripcion}" filterMatchMode="contains">
+                            <h:outputText value="#{fn:toUpperCase(sedePrestador.zonaDescripcion)}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n.form_label_direccion}" styleClass="text-center col-lg-2"
+                                  filterBy="#{sedePrestador.direccion}" filterMatchMode="contains">
+                            <h:outputText value="#{fn:toUpperCase(sedePrestador.direccion)}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n.form_label_seleccionar}" styleClass="text-center col-lg-2"
+                                  selectionMode="multiple" />
+                        <p:column headerText="#{i18n.sede_neg_tbl_asignar_areas}" styleClass="text-center col-lg-1">
+                            <p:commandButton id="btnInvitar" alt="#{i18n.sede_neg_tbl_asignar_areas}"
+                                             title="#{i18n.sede_neg_tbl_asignar_areas}" icon="fa fa-globe"
+                                             actionListener="#{areaCoberturaController.verAreaCobertura(negociacionController.negociacion.id, sedePrestador.id, negociacionController.negociacion.estadoLegalizacion)}"
+                                             update="areasCoberturaForm,sedesPrestadorForm" process="@this"
+                                             disabled="#{!sedePrestador.seleccionado or negociacionController.bloquearSedes == true}"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+            <p:spacer/>
+            <h:panelGroup id="panelSeleccionSedePrincipal">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p:outputLabel for="sedePrincipal" value="Sede principal" styleClass="col-lg-2"/>
+                        <div class="col-lg-10">
+                            <p:selectOneMenu id="sedePrincipal" style="width: 100%" effect="fold"
+                                             value="#{negociacionController.negociacion.sedePrincipal}"
+                                             required="#{negociacionController.sedesSelecciondas.size() > 0}"
+                                             requiredMessage="#{i18n.form_label_required}"
+                                             converter="omnifaces.SelectItemsConverter">
+                                <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" noSelectionOption="true"/>
+                                <!--@elvariable id="sedeNegociacion" type="com.conexia.contratacion.commons.dto.contractual.parametrizacion.SedePrestadorDto"-->
+                                <f:selectItems value="#{negociacionController.sedesPrestadorSeleccionadas}"
+                                               var="sedeNegociacion" itemValue="#{sedeNegociacion}"
+                                               itemLabel="#{sedeNegociacion.codigoSede}-#{sedeNegociacion.nombreSede}">
+                                </f:selectItems>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+            <p:spacer/>
+            <h:panelGroup rendered="#{not negociacionController.mostrarPoblacion()}">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p:outputLabel for="distribucionPoblacion"
+                                       value="¿Desea distribuir la población por servicio?"
+                                       styleClass="col-lg-4"/>
+                        <div class="col-lg-3">
+                            <p:selectOneRadio id="distribucionPoblacion"
+                                              value="#{negociacionController.negociacion.poblacionServicio}"
+                                              required="true" requiredMessage="#{i18n.form_label_required}"
+                                              styleClass="anchoInput"
+                                              disabled="#{negociacionController.bloquearSedes == true}">
+                                <p:ajax event="click" process="@this"
+                                        update="groupPoblacionNo"/>
+                                <f:selectItem itemLabel="Si" itemValue="true"/>
+                                <f:selectItem itemLabel="No" itemValue="false"/>
+                            </p:selectOneRadio>
+                        </div>
+                        <h:panelGroup id="groupPoblacionNo">
+                            <p:outputLabel for="poblacionNegociacion" id="labelPoblacion"
+                                           rendered="#{negociacionController.negociacion.poblacionServicio!=null and !negociacionController.negociacion.poblacionServicio and negociacionController.mostrarPoblacion()}"
+                                           value="#{i18n.negociacion_label_poblacion}"
+                                           styleClass="col-lg-2"/>
+                            <div class="col-lg-3">
+                                <p:inputText id="poblacionNegociacion"
+                                             value="#{negociacionController.negociacion.poblacion}"
+                                             maxlength="9" styleClass="anchoInput"
+                                             converter="javax.faces.Integer"
+                                             validatorMessage="#{i18n.form_label_validar_numeros_msg}"
+                                             rendered="#{negociacionController.negociacion.poblacionServicio!=null and !negociacionController.negociacion.poblacionServicio  and negociacionController.mostrarPoblacion()}"
+                                             required="true" requiredMessage="#{i18n.form_label_required}"
+                                             disabled="#{negociacionController.bloquearSedes == true}">
+                                    <f:validateLongRange minimum="0"/>
+                                </p:inputText>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </h:panelGroup>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p:commandButton value="#{i18n.form_label_button_siguiente}" id ="siguiente_prestador"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     action="#{negociacionController.siguienteContrAnterior()}"
+                                     actionListener="#{negociacionController.validarSedesNegociacion()}"
+                                     iconPos="left" process="@form"
+                                     update="tipoModalidadNegociacionForm,sedesPrestadorForm,sedePrincipal"
+                                     disabled="#{empty negociacionController.sedesPrestador}"/>
+                </div>
+            </div>
+            <br/>
+        </p:outputPanel>
+    </h:form>
+
+    <ui:include src="./areaCoberturaModal.xhtml"/>
+</f:view>

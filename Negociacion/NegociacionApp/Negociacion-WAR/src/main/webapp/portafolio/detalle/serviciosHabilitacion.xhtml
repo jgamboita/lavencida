@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="serviciosHabilitacionForm">
+		<p:panel id="panelServiciosHabilitacion">
+			<div class="form-group">
+				<p:dataTable id="serviciosHabilitacion" var="servicio"
+					value="#{detallePortafolioController.servicioHabilitacion}"
+					style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15" widgetVar="serviciosHabilitacionVar">
+
+					<p:column headerText="#{i18n.servicio_label_grupo_habilitacion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.servicioSalud.macroservicio.nombre}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{servicio.servicioSalud.macroservicio.nombre}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.servicio_label_servicio_habilitacion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.servicioSalud.codigo} - #{servicio.servicioSalud.nombre}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.servicioSalud.codigo} - #{servicio.servicioSalud.nombre}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.servicio_label_modalidad}"
+						styleClass="text-center col-lg-1" filterBy="#{servicio.modalidad}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.modalidad}" />
+					</p:column>
+
+					<p:column
+						headerText="#{i18n.negociacion_procedimiento_tbl_tarifario}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.tarifario.descripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.tarifario.descripcion}" />
+					</p:column>
+
+					<p:column
+						headerText="#{i18n.servicio_label_porcentaje_negociacion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.porcentajeNegociacion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.porcentajeNegociacion}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.servicio_label_tarifa_diferencial}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.tarifaDiferencial}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.tarifaDiferencial}" />
+					</p:column>
+
+					<p:column headerText="#{i18n.form_label_estado}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.estadoDescripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.estadoDescripcion}" />
+					</p:column>
+
+					<p:column styleClass="text-center col-lg-1">
+						<p:commandLink styleClass="fa fa-gear"
+							actionListener="#{detallePortafolioController.verProcedimientos(servicio)}"
+							update="dialogProcedimientos, procedimientosForm"
+							oncomplete="PF('dialogProcedimietosW').show();"
+							process="@this" />
+					</p:column>
+
+				</p:dataTable>
+			</div>
+		</p:panel>
+	</h:form>
+
+</f:view>

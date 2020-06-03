@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            <h:panelGrid border="0" id="panelTituloNegociacion">
+                <h:outputLabel rendered="#{empty negociacionController.negociacion.id}" value="#{i18n.negociacion_nueva_titulo}"/>
+                <h:outputLabel rendered="#{not empty negociacionController.negociacion.id}" value="#{i18n.negociacion_label_numero} #{negociacionController.negociacion.id}"/>
+            </h:panelGrid>
+        </ui:define>
+
+        <ui:define name="content">
+            <p:panel id="contenedorNegociacion">
+                <ui:include src="./detalleNuevaNegociacion.xhtml"/>
+                <ui:include src="./mensajeTecnologiasPuedenNegociar.xhtml"/>
+                <ui:include src="../sedes/sedesPrestador.xhtml"/>
+                <ui:include src="./tecnologiasPuedenNegociarModal.xhtml"/>
+                <ui:include src="./tipoModalidadNegociacion.xhtml"/>
+                <ui:include src="./seleccionarContratoAnterior.xhtml"/>
+                <ui:include src="./botonera.xhtml"/>
+            </p:panel>
+        </ui:define>
+    </ui:composition>
+</f:view>

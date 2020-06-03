@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:o="http://omnifaces.org/ui">
+
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" var="NegociacionModalidadEnum"/>
+
+    <h:form id="tipoModalidadNegociacionForm">
+        <p:outputPanel id="panelModalidadNegociacion" rendered="#{negociacionController.bloquearSedes}">
+            <h:panelGrid columns="1" style="width:100%">
+                <f:facet name="header">
+                    <p:outputLabel value="#{i18n.negociacion_tipo_modalidad_title}" styleClass="titulo-bold"/>
+                    <div class="separador"></div>
+                </f:facet>
+            </h:panelGrid>
+            <br/>
+
+            <div class="row">
+                <div class="form-group">
+                    <div class="form-group form-group-sm col-lg-6">
+                        <p:selectOneRadio id="tipoModalidadNegociacion" layout="grid" columns="2" style="width: 80%"
+                                          value="#{negociacionController.negociacion.tipoNegociacion}"
+                                          required="true" requiredMessage="#{i18n.form_label_required}"
+                                          >
+                            <f:selectItems value="#{negociacionController.tipoNegociacion}"
+                                           var="tipo" itemLabel="#{i18n[cnx:enum_key(tipo)]}"
+                                           itemValue="#{tipo}"/>
+                            <p:ajax update="@this"/>
+                        </p:selectOneRadio>
+                        <p:message for="tipoModalidadNegociacion"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group form-group-sm col-lg-5">
+                    <p:outputLabel value="#{i18n.negociacion_copiar_contenido} " for="baseOtraNegociacion"
+                                   style="width: 85%"
+                                   rendered="#{negociacionController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}"/>
+                    <p:selectBooleanCheckbox id="baseOtraNegociacion"
+                                             value="#{negociacionController.clonarNegociacion}"
+                                             rendered="#{negociacionController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+                        <p:ajax listener="#{negociacionController.disableContrAnterior()}"
+                                update="tipoModalidadNegociacionForm:panelModalidadNegociacion"/>
+                    </p:selectBooleanCheckbox>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group form-group-sm col-lg-7">
+                    <p:panelGrid id="clonarNegociacionPanel" rendered="#{negociacionController.clonarNegociacion}"
+                                 class="col-lg-6">
+                        <div class="col-lg-12">
+                            <p:outputLabel value="#{i18n.negociacion_copiar_tarifas}" for="copiarTarifas"/>
+                            <p:selectBooleanCheckbox id="copiarTarifas"
+                                                     value="#{negociacionController.clonarNegociacionDto.copiarTarifasNegociadas}"/>
+                        </div>
+                        <div class="col-lg-12">
+                            <p:outputLabel for="numeroNegociacion" id="labelNumeroNegociacion"
+                                           value="#{i18n.negociacion_a_duplicar_numero}"
+                                           styleClass="col-lg-4"/>
+                            <div class="col-lg-4">
+                                <p:inputText id="numeroNegociacion" style="width: 100%"
+                                             rendered="#{negociacionController.clonarNegociacion}"
+                                             value="#{negociacionController.clonarNegociacionDto.negociacionBase.id}" maxlength="7"
+                                             converter="javax.faces.Integer"
+                                             validatorMessage="#{i18n.form_label_validar_numeros_msg}"
+                                             required="true" requiredMessage="#{i18n.form_label_required}">
+                                    <f:validateLongRange minimum="0"/>
+                                </p:inputText>
+                            </div>
+                            <div class="col-lg-4">
+                                <p:commandButton value="#{i18n.form_label_button_buscar}"
+                                                 styleClass="btn btn-sm btn-info" icon="fa fa fa-search"
+                                                 actionListener="#{negociacionController.consultarNegociacionBase()}"
+                                                 iconPos="left" update="tipoModalidadNegociacionForm"
+                                                 process="clonarNegociacionPanel"/>
+                            </div>
+                        </div>
+                    </p:panelGrid>
+                    <h:panelGroup id="prestadorNegociacionBase"
+                                  rendered="#{negociacionController.clonarNegociacionDto.negociacionBase.prestador != null}">
+                        <div class="col-lg-12">
+                            <p:outputLabel id="labelPrestador" for="informacionPrestador"
+                                           value="#{i18n.negociacion_a_duplicar_prestador}"
+                                           styleClass="col-lg-4"/>
+                            <h:outputText id="informacionPrestador"
+                                          value="#{negociacionController.clonarNegociacionDto.negociacionBase.prestador.numeroDocumento} - #{negociacionController.clonarNegociacionDto.negociacionBase.prestador.nombre}"
+                                          styleClass="col-lg-8"/>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p:commandButton value="#{i18n.form_label_button_regresar}"
+                                     styleClass="btn btn-sm btn-warning" icon="fa fa-long-arrow-left"
+                                     actionListener="#{negociacionController.desbloquearSedes()}"
+                                     rendered="#{negociacionController.clonarNegociacion}"
+                                     iconPos="left" id="regresar"
+                                     update="tipoModalidadNegociacionForm,sedesPrestadorForm"
+                                     process="@this"/>
+                    <p:commandButton value="#{i18n.form_label_button_terminar}" id="terminar"
+                                     rendered="#{negociacionController.clonarNegociacion
+                                                                     or negociacionController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.EVENTO}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     actionListener="#{negociacionController.verificarContratoAnterior()}"
+                                     update="tipoModalidadNegociacionForm" iconPos="left"/>
+                    <p:commandButton value="Siguiente" id="siguiente"
+                                     rendered="#{!negociacionController.clonarNegociacion
+                                                                     and negociacionController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     actionListener="#{negociacionController.siguienteContrAnterior()}"
+                                     update="tipoModalidadNegociacionForm,contratoAnteriorForm"
+                                     process="@form" iconPos="left"/>
+                </div>
+            </div>
+            <br/>
+        </p:outputPanel>
+    </h:form>
+
+</f:view>

@@ -1,0 +1,7 @@
+<xls>
+	<area ref="Template!A1:P4">
+		<each items="anexos" var="row" ref="Template!A2:P2">
+            <area ref="Template!A2:P2"/>
+        </each>
+	</area>
+</xls>

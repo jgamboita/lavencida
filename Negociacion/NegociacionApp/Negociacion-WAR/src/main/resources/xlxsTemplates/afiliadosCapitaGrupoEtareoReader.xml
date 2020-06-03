@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workbook>
+	<worksheet name="Hoja1">
+		<section startRow="0" endRow="0"/>
+		<loop startRow="1" endRow="1" items="poblacionNegociacion" var="afiliado" varType="com.conexia.contratacion.commons.dto.maestros.AfiliadoDto">
+			<section startRow="1" endRow="1">
+				<mapping row="1" col="0">afiliado.codigoUnicoAfiliado</mapping>
+				<mapping row="1" col="1">afiliado.tipoIdentificacion.codigo</mapping>
+				<mapping row="1" col="2">afiliado.numeroIdentificacion</mapping>
+			</section>
+			<loopbreakcondition>
+		        <rowcheck offset="0">
+		            <cellcheck offset="0"></cellcheck>
+		            <cellcheck offset="1"></cellcheck>
+		            <cellcheck offset="2"></cellcheck>
+		        </rowcheck>
+	    	</loopbreakcondition>
+		</loop>
+	</worksheet>
+</workbook>

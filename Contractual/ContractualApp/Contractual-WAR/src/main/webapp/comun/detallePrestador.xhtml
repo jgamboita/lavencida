@@ -1,0 +1,203 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:panelGroup>
+    <h:panelGrid columns="1" style="width:100%">
+        <f:facet name="header">
+            <p:outputLabel value="Datos de la IPS" styleClass="titulo-bold"></p:outputLabel>
+            <div class="separador"></div>
+        </f:facet>
+    </h:panelGrid>
+    <p:panel header="#{detallePrestadorController.prestador.nombre}" 
+             toggleable="true" id="panelDetallePrestador">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2">
+                    <h:outputLabel value="Tipo Documento:" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputText value="#{detallePrestadorController.prestador.tipoIdentificacionCod}" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="No. Documento:" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputText value="#{detallePrestadorController.prestador.numeroDocumento}" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Código Prestador:" />
+                </div>
+                <div class="col-lg-2">
+                    <p:inputText id="prefijo" value="#{detallePrestadorController.prestador.prefijo}" 
+                                 rendered="#{((detallePrestadorController.prestador.prefijo == null 
+                                             || detallePrestadorController.prestador.prefijo.length()==0) and detallePrestadorController.mostrarRepresentante eq true)}" 
+                                 required="true" requiredMessage="Por favor ingrese el código del prestador."
+                                 readonly="#{readonly}"
+                                 validatorMessage="Por favor valide la longitud del campo código prestador.">
+                        <f:validateLength minimum="2" maximum="3"/>
+                    </p:inputText>
+                    <p:message for="prefijo" id="msgPrefijo" display="icon" />
+                    <h:outputText value="#{detallePrestadorController.prestador.prefijo}" 
+                                  rendered="#{detallePrestadorController.prestador.prefijo != null 
+                                              || detallePrestadorController.prestador.prefijo.length()>0  
+                                                || !detallePrestadorController.mostrarRepresentante eq true}"/>
+                </div>                                    
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2">
+                    <h:outputLabel value="Tipo" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputText value="#{detallePrestadorController.prestador.tipoPrestador}" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Naturaleza Jurídica:" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputText value="#{detallePrestadorController.prestador.naturalezaJuridica}" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Clase del prestador:" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputText value="#{detallePrestadorController.prestador.clasePrestador}" />
+                </div>                                    
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2">
+                    <h:outputLabel value="Categoria:" />
+                </div>
+                <div class="col-lg-10">
+                    <h:outputText value="#{detallePrestadorController.prestador.categoriaPrestador}" />
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2">
+                	<h:outputLabel value="Nivel de Atención:" style="#{detallePrestadorController.prestador.nivelAtencion eq null ? 'background:Red;' : ''}"/>
+                </div>
+                <div class="col-lg-2">
+                    <h:outputText value="#{detallePrestadorController.prestador.nivelAtencion}" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="E.S.E.:" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputText value="#{detallePrestadorController.prestador.ese}" />
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Correo Electrónico:" />
+                </div>
+                <div class="col-lg-2">
+                    <p:inputText id="correoElectronico" value="#{detallePrestadorController.prestador.correoElectronico}" 
+                                 readonly="#{readonly}"
+                                 required="true" requiredMessage="Por favor ingrese el correo electronico."
+                                 validatorMessage="Formato de correo invalido" >
+                        <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+                    </p:inputText>                    
+                </div>        
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2">
+                    <h:outputLabel value="Nombre Representante Legal:" rendered="#{detallePrestadorController.mostrarRepresentante eq true}"/>
+                </div>
+                <div class="col-lg-2">
+                    <p:inputText value="#{detallePrestadorController.prestador.representanteLegal}" 
+                                 readonly="#{readonly}"
+                                 requiredMessage="Por favor ingresar el nombre del representante legal."
+                                 rendered="#{detallePrestadorController.mostrarRepresentante eq true}"
+                                 required="true">
+                    </p:inputText>
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Tipo Identificación Representante Legal:" rendered="#{detallePrestadorController.mostrarRepresentante eq true}" />
+                </div>
+                <div class="col-lg-2">
+                    <p:selectOneMenu id="tipoIdentificacion" class="anchoInput" rendered="#{detallePrestadorController.mostrarRepresentante eq true}"
+                                     disabled="#{readonly}"
+                                     value="#{detallePrestadorController.prestador.tipoIdentificacionRepLegal}"
+                                     converter="omnifaces.SelectItemsConverter" required="true" 
+                                     requiredMessage="Por favor ingrese el tipo de identificación del representante legal.">
+                        <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                        <f:selectItems value="#{detallePrestadorController.tiposIdentificacionDto}"
+                                       var="tipoIdentificacion"
+                                       itemLabel="#{tipoIdentificacion.descripcion}"
+                                       itemValue="#{tipoIdentificacion}"/>
+                    </p:selectOneMenu>
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Numero identificación Representante Legal:" rendered="#{detallePrestadorController.mostrarRepresentante eq true}"/>
+                </div>
+                <div class="col-lg-2">
+                    <p:inputText value="#{detallePrestadorController.prestador.numeroIdentificacionRepLegal}" 
+                                 readonly="#{readonly}"
+                                 rendered="#{detallePrestadorController.mostrarRepresentante eq true}"
+                                 required="true" requiredMessage="Por favor ingresar el número de identificación del representante legal" 
+                                 validatorMessage="Por favor ingresar un número de identificación valido.">
+                        <f:validateRegex pattern="^[0-9]+$" />
+                    </p:inputText>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2">
+                    <h:outputLabel value="Departamento:" rendered="#{detallePrestadorController.mostrarUbicacion eq true}"/>
+                </div>
+                <div class="col-lg-2">
+                    <p:selectOneMenu id="departamento" class="anchoInput" rendered="#{detallePrestadorController.mostrarUbicacion eq true}"
+                                     disabled="#{readonly}"
+                                     value="#{detallePrestadorController.departamento}" 
+                                     converter="omnifaces.SelectItemsConverter" required="true" 
+                                     requiredMessage="Por favor ingrese el departamento del prestador.">
+                        <p:ajax update="municipio" listener="#{detallePrestadorController.buscaMunicipios}" />
+                        <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                        <f:selectItems value="#{detallePrestadorController.departamentos}"
+                                       var="dpto"
+                                       itemLabel="#{dpto.descripcion}"
+                                       itemValue="#{dpto}"/>
+                    </p:selectOneMenu>
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Municipio" rendered="#{detallePrestadorController.mostrarUbicacion eq true}"/>
+                </div>
+                <div class="col-lg-2">
+                    <p:selectOneMenu id="municipio" class="anchoInput" rendered="#{detallePrestadorController.mostrarUbicacion eq true}"
+                                     disabled="#{readonly}"
+                                     value="#{detallePrestadorController.municipioDto}"
+                                     converter="omnifaces.SelectItemsConverter" required="true" 
+                                     requiredMessage="Por favor ingrese el municipio del prestador.">
+                        <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                        <f:selectItems value="#{detallePrestadorController.municipios}"
+                                       var="mun"
+                                       itemLabel="#{mun.descripcion}"
+                                       itemValue="#{mun}"/>
+                    </p:selectOneMenu>
+                </div>
+                <div class="col-lg-2">
+                    <h:outputLabel value="Dirección" rendered="#{detallePrestadorController.mostrarUbicacion eq true}" />
+                </div>
+                <div class="col-lg-2">
+                    <p:inputText rendered="#{detallePrestadorController.mostrarUbicacion eq true}"
+                                 readonly="#{readonly}"
+                                 requiredMessage="Por favor ingresar la direccion."
+                                 value="#{detallePrestadorController.direccion}" 
+                                 required="true" />
+                </div>                
+            </div>
+        </div>
+    </p:panel>
+    </h:panelGroup>
+</ui:composition>

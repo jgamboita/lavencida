@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+	<composite:interface>
+	
+		<composite:attribute name="methodListenerUploadFile"
+			method-signature="void methodListenerUploadFile(org.primefaces.event.FileUploadEvent)" />
+		<composite:attribute name="methodListenerRemoveUploadFile"
+			method-signature="void methodListenerUploadFile()" />
+		<composite:attribute name="targetUploadFile" />
+		<composite:attribute name="filesUpload" />
+		<composite:attribute name="formToUpdate" />
+		<composite:attribute name="titulo" />
+	
+	</composite:interface>
+	
+	<p:panel>
+		<h:panelGrid columns="1" style="width:100%; margin-bottom: 10px;">
+			<f:facet name="header">
+				<p:outputLabel
+					value="#{cc.attrs.titulo}"
+					styleClass="titulo-bold">
+				</p:outputLabel>
+				<div class="separador"></div>
+			</f:facet>
+		</h:panelGrid>
+	
+		<div class="row">
+			<div class="col-lg-12 form-group form-group-sm">
+				<p:outputLabel value="#{cc.attrs.lbl_buscador_tecnologia_codigo}"
+					styleClass="col-lg-4" />
+				<div class="col-lg-6">
+					<p:inputText id="codigoTecnologiaId"/>
+				</div>
+				
+				<p:outputLabel value="#{cc.attrs.lbl_buscador_tecnologia_codigo_cliente}"
+					styleClass="col-lg-4" />
+				<div class="col-lg-6">
+					<p:inputText id="codigoClienteTecnologiaId"/>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12 form-group form-group-sm">
+				<p:outputLabel value="#{cc.attrs.lbl_buscador_tecnologia_nombre}"
+					styleClass="col-lg-4" />
+				<div class="col-lg-6">
+					<p:inputText id="nombreTecnologiaId"/>
+				</div>
+			</div>
+		</div>	
+	</p:panel>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/inner.xhtml">
+    <ui:define name="title">
+        <h:outputLabel value="#{i18n.paquete_detalle_titulo}"/>
+    </ui:define>
+    <ui:define name="content">
+        <p:panel id="panelDetalleNegociacionPaquete">
+            <ui:include src="./encabezadoNegociacionPaquete.xhtml"/>
+            <ui:include src="./tecnologiasNegociacionPaquete.xhtml"/>
+            <ui:include src="./pieDePaginaNegociacionPaquete.xhtml"/>
+        </p:panel>
+    </ui:define>
+</ui:composition>

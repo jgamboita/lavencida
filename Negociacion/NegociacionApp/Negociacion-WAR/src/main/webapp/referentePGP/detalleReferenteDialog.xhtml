@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:cnx="http://conexia.com/utils" xmlns:o="http://omnifaces.org/ui">
+
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" />
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.ArchivosNegociacionEnum" />
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.EstadoReferentePgpEnum" />
+      <o:importConstants		type="com.conexia.contratacion.commons.constants.enums.FiltroReferentePgpEnum"	var="filtroReferentePgpEnum" />
+      
+      
+      <h:form id="formGestionReferenteDialog">
+        <p:panel id="panelReferenteDialog">
+          <h:panelGrid columns="1" style="width:100%">
+            <f:facet name="header">
+              <p:outputLabel value="Detalle referente: #{tecnologiasSSController.referenteDetalle.descripcion}" styleClass="titulo-bold">
+              </p:outputLabel>
+              <div class="separador"></div>
+            </f:facet>
+          </h:panelGrid>
+          <br />
+          <div class="row">
+            <div class="ui-grid-row">
+              <div class="ui-grid-col-2  text-right">
+                <p:outputLabel value="Regimen: " />
+              </div>
+              <div class="ui-grid-col-2">
+				<p:outputLabel value="#{tecnologiasSSController.referenteDetalle.regimen}"/>
+              </div>
+            </div>
+          </div>
+          <p:separator />
+          <h:panelGroup>
+            <div class="form-group">
+              <h:panelGroup id="panelFiltrosDialog">
+                <p:outputLabel value="Filtros: #{tecnologiasSSController.referenteDetalle.filtroReferente.descripcion}" styleClass="titulo-bold" />
+                <br />
+                <br />
+              </h:panelGroup>
+            </div>
+            <h:panelGroup id="panelUbicacionDialog"
+              rendered="#{tecnologiasSSController.referenteDetalle.filtroReferente == filtroReferentePgpEnum.POR_UBICACION}">
+              <div class="row">
+
+                <div class="col-lg-2">
+                	<p:outputLabel for="detalleRegionalRef" value="Regional: "
+                		rendered="#{tecnologiasSSController.referenteUbicacion.regional.descripcion != null}"/>
+                  	<p:spacer style="width:10px"></p:spacer>
+                  	<h:outputText id="detalleRegionalRef" value="#{tecnologiasSSController.referenteUbicacion.regional.descripcion}"/>
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-2">
+                	<p:outputLabel for="detalleDepartamentoRef" value="Departamento: "	 
+                  		rendered="#{tecnologiasSSController.referenteUbicacion.departamento.descripcion != null}"/>
+                  	<p:spacer style="width:10px"></p:spacer>
+                  	<h:outputText id="detalleDepartamentoRef" value="#{tecnologiasSSController.referenteUbicacion.departamento.descripcion}"/>
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-2">
+                	<p:outputLabel for="detalleZonaRef" value="Zona: "	 
+                  		rendered="#{tecnologiasSSController.referenteUbicacion.zonaMunicipio.descripcion != null}"/>
+                  	<p:spacer style="width:10px"></p:spacer>
+                  	<h:outputText id="detalleZonaRef" value="#{tecnologiasSSController.referenteUbicacion.zonaMunicipio.descripcion}"/>
+                </div>
+
+                <div class="col-lg-offset-1 col-lg-2">
+                	<p:outputLabel for="detalleMunicipioRef" value="Municipio: "	 
+                  		rendered="#{tecnologiasSSController.referenteUbicacion.municipio.descripcion != null}"/>
+                  	<p:spacer style="width:10px"></p:spacer>
+                  	<h:outputText id="detalleMunicipioRef" value="#{tecnologiasSSController.referenteUbicacion.municipio.descripcion}" />
+                </div>
+              </div>
+            </h:panelGroup>
+            <br />
+
+            <h:panelGroup id="panelPrestadorDialog"
+              rendered="#{tecnologiasSSController.referenteDetalle.filtroReferente == filtroReferentePgpEnum.POR_PRESTADOR}">
+
+              <p:outputLabel id="nombrePrestadorDialog"
+                value="#{tecnologiasSSController.referentePrestador.nombre}" />
+                
+              <div class="row">
+
+                <div class="col-lg-3">
+                	<p:outputLabel for="NumeroDocPrestadorRef" value="Número de documento: "/>
+                	<p:spacer style="width:10px"></p:spacer>
+                  	<h:outputText id="NumeroDocPrestadorRef" value="#{tecnologiasSSController.referentePrestador.numeroDocumento}" />
+              	</div>
+
+                <div class="col-lg-offset-1 col-lg-7">
+
+                  <p:outputLabel value="Sedes:" />
+                  <p:selectOneMenu id="listSedesDialog" styleClass="anchoInput"
+                    label="Sedes del prestador..." filter="true"
+                    filterMatchMode="startsWith">
+
+                    <f:selectItems
+						value="#{tecnologiasSSController.referenteSedes}"
+						var="sede" itemLabel="#{sede.sedePrestador.nombreSede}"
+						itemValue="#{sede}" />
+                  </p:selectOneMenu>
+
+                </div>
+
+              </div>
+            </h:panelGroup>
+
+            <br />
+
+            <h:panelGroup id="panelGeneralDialog">
+
+              <div class="separador"></div>
+              <div class="row">
+                <div class="col-lg-3">
+                  <p:outputLabel value="Tecnologia:  " />
+                  <p:selectBooleanCheckbox itemLabel="Procedimientos"
+                    styleClass="anchoInput"
+                    value="#{tecnologiasSSController.referenteDetalle.esProcedimiento}"
+                    disabled="true">
+                  </p:selectBooleanCheckbox>
+                  <p:selectBooleanCheckbox itemLabel="Medicamentos"
+                    styleClass="anchoInput"
+                    value="#{tecnologiasSSController.referenteDetalle.esMedicamento}"
+                    disabled="true">
+                  </p:selectBooleanCheckbox>
+                </div>
+                <br />
+
+              </div>
+
+            </h:panelGroup>
+
+            <br />
+            <br />
+
+            <h:panelGroup id="panelEspPgpDialog">
+              <div class="separador"></div>
+              <p:outputLabel value="Rango de fechas" />
+              <div class="row">
+                <div class="col-lg-3">
+                  <p:outputLabel for="detalleReferenteFechaInicio" value="Fecha inicio: "/>
+                  <p:spacer style="width:10px"></p:spacer>
+                  <h:outputText id="detalleReferenteFechaInicio"  value="#{tecnologiasSSController.referenteDetalle.fechaInicio}">
+                  	<f:convertDateTime pattern="dd/MM/yyyy"/>
+                  </h:outputText>
+                </div>
+
+                <div class="col-lg-offset-3 col-lg-3">
+                  <p:outputLabel for="detalleReferenteFechaFin" value="Fecha fin: "/>
+                  <p:spacer style="width:10px"></p:spacer>
+                  <h:outputText id="detalleReferenteFechaFin" value="#{tecnologiasSSController.referenteDetalle.fechaFin}">
+                  	<f:convertDateTime pattern="dd/MM/yyyy"/>
+                  </h:outputText>
+                </div>
+              </div>
+            </h:panelGroup>
+          </h:panelGroup>
+          <br />
+
+          <p:separator />
+
+          <h:panelGroup
+            id="pnlTecnologiasDialog">
+            <p:tabView id="tabsTecnologiasDialog" widgetVar="tabsTecnologiasDialogW"
+								dynamic="true" cache="false">
+
+              <p:tab title="#{i18n.enum_tipotecnologiaenum_procedimientos}" id="tabProcedimientosPgpDialog">
+                <ui:include
+                  src="./procedimientos/capitulosReferentePgpDialog.xhtml" />
+              </p:tab>
+
+
+              <p:tab id="tabMedicamentosPgpDialog"
+                title="#{i18n.enum_tipotecnologiaenum_medicamentos}">
+                <ui:include src="./medicamentos/gruposReferentePgpDialog.xhtml" />
+              </p:tab>
+            </p:tabView>
+
+          </h:panelGroup>
+
+        </p:panel>
+      </h:form>
+
+</f:view>
+

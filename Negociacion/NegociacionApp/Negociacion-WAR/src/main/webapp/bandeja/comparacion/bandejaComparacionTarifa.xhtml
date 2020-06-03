@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:o="http://omnifaces.org/ui">
+	<o:importConstants
+        type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum"  var="NegociacionModalidadEnum"/>
+
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="#{i18n.comparacion_tarifas_comparacion_titulo}" />
+
+		</ui:define>
+		<ui:define name="content">
+			<h:form id="filtrosPrestador">
+				<p:panel id="panelFiltrosPrestador">
+
+					<div class="form-group">
+						<!-- row -->
+						<div class="row">
+							<div class="col-lg-3">
+								<p:outputLabel for="modalidad" value="Modalidad" />
+
+								<p:selectOneMenu id="modalidad" effect="fold" required="true"
+									requiredMessage="#{i18n.form_label_required}"
+									styleClass="anchoInput"
+									value="#{bandejaComparacionTarifasController.filtro.modalidadNegociacion}">
+									<f:ajax listener="#{bandejaComparacionTarifasController.onChangeModalidad}" update=":panelRias" render=":panelRias" />
+									<f:selectItems
+										value="#{bandejaComparacionTarifasController.modalidades}"
+										var="modalidad" itemValue="#{modalidad}"
+										itemLabel="#{i18n[cnx:enum_key(modalidad)]}"  />
+
+								</p:selectOneMenu>
+
+								<p:message for="modalidad" />
+
+
+
+							</div>
+							<div class="col-lg-offset-1 col-lg-3">
+
+								<p:outputLabel for="tiposDocumento"
+									value="#{i18n.form_label_tipdocumento_extendido}" />
+								<p:selectOneMenu id="tiposDocumento"
+									value="#{bandejaComparacionTarifasController.filtro.tipoIdentificacionSeleccionado}"
+									converter="omnifaces.SelectItemsConverter" effect="fold"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									styleClass="anchoInput">
+									<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+										itemValue="" noSelectionOption="true" />
+									<f:selectItems value="#{listaTiposDocumento}"
+										var="tipoIdentificacion" itemValue="#{tipoIdentificacion}"
+										itemLabel="#{tipoIdentificacion.descripcion}" />
+								</p:selectOneMenu>
+								<p:message for="tiposDocumento" />
+
+							</div>
+							<div class="col-lg-offset-1 col-lg-3">
+
+								<p:outputLabel for="numeroDocumento"
+									value="#{i18n.form_label_nrodocumento}" />
+								<p:inputText id="numeroDocumento"
+									value="#{bandejaComparacionTarifasController.filtro.numeroIdentificacion}"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									maxlength="12" styleClass="form-control input-sm"
+									validatorMessage="#{i18n.form_label_validar_caracteres_msg}">
+									<!-- Validación de caracteres especiales -->
+									<f:validateRegex pattern="#{i18n.form_label_validar_caracteres}"  disabled="true" />
+								</p:inputText>
+								<p:message for="numeroDocumento" />
+
+							</div>
+						</div>
+						<!--end row -->
+						<h:outputText value="&#160;" />
+						<!-- row -->
+						<div class="row">
+							<div class="col-lg-4">
+								<p:outputLabel for="nombrePrestador"
+									value="#{i18n.bandeja_prestador_label_nombreprestador}" />
+								<p:message for="nombrePrestador" />
+								<p:inputText id="nombrePrestador"
+									value="#{bandejaComparacionTarifasController.filtro.nombrePrestador}"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									validatorMessage="#{i18n.form_label_validar_caracteresConBasicos_msg}"
+									maxlength="50" styleClass="form-control input-sm">
+									<f:validateRegex
+										pattern="#{i18n.form_label_validar_caracteresConBasicos}" />
+								</p:inputText>
+
+							</div>
+
+							<div class="col-lg-3">
+								<p:outputLabel for="prefijo" class="col-lg-12"
+									value="#{i18n.bandeja_prestador_label_prefijo}" />
+								<p:inputText id="prefijo"
+									value="#{bandejaComparacionTarifasController.filtro.prefijo}"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									maxlength="3" styleClass="form-control input-sm">
+									<!-- Validación de solo número -->
+									<f:convertNumber integerOnly="true" />
+								</p:inputText>
+								<p:message for="prefijo" />
+
+							</div>
+
+							<div class="col-lg-offset-1 col-lg-3">
+								<p:outputLabel for="tiposTecnologias"
+									value="#{i18n.form_label_tipo_tecnologia}" />
+								<p:selectManyMenu id="tiposTecnologias" showCheckbox="true"
+									value="#{bandejaComparacionTarifasController.filtro.tiposTecnologiasSeleccionados}"
+									styleClass="anchoInput">
+									<f:selectItems
+										value="#{bandejaComparacionTarifasController.filtro.tiposTecnologiasNoTransportes}"
+										var="tipoTecnologia" itemValue="#{tipoTecnologia}"
+										itemLabel="#{i18n[cnx:enum_key(tipoTecnologia)]}" />
+								</p:selectManyMenu>
+							</div>
+						</div>
+						
+						
+						<!--end row -->
+						<h:outputText value="&#160;" />
+					
+					</div>
+					
+					<div class="row">
+						<div class="col-lg-12">
+							<p:commandButton value="#{i18n.form_label_button_buscar}"
+								update="tablaPrestadoresGral,filtrosPrestador"
+								actionListener="#{bandejaComparacionTarifasController.buscarPrestador}"
+								styleClass="btn btn-sm btn-info" icon="fa fa-search"
+								iconPos="left" />
+							<p:commandButton value="#{i18n.form_label_button_limpiar}"
+								process="@this" update="tablaPrestadoresGral,filtrosPrestador"
+								actionListener="#{bandejaComparacionTarifasController.reset}"
+								styleClass="btn btn-sm btn-warning" icon="fa fa-trash-o"
+								iconPos="left">
+                               <p:ajax update="panelFiltrosPrestador" resetValues="true"/>
+							</p:commandButton>
+							<p:commandButton value="#{i18n.form_label_button_rias}"
+								update="tablaPrestadoresGral,filtrosPrestador"
+								actionListener="#{bandejaComparacionTarifasController.compararRias}"
+								styleClass="btn btn-sm btn-info" icon="fa fa-road"
+								iconPos="left" />
+						</div>
+					</div>
+
+
+					<!-- Separador de secciones -->
+					<p:separator />
+					<!-- Tabla de prestadores -->
+					<p:dataTable id="tablaPrestadoresGral" var="prestador"
+						rendered="#{bandejaComparacionTarifasController.prestadores != null}"
+						value="#{bandejaComparacionTarifasController.prestadores}"
+						emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+						paginator="true" paginatorPosition="bottom"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+                                                rowKey="#{prestador.id}"
+						selection="#{bandejaComparacionTarifasController.prestadoresSeleccionados}">
+                                                
+						<p:ajax event="page" />
+						<p:ajax event="sort" />
+						<p:ajax event="rowSelectCheckbox" />
+						<p:ajax event="filter" />
+
+						<p:column filterBy="#{prestador.id}" filterMatchMode="contains"
+							filterStyleClass="anchoInput"
+							headerText="#{i18n.bandeja_prestador_tabla_col_numeroPres}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.id}" />
+						</p:column>
+
+						<p:column filterBy="#{prestador.nombre}"
+							filterMatchMode="contains" filterStyleClass="anchoInput"
+							headerText=" #{i18n.bandeja_prestador_tabla_col_nombre}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.nombre}" />
+						</p:column>
+
+						<p:column filterBy="#{prestador.numeroDocumento}"
+							filterMatchMode="contains" filterStyleClass="anchoInput"
+							headerText="#{i18n.bandeja_prestador_tabla_col_numId}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.numeroDocumento}" />
+						</p:column>
+
+						<p:column filterBy="#{prestador.prefijo}"
+							filterMatchMode="contains" filterStyleClass="anchoInput"
+							headerText="#{i18n.bandeja_prestador_tabla_col_prefijo}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.prefijo}" />
+						</p:column>
+
+						<p:column filterBy="#{prestador.sedes}" filterMatchMode="contains"
+							filterStyleClass="anchoInput"
+							headerText="#{i18n.bandeja_prestador_tabla_col_sedes}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.sedes}" />
+						</p:column>
+
+						<p:column filterBy="#{prestador.fechaFinVigencia}"
+							filterMatchMode="contains" filterStyleClass="anchoInput"
+							headerText="#{i18n.comparacion_tarifas_bandeja_tbl_fecha_fin_vigencia}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.fechaFinVigencia}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						
+						<p:column filterBy="#{bandejaComparacionTarifasController.filtro.modalidadNegociacion ne null}"
+							filterMatchMode="contains" filterStyleClass="anchoInput"
+							headerText="Modalidad"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.prestadorComite.tipoModalidad.descripcion}" />
+						</p:column>
+						
+						<p:column filterBy="#{prestador.estadoPortafolio}"
+							filterMatchMode="contains" filterStyleClass="anchoInput"
+							headerText="#{i18n.comparacion_tarifas_bandeja_tbl_estado_portafolio}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.estadoPortafolio}" />
+						</p:column>
+
+						<p:column filterBy="#{prestador.tiposTecnologias}"
+							filterMatchMode="contains" filterStyleClass="anchoInput"
+							headerText="#{i18n.bandeja_prestador_tabla_col_tipotecnologias}"
+							styleClass="text-center">
+							<h:outputText value="#{prestador.tiposTecnologias}" />
+						</p:column>
+						<!-- Acciones -->
+						<p:column headerText="#{i18n.form_label_acciones}"
+							styleClass="text-center"
+							rendered="#{bandejaComparacionTarifasController.filtro.modalidadNegociacion.id == 2}">
+							<div class="col-lg-1">
+								<p:commandButton id="btnRevisarTarifas"
+									actionListener="#{bandejaComparacionTarifasController.verPrestador(prestador.id)}"
+									icon="fa fa-eye"
+									alt="#{i18n.comparacion_tarifas_comparacion_titulo}"
+									title="#{i18n.comparacion_tarifas_comparacion_titulo}"
+									update="filtrosPrestador" process="@this" />
+							</div>
+						</p:column>
+						<p:column headerText="#{i18n.form_label_seleccionado}"
+							styleClass="text-center" selectionMode="multiple"
+							disabledSelection="#{!prestador.contratoAnterior}"
+							visible="#{bandejaComparacionTarifasController.filtro.modalidadNegociacion.id == 1}" />
+					</p:dataTable>
+
+					<div class="form-group">
+						<div class="row">
+							<div class="col-lg-12" align="right">
+								<p:commandButton
+									value="#{i18n.negociacion_btn_pasar_negociacion}"
+									update="tablaPrestadoresGral,filtrosPrestador"
+									actionListener="#{bandejaComparacionTarifasController.enviarNegociacion()}"
+									styleClass="btn btn-sm btn-success" icon="fa fa-check"
+									rendered="#{bandejaComparacionTarifasController.prestadores.size() > 0 and bandejaComparacionTarifasController.filtro.modalidadNegociacion.id ==  1}"
+									iconPos="left" />
+							</div>
+						</div>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:c="http://java.sun.com/jstl/core"
+        xmlns:o="http://omnifaces.org/ui" xmlns:cnx="http://conexia.com/utils">
+
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" var="NegociacionModalidadEnum"/>
+
+    <h:form id="validacionesNegociacionForm">
+        <h:outputLabel value="#{i18n.validacion_legalizacion_titulo}"/>
+        <br/>
+        <h:outputLabel value="#{i18n.mensaje_no_tecnologias}" rendered="#{not tecnologiasSSController.existenTecnologias}"/>
+
+        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+            <p:dataTable var="sedePrestador"
+                         value="#{tecnologiasSSController.sedesSinPoblacion}"
+                         rendered="#{not empty tecnologiasSSController.sedesSinPoblacion}"
+                         scrollable="true" scrollHeight="200" id="sedesSinPob">
+                <f:facet name="header">
+                    <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_sedes}"/>
+                </f:facet>
+                <f:facet name="footer">
+                    <p:outputPanel style="text-align: right">
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                            <p:dataExporter type="xls" target="sedesSinPob"
+                                            fileName="sedesSinPoblacion"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                            <p:dataExporter type="pdf" target="sedesSinPob"
+                                            fileName="sedesSinPoblacion"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-o fa-2x success"/>
+                            <p:dataExporter type="csv" target="sedesSinPob"
+                                            fileName="sedesSinPoblacion"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                            <p:dataExporter type="xml" target="sedesSinPob"
+                                            fileName="sedesSinPoblacion"/>
+                        </h:commandLink>
+                    </p:outputPanel>
+                </f:facet>
+                <p:column headerText="Código">
+                    <h:outputText value="#{sedePrestador.codigoPrestador}"/>
+                </p:column>
+                <p:column headerText="Nombre sede">
+                    <h:outputText value="#{sedePrestador.nombreSede}"/>
+                </p:column>
+            </p:dataTable>
+        </c:if>
+        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+            <p:dataTable var="medicamentoPgp"
+                         value="#{tecnologiasSSController.medicamentosSinValorPgp}"
+                         rendered="#{not empty tecnologiasSSController.medicamentosSinValorPgp}"
+                         scrollable="true" scrollHeight="200" id="medSinValorPgp">
+                <f:facet name="header">
+                    <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_medicamentos}"/>
+                </f:facet>
+                <f:facet name="footer">
+                    <p:outputPanel style="text-align: right">
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                            <p:dataExporter type="xls" target="medSinValorPgp"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                            <p:dataExporter type="pdf" target="medSinValorPgp"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-o fa-2x success"/>
+                            <p:dataExporter type="csv" target="medSinValorPgp"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                            <p:dataExporter type="xml" target="medSinValorPgp"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+                    </p:outputPanel>
+                </f:facet>
+                <p:column headerText="Grupo Código">
+                    <h:outputText value="#{medicamentoPgp.categoriaMedicamento.codigo}"/>
+                </p:column>
+                <p:column headerText="Grupo Terapéutico">
+                    <h:outputText value="#{medicamentoPgp.categoriaMedicamento.nombre}"/>
+                </p:column>
+                <p:column headerText="Código">
+                    <h:outputText value="#{medicamentoPgp.cums}"/>
+                </p:column>
+                <p:column headerText="Descripción">
+                    <h:outputText value="#{medicamentoPgp.descripcion}"/>
+                </p:column>
+            </p:dataTable>
+        </c:if>
+
+        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+            <p:dataTable var="procedimiento"
+                         value="#{tecnologiasSSController.procedimientosDiferenteValor}"
+                         rendered="#{not empty tecnologiasSSController.procedimientosDiferenteValor}"
+                         scrollable="true" scrollHeight="200" id="procedimientosDiferenteValor">
+                <f:facet name="header">
+                    <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_procedimiento_diferente_valor}"/>
+                </f:facet>
+                <f:facet name="footer">
+                    <p:outputPanel style="text-align: right">
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                            <p:dataExporter type="xls" target="procedimientosDiferenteValor"
+                                            fileName="ProcedimientosDiferenteValorVariosServicios"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                            <p:dataExporter type="pdf" target="procedimientosDiferenteValor"
+                                            fileName="ProcedimientosDiferenteValorVariosServicios"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-o fa-2x success"/>
+                            <p:dataExporter type="csv" target="procedimientosDiferenteValor"
+                                            fileName="ProcedimientosDiferenteValorVariosServicios"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                            <p:dataExporter type="xml" target="procedimientosDiferenteValor"
+                                            fileName="ProcedimientosDiferenteValorVariosServicios"/>
+                        </h:commandLink>
+                    </p:outputPanel>
+                </f:facet>
+                <p:column headerText="Código servicio">
+                    <h:outputText value="#{procedimiento.procedimientoDto.servicioSalud.codigo}"/>
+                </p:column>
+                <p:column headerText="Nombre servicio">
+                    <h:outputText value="#{procedimiento.procedimientoDto.servicioSalud.nombre}"/>
+                </p:column>
+                <p:column headerText="Código tecnología única">
+                    <h:outputText value="#{procedimiento.procedimientoDto.codigoCliente}"/>
+                </p:column>
+                <p:column headerText="Código tecnología">
+                    <h:outputText value="#{procedimiento.procedimientoDto.cups}"/>
+                </p:column>
+                <p:column headerText="Descripción">
+                    <h:outputText value="#{procedimiento.procedimientoDto.descripcion}"/>
+                </p:column>
+                <p:column headerText="Valor">
+                    <h:outputText value="#{procedimiento.valorNegociado}"/>
+                </p:column>
+            </p:dataTable>
+        </c:if>
+
+        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+            <p:dataTable var="medicamento"
+                         value="#{tecnologiasSSController.medicamentosConErrores}"
+                         rendered="#{not empty tecnologiasSSController.medicamentosConErrores}"
+                         scrollable="true" scrollHeight="200" id="medSinValor">
+                <f:facet name="header">
+                    <h:outputLabel value="#{i18n.form_label_medicamentos_con_errores}"/>
+                </f:facet>
+                <f:facet name="footer">
+                    <p:outputPanel style="text-align: right">
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                            <p:dataExporter type="xls" target="medSinValor"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                            <p:dataExporter type="pdf" target="medSinValor"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-o fa-2x success"/>
+                            <p:dataExporter type="csv" target="medSinValor"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                            <p:dataExporter type="xml" target="medSinValor"
+                                            fileName="medicamentosSinValor"/>
+                        </h:commandLink>
+                    </p:outputPanel>
+                </f:facet>
+                <p:outputPanel rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA}">
+                    <p:column headerText="${i18n.tab_th_ruta}">
+                        <h:outputText value="#{medicamento.riaDescripcion}"/>
+                    </p:column>
+                    <p:column headerText="${i18n.form_label_activida}">
+                        <h:outputText value="#{medicamento.actividadDescripcion}"/>
+                    </p:column>
+                </p:outputPanel>
+                <p:column headerText="${i18n.form_label_cums}">
+                    <h:outputText value="#{medicamento.codigoEmssanar}"/>
+                </p:column>
+                <p:column headerText="${i18n.form_label_descripcion}">
+                    <h:outputText value="#{medicamento.descripcionTecnologia}"/>
+                </p:column>
+                <p:column headerText="${i18n.form_label_descripcion_error}">
+                    <h:outputText value="#{i18n[cnx:enum_key(medicamento.tipoErrorTecnologiaEnum)]}"/>
+                </p:column>
+            </p:dataTable>
+        </c:if>
+
+        <p:dataTable var="procedimiento"
+                     value="#{tecnologiasSSController.procedimientosSinValor}"
+                     rendered="#{not empty tecnologiasSSController.procedimientosSinValor}"
+                     scrollable="true" scrollHeight="200" id="proNoCompletados">
+            <f:facet name="header">
+                <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_procedimientos}"/>
+            </f:facet>
+            <f:facet name="footer">
+                <p:outputPanel style="text-align: right">
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                        <p:dataExporter type="xls" target="proNoCompletados"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                        <p:dataExporter type="pdf" target="proNoCompletados"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-o fa-2x success"/>
+                        <p:dataExporter type="csv" target="proNoCompletados"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                        <p:dataExporter type="xml" target="proNoCompletados"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+                </p:outputPanel>
+            </f:facet>
+            <p:column headerText="Código Capítulo"
+                      rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+                <h:outputText value="#{procedimiento.capituloProcedimiento.codigo}"/>
+            </p:column>
+            <p:column headerText="Capítulo"
+                      rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+                <h:outputText value="#{procedimiento.capituloProcedimiento.descripcion}"/>
+            </p:column>
+            <p:column headerText="Descripción">
+                <h:outputText value="#{procedimiento.descripcion}"/>
+            </p:column>
+            <p:column headerText="Código tecnología">
+                <h:outputText value="#{procedimiento.cups}"/>
+            </p:column>
+            <p:column headerText="Descripción">
+                <h:outputText value="#{procedimiento.descripcion}"/>
+            </p:column>
+        </p:dataTable>
+
+        <!--@elvariable id="procedimiento" type="com.conexia.contratacion.commons.dto.ErroresTecnologiasDto"-->
+        <p:dataTable var="procedimiento"
+                     value="#{tecnologiasSSController.procedimientosConErrores}"
+                     rendered="#{not empty tecnologiasSSController.procedimientosConErrores}"
+                     scrollable="true" scrollHeight="200" id="procedimientosConErroresId">
+            <f:facet name="header">
+                <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_procedimientos}"/>
+            </f:facet>
+            <f:facet name="footer">
+                <p:outputPanel style="text-align: right">
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                        <p:dataExporter type="xls" target="procedimientosConErroresId"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                        <p:dataExporter type="pdf" target="procedimientosConErroresId"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-o fa-2x success"/>
+                        <p:dataExporter type="csv" target="procedimientosConErroresId"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                        <p:dataExporter type="xml" target="procedimientosConErroresId"
+                                        fileName="procedimientosSinValor"/>
+                    </h:commandLink>
+                </p:outputPanel>
+            </f:facet>
+            <p:outputPanel rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA}">
+                <p:column headerText="${i18n.tab_th_ruta}">
+                    <h:outputText value="#{procedimiento.riaDescripcion}"/>
+                </p:column>
+                <p:column headerText="${i18n.form_label_activida}">
+                    <h:outputText value="#{procedimiento.actividadDescripcion}"/>
+                </p:column>
+            </p:outputPanel>
+            <p:column headerText="${i18n.tab_no_proces_codigo_servicio}">
+                <h:outputText value="#{procedimiento.codigoServicio}"/>
+            </p:column>
+            <p:column headerText="${i18n.form_label_codigo_emssanar}">
+                <h:outputText value="#{procedimiento.codigoEmssanar}"/>
+            </p:column>
+            <p:column headerText="${i18n.form_label_descripcion}">
+                <h:outputText value="#{procedimiento.descripcionTecnologia}"/>
+            </p:column>
+            <p:column headerText="${i18n.form_label_descripcion_error}">
+                <h:outputText value="#{i18n[cnx:enum_key(procedimiento.tipoErrorTecnologiaEnum)]}"/>
+            </p:column>
+        </p:dataTable>
+
+        <p:dataTable var="procedimiento"
+                     value="#{tecnologiasSSController.procedimientosSinFranja}"
+                     rendered="#{not empty tecnologiasSSController.procedimientosSinFranja}"
+                     scrollable="true" scrollHeight="200" id="ptosSinFranja">
+            <f:facet name="header">
+                <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_procedimientos_franja}"/>
+            </f:facet>
+            <f:facet name="footer">
+                <p:outputPanel style="text-align: right">
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                        <p:dataExporter type="xls" target="ptosSinFranja"
+                                        fileName="procedimientosSinFranja"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                        <p:dataExporter type="pdf" target="ptosSinFranja"
+                                        fileName="procedimientosSinFranja"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-o fa-2x success"/>
+                        <p:dataExporter type="csv" target="ptosSinFranja"
+                                        fileName="procedimientosSinFranja"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                        <p:dataExporter type="xml" target="ptosSinFranja"
+                                        fileName="procedimientosSinFranja"/>
+                    </h:commandLink>
+                </p:outputPanel>
+            </f:facet>
+            <p:column headerText="Código capitulo">
+                <h:outputText value="#{procedimiento.capituloProcedimiento.codigo}"/>
+            </p:column>
+            <p:column headerText="Descripción capitulo">
+                <h:outputText value="#{procedimiento.capituloProcedimiento.descripcion}"/>
+            </p:column>
+            <p:column headerText="Código tecnología única">
+                <h:outputText value="#{procedimiento.codigoCliente}"/>
+            </p:column>
+            <p:column headerText="Descripción">
+                <h:outputText value="#{procedimiento.descripcion}"/>
+            </p:column>
+        </p:dataTable>
+
+        <p:dataTable var="medicamento"
+                     value="#{tecnologiasSSController.medicamentosSinFranja}"
+                     rendered="#{not empty tecnologiasSSController.medicamentosSinFranja}"
+                     scrollable="true" scrollHeight="200" id="medSinFranja">
+            <f:facet name="header">
+                <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_medicamentos_franja}"/>
+            </f:facet>
+            <f:facet name="footer">
+                <p:outputPanel style="text-align: right">
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                        <p:dataExporter type="xls" target="medSinFranja"
+                                        fileName="medicamentosSinFranja"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                        <p:dataExporter type="pdf" target="medSinFranja"
+                                        fileName="medicamentosSinFranja"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-o fa-2x success"/>
+                        <p:dataExporter type="csv" target="medSinFranja"
+                                        fileName="medicamentosSinFranja"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                        <p:dataExporter type="xml" target="medSinFranja"
+                                        fileName="medicamentosSinFranja"/>
+                    </h:commandLink>
+                </p:outputPanel>
+            </f:facet>
+            <p:column headerText="Código grupo terapéutico">
+                <h:outputText value="#{medicamento.categoriaMedicamento.codigo}"/>
+            </p:column>
+            <p:column headerText="Descripción grupo terapéutico">
+                <h:outputText value="#{medicamento.categoriaMedicamento.nombre}"/>
+            </p:column>
+            <p:column headerText="Código">
+                <h:outputText value="#{medicamento.cums}"/>
+            </p:column>
+            <p:column headerText="Descripción">
+                <h:outputText value="#{medicamento.descripcion}"/>
+            </p:column>
+        </p:dataTable>
+
+        <p:dataTable var="medicamentoRegulado"
+                     value="#{tecnologiasSSController.medicamentosReguladosError}"
+                     rendered="#{not empty tecnologiasSSController.medicamentosReguladosError}"
+                     scrollable="true" scrollHeight="200" id="medRegulado">
+            <f:facet name="header">
+                <h:outputLabel value="#{i18n.validacion_legalizacion_titulo_tab_medicamentos_regulados}"/>
+            </f:facet>
+            <f:facet name="footer">
+                <p:outputPanel style="text-align: right">
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                        <p:dataExporter type="xls" target="medRegulado"
+                                        fileName="medRegulado"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                        <p:dataExporter type="pdf" target="medRegulado"
+                                        fileName="medRegulado"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-o fa-2x success"/>
+                        <p:dataExporter type="csv" target="medRegulado"
+                                        fileName="medRegulado"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                        <p:dataExporter type="xml" target="medRegulado"
+                                        fileName="medRegulado"/>
+                    </h:commandLink>
+                </p:outputPanel>
+            </f:facet>
+            <p:column headerText="CUMS">
+                <h:outputText value="#{medRegulado.medicamentoDto.cums}"/>
+            </p:column>
+            <p:column headerText="Descripción">
+                <h:outputText value="#{medRegulado.descripcionMedicamento}"/>
+            </p:column>
+            <p:column headerText="Regulado">
+                <h:outputText value="#{medRegulado.esRegulado}"/>
+            </p:column>
+        </p:dataTable>
+
+        <p:dataTable var="paquete"
+                     value="#{tecnologiasSSController.paquetesConErrores}"
+                     rendered="#{not empty tecnologiasSSController.paquetesConErrores}"
+                     scrollable="true" scrollHeight="200" id="pqSinContenido">
+            <f:facet name="header">
+                <h:outputLabel value="#{i18n.form_label_paquetes_con_errores}"/>
+            </f:facet>
+            <f:facet name="footer">
+                <p:outputPanel style="text-align: right">
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                        <p:dataExporter type="xls" target="pqSinContenido"
+                                        fileName="paquetesConErrores"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-pdf-o fa-2x success"/>
+                        <p:dataExporter type="pdf" target="pqSinContenido"
+                                        fileName="paquetesConErrores"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-o fa-2x success"/>
+                        <p:dataExporter type="csv" target="pqSinContenido"
+                                        fileName="paquetesConErrores"/>
+                    </h:commandLink>
+
+                    <h:commandLink>
+                        <h:outputText class="fa fa-file-code-o fa-2x success"/>
+                        <p:dataExporter type="xml" target="pqSinContenido"
+                                        fileName="paquetesConErrores"/>
+                    </h:commandLink>
+                </p:outputPanel>
+            </f:facet>
+            <p:column headerText="${i18n.sede_prestador_label_codigo_habilitacion}">
+                <h:outputText value="#{paquete.codigoHabilitacion}"/>
+            </p:column>
+            <p:column headerText="${i18n.servicio_label_servicio_habilitacion}">
+                <h:outputText value="#{paquete.codigoServicio}"/>
+            </p:column>
+            <p:column headerText="${i18n.form_label_codigo_emssanar}">
+                <h:outputText value="#{paquete.codigoEmssanar}"/>
+            </p:column>
+            <p:column headerText="${i18n.form_label_descripcion_error}">
+                <h:outputText value="#{i18n[cnx:enum_key(paquete.tipoErrorTecnologiaEnum)]}"/>
+            </p:column>
+        </p:dataTable>
+
+    </h:form>
+</f:view>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<p:dialog header="#{i18n.negociacion_tecnologias_tab_title}" widgetVar="tecnologiasNegociarDlg" modal="true"
+		height="350" width="70%">
+		<h:form id="tecnologiasNegociacionForm">
+			<p:panel id="panelTecnologiasNegociacion">
+				<p:tabView>
+					<p:tab title="#{i18n.negociacion_servicios_tab_title}"
+						rendered="#{not empty negociacionController.tecnologiasNegociacion.serviciosSalud}">
+						<div class="form-group">
+							<p:dataTable id="serviciosNegociacion" var="servicio"
+								value="#{negociacionController.tecnologiasNegociacion.serviciosSalud}"
+								style="margin: 0 auto;"
+								emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+								paginator="true" paginatorPosition="bottom"
+								paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="5,10,15">
+
+								<p:column headerText="#{i18n.servicio_label_grupo_habilitacion}"
+									styleClass="text-center col-lg-3"
+									filterBy="#{servicio.macroservicio.nombre}"
+									filterMatchMode="contains">
+									<h:outputText value="#{fn:toUpperCase(servicio.macroservicio.nombre)}" />
+								</p:column>
+
+								<p:column
+									headerText="#{i18n.servicio_label_servicio_habilitacion}"
+									styleClass="text-center col-lg-3" filterBy="#{servicio.nombre}"
+									filterMatchMode="contains">
+									<h:outputText value="#{fn:toUpperCase(servicio.nombre)}" />
+								</p:column>
+							</p:dataTable>
+						</div>
+					</p:tab>
+					<p:tab title="#{i18n.negociacion_medicamentos_tab_title}"
+						rendered="#{not empty negociacionController.tecnologiasNegociacion.medicamentos}">
+						<div class="form-group">
+							<p:dataTable id="medicamentosNegociacion" var="medicamento"
+								value="#{negociacionController.tecnologiasNegociacion.medicamentos}"
+								style="margin: 0 auto;"
+								emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+								paginator="true" paginatorPosition="bottom"
+								paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="5,10,15">
+
+								<p:column
+									headerText="#{i18n.medicamento_label_grupo_farmacologico}"
+									styleClass="text-center col-lg-3"
+									filterBy="#{fn:toUpperCase(medicamento.categoriaMedicamento.nombre)}"
+									filterMatchMode="contains">
+									<h:outputText
+										value="#{medicamento.categoriaMedicamento.nombre}" />
+								</p:column>
+
+								<p:column headerText="#{i18n.medicamento_label_cum}"
+									styleClass="text-center col-lg-3"
+									filterBy="#{medicamento.cums}" filterMatchMode="contains">
+									<h:outputText value="#{fn:toUpperCase(medicamento.cums)}" />
+								</p:column>
+
+								<p:column headerText="#{i18n.medicamento_label_atc}"
+									styleClass="text-center col-lg-3" filterBy="#{medicamento.atc}"
+									filterMatchMode="contains">
+									<h:outputText value="#{fn:toUpperCase(medicamento.atc)}" />
+								</p:column>
+
+								<p:column headerText="#{i18n.medicamento_label_descripcion}"
+									styleClass="text-center col-lg-3"
+									filterBy="#{medicamento.descripcion}"
+									filterMatchMode="contains">
+									<h:outputText value="#{fn:toUpperCase(medicamento.descripcion)}" />
+								</p:column>
+							</p:dataTable>
+						</div>
+					</p:tab>
+					<p:tab title="#{i18n.negociacion_paquetes_tab_title}"
+						rendered="#{not empty negociacionController.tecnologiasNegociacion.paquete}">
+						<div class="form-group">
+							<p:dataTable id="paquetesNegociacion" var="paquete"
+								value="#{negociacionController.tecnologiasNegociacion.paquete}"
+								style="margin: 0 auto;"
+								emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+								paginator="true" paginatorPosition="bottom"
+								paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="5,10,15">
+
+								<p:column headerText="#{i18n.paquete_label_codigo}"
+									styleClass="text-center col-lg-3"
+									filterBy="#{paquete.codigoPortafolio}"
+									filterMatchMode="contains">
+									<h:outputText value="#{fn:toUpperCase(paquete.codigoPortafolio)}" />
+								</p:column>
+
+								<p:column headerText="#{i18n.paquete_label_descripcion}"
+									styleClass="text-center col-lg-3"
+									filterBy="#{paquete.descripcion}" filterMatchMode="contains">
+									<h:outputText value="#{fn:toUpperCase(paquete.descripcion)}" />
+								</p:column>
+							</p:dataTable>
+						</div>
+					</p:tab>
+					<p:tab title="#{i18n.negociacion_traslados_tab_title}"
+                        rendered="#{not empty negociacionController.tecnologiasNegociacion.traslados}">
+                        <div class="form-group">
+                            <p:dataTable id="trasladosNegociacion" var="traslado"
+                                value="#{negociacionController.tecnologiasNegociacion.traslados}"
+                                style="margin: 0 auto;"
+                                emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+                                paginator="true" paginatorPosition="bottom"
+                                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowsPerPageTemplate="5,10,15">
+
+                                <p:column headerText="#{i18n.form_label_codigo}"
+                                    styleClass="text-center col-lg-3"
+                                    filterBy="#{traslado.codigo}"
+                                    filterMatchMode="contains">
+                                    <h:outputText value="#{fn:toUpperCase(traslado.codigo)}" />
+                                </p:column>
+
+                                <p:column headerText="#{i18n.form_label_codigo_emssanar}"
+                                    styleClass="text-center col-lg-3"
+                                    filterBy="#{traslado.codigoCliente}" filterMatchMode="contains">
+                                    <h:outputText value="#{fn:toUpperCase(traslado.codigoCliente)}" />
+                                </p:column>
+                                
+                                <p:column headerText="#{i18n.form_label_descripcion}"
+                                    styleClass="text-center col-lg-3"
+                                    filterBy="#{traslado.descripcion}" filterMatchMode="contains">
+                                    <h:outputText value="#{fn:toUpperCase(traslado.descripcion)}" />
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </p:tab>
+				</p:tabView>
+			</p:panel>
+		</h:form>
+	</p:dialog>
+</f:view>

@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:panelGroup id="panelMedicamentos">
+        <div class="widget-header" style="margin-top: 20px;">
+			<span class="widget-caption">
+				<p:outputLabel value="#{i18n.tab_medicamento_paquete_buscar_cums}" styleClass="titulo-bold"/>
+			</span>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <p:outputLabel for="CUM" value="#{i18n.tab_medicamento_paquete_cum}" styleClass="col-lg-2"/>
+                <p:inputText id="CUM" styleClass="input-sm col-lg-4"
+                             value="#{negociacionPaqueteDetalleSSController.filtroMedicamentoDto.cums}"/>
+                <p:outputLabel for="codigoAtc" value="#{i18n.tab_medicamento_paquete_codigo_atc}"
+                               styleClass="col-lg-2"/>
+                <p:inputText id="codigoAtc" styleClass="input-sm col-lg-4"
+                             value="#{negociacionPaqueteDetalleSSController.filtroMedicamentoDto.atc}"/>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <p:outputLabel for="principioActivo" value="#{i18n.tab_medicamento_paquete_principio_activo}"
+                               styleClass="col-lg-2"/>
+                <p:inputText id="principioActivo" styleClass="input-sm col-lg-4"
+                             value="#{negociacionPaqueteDetalleSSController.filtroMedicamentoDto.principioActivo}"/>
+                <p:outputLabel value="#{i18n.tab_medicamento_paquete_grupo}" styleClass="col-lg-2"/>
+                <h:selectOneMenu styleClass="col-lg-4"
+                                 value="#{negociacionPaqueteDetalleSSController.filtroMedicamentoDto.categoriaMedicamento.id}">
+                    <f:selectItem itemLabel="Seleccionar..."/>
+                    <f:selectItems value="#{negociacionPaqueteDetalleSSController.categoriaMedicamento}"
+                                   var="cm" itemLabel="#{cm.codigo} - #{cm.nombre}"
+                                   itemValue="#{cm.id}"/>
+                </h:selectOneMenu>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <div class="col-lg-10"></div>
+                <p:commandButton id="botonBuscarMedicamentos"
+                                 value="#{i18n.form_label_button_buscar}" process="panelMedicamentos"
+                                 styleClass="btn btn-sm btn-info" icon="fa fa-search" iconPos="left"
+                                 actionListener="#{negociacionPaqueteDetalleSSController.buscarMedicamentos}"
+                                 update="medicamentosPaqueteDlgTabla"/>
+            </div>
+        </div>
+    </h:panelGroup>
+    <div class="widget-header" style="margin-top: 20px;">
+		<span class="widget-caption">
+			<p:outputLabel value="#{i18n.tab_medicamento_paquete_cums_asociados}" styleClass="titulo-bold"/>
+		</span>
+    </div>
+
+    <div class="widget-header" style="margin-top: 20px;">
+        <span class="widget-caption">Tecnologías en Paquete Básico</span>
+    </div>
+
+    <p:dataTable id="medicamentosPaquete" var="medicamentoPaquete"
+                 value="#{negociacionPaqueteDetalleSSController.medicamentosPaquetePrestador}"
+                 style="margin: 0 auto;"
+                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                 paginator="true" paginatorPosition="bottom"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15">
+
+        <p:columnGroup type="header">
+            <p:row>
+                <p:column rowspan="2" headerText="#{i18n.tab_medicamento_paquete_codigo_atc}"
+                          styleClass="text-center col-lg-2" filterBy="#{medicamentoPaquete.medicamento.atc}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_medicamento_paquete_cum}" styleClass="text-center col-lg-2"
+                          filterBy="#{medicamentoPaquete.medicamento.cums}" filterMatchMode="contains"
+                          filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_medicamento_paquete_principio_activo}"
+                          styleClass="text-center col-lg-3" filterBy="#{medicamentoPaquete.medicamento.principioActivo}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.medicamento_label_concentracion}"
+                          styleClass="text-center col-lg-2" filterBy="#{medicamentoPaquete.medicamento.concentracion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_medicamento_paquete_forma}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{medicamentoPaquete.medicamento.formaFarmaceutica}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_medicamento_paquete_titular}"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{medicamentoPaquete.medicamento.titularRegistroSanitario}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_cantidad_maxima}"
+                          styleClass="text-center col-lg-2" filterBy="#{medicamentoPaquete.cantidadMaxima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_cantidad_minima}"
+                          styleClass="text-center col-lg-2" filterBy="#{medicamentoPaquete.cantidadMinima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.tab_tecnologia_paquete_observacion}"
+                          styleClass="text-center col-lg-3" filterBy="#{medicamentoPaquete.observacion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column colspan="3" headerText="#{i18n.tab_tecnologia_paquete_ingreso}"
+                          styleClass="text-center col-lg-5"/>
+                <p:column colspan="3" headerText="#{i18n.tab_tecnologia_paquete_frecuencia}"
+                          styleClass="text-center col-lg-5"/>
+                <p:column rowspan="2" headerText="En Negociación" styleClass="text-center col-lg-2"/>
+            </p:row>
+            <p:row>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_aplica}" colspan="2"
+                          styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}" styleClass="text-center col-lg-2"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_unidad}" colspan="2"
+                          styleClass="text-center col-lg-5"/>
+                <p:column headerText="#{i18n.tab_tecnologia_paquete_cantidad}" styleClass="text-center col-lg-2"/>
+            </p:row>
+        </p:columnGroup>
+
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                          value="#{medicamentoPaquete.medicamento.atc}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.cums}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.principioActivo}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.concentracion}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.formaFarmaceutica}"/>
+        </p:column>
+
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.titularRegistroSanitario}"/>
+        </p:column>
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{medicamentoPaquete.cantidadMaxima}"
+                         style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         maxlength="5" label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaMedicamento(medicamentoPaquete)}"
+                        update="medicamentosPaquete"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{medicamentoPaquete.cantidadMinima}"
+                         style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         maxlength="5" label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaMedicamento(medicamentoPaquete)}"
+                        update="medicamentosPaquete"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText class="text-center col-lg-12" value="#{medicamentoPaquete.observacion}"
+                         style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         maxlength="100" validatorMessage="#{i18n.tab_tecnologia_observacion}">
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaMedicamento(medicamentoPaquete)}"
+                        update="medicamentosPaquete"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{medicamentoPaquete.ingresoAplica}" 
+                             style="#{medicamentoPaquete.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesIngresoAplica}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaMedicamento(medicamentoPaquete)}"
+                        update="medicamentosPaquete"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12" value="#{medicamentoPaquete.ingresoCantidad}" maxlength="5"
+                            style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                            label="-" converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaMedicamento(medicamentoPaquete)}"
+                        update="medicamentosPaquete"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{medicamentoPaquete.frecuenciaUnidad}" 
+                             style="#{medicamentoPaquete.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesFrecuenciaUnidad}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaMedicamento(medicamentoPaquete)}"
+                        update="medicamentosPaquete"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber class="text-center col-lg-12" value="#{medicamentoPaquete.frecuenciaCantidad}" maxlength="5"
+                            label="-" converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}"
+                            style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarFilaMedicamento(medicamentoPaquete)}"
+                        update="medicamentosPaquete"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column>
+            <p:selectBooleanCheckbox value="#{medicamentoPaquete.enNegociacion}">
+                <p:ajax update="formTecnologiasTabs:tecnologiaTabs:medicamentosPaqueteDlgTabla formTecnologiasTabs:tecnologiaTabs:medicamentosPaquete"
+                        listener="#{negociacionPaqueteDetalleSSController.gestionarMedicamentoPaqueteBasico}"
+                        immediate="true"/>
+                <f:attribute name="medicamento" value="#{medicamentoPaquete}"/>
+            </p:selectBooleanCheckbox>
+        </p:column>
+
+    </p:dataTable>
+    <p:growl id="growlMedicamentos" life="2000"/>
+    <div class="widget-header" style="margin-top: 20px;">
+        <span class="widget-caption">Tecnologías IPS</span>
+    </div>
+    <p:dataTable id="medicamentosPaqueteIps" var="medicamentoPaquete"
+                 value="#{negociacionPaqueteDetalleSSController.paqueteMedicamentoNegociacion}"
+                 style="margin: 0 auto;"
+                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                 paginator="true" paginatorPosition="bottom"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15">
+
+        <p:columnGroup type="header">
+            <p:row>
+                <p:column rowspan="2" headerText="Código ATC" styleClass="text-center col-lg-2"
+                          filterBy="#{medicamentoPaquete.medicamento.atc}" filterMatchMode="contains"
+                          filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="CUM" styleClass="text-center col-lg-2"
+                          filterBy="#{medicamentoPaquete.medicamento.cums}" filterMatchMode="contains"
+                          filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="Principio Activo" styleClass="text-center col-lg-3"
+                          filterBy="#{medicamentoPaquete.medicamento.principioActivo}" filterMatchMode="contains"
+                          filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="#{i18n.medicamento_label_concentracion}"
+                          styleClass="text-center col-lg-2" filterBy="#{medicamentoPaquete.medicamento.concentracion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="Forma Farmacéutica"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{medicamentoPaquete.medicamento.formaFarmaceutica}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="Titular Registro Sanitario"
+                          styleClass="text-center col-lg-2"
+                          filterBy="#{medicamentoPaquete.medicamento.titularRegistroSanitario}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column headerText="Cantidad Máxima" rowspan="2"
+                          styleClass="text-center col-lg-2" filterBy="#{medicamentoPaquete.cantidadMaxima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="Cantidad Mínima"
+                          styleClass="text-center col-lg-2" filterBy="#{medicamentoPaquete.cantidadMinima}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column rowspan="2" headerText="Observación" styleClass="text-center col-lg-3"
+                          filterBy="#{medicamentoPaquete.observacion}"
+                          filterMatchMode="contains" filterStyleClass="anchoInput"/>
+                <p:column colspan="3" headerText="Ingreso al Programa" styleClass="text-center col-lg-5"/>
+                <p:column colspan="3" headerText="Frecuencia" styleClass="text-center col-lg-5"/>
+                <p:column rowspan="2" headerText="Eliminar" styleClass="text-center col-lg-2"/>
+            </p:row>
+            <p:row>
+                <p:column headerText="Aplica" colspan="2" styleClass="text-center col-lg-5"/>
+                <p:column headerText="Cantidad" styleClass="text-center col-lg-2"/>
+                <p:column headerText="Unidad" colspan="2" styleClass="text-center col-lg-5"/>
+                <p:column headerText="Cantidad" styleClass="text-center col-lg-2"/>
+            </p:row>
+        </p:columnGroup>
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.atc}"/>
+        </p:column>
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.cums}"/>
+        </p:column>
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.principioActivo}"/>
+        </p:column>
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.concentracion}"/>
+        </p:column>
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.formaFarmaceutica}"/>
+        </p:column>
+        <p:column>
+            <h:outputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                value="#{medicamentoPaquete.medicamento.titularRegistroSanitario}"/>
+        </p:column>
+        <p:column>
+            <h:inputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         class="text-center col-lg-12" value="#{medicamentoPaquete.cantidadMaxima}"                
+                         maxlength="5" label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarMedicamentoNegociacion(medicamentoPaquete)}"
+                        update="medicamentosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         class="text-center col-lg-12" value="#{medicamentoPaquete.cantidadMinima}"                        
+                         maxlength="5" label="-" validatorMessage="#{i18n.validacion_cantidad_tecnologias}"
+                         converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateLongRange minimum="1" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarMedicamentoNegociacion(medicamentoPaquete)}"
+                        update="medicamentosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column>
+            <h:inputText style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                         class="text-center col-lg-12" value="#{medicamentoPaquete.observacion}"
+                         maxlength="100" validatorMessage="#{i18n.tab_tecnologia_observacion}">
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarMedicamentoNegociacion(medicamentoPaquete)}"
+                        update="medicamentosPaqueteIps"/>
+            </h:inputText>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{medicamentoPaquete.ingresoAplica}" 
+                             style="#{medicamentoPaquete.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesIngresoAplica}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarMedicamentoNegociacion(medicamentoPaquete)}"
+                        update="medicamentosPaqueteIps"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                            class="text-center col-lg-12" value="#{medicamentoPaquete.ingresoCantidad}" label="-"
+                            maxlength="5"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarMedicamentoNegociacion(medicamentoPaquete)}"
+                        update="medicamentosPaqueteIps"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column colspan="2">
+            <h:selectOneMenu value="#{medicamentoPaquete.frecuenciaUnidad}" 
+                             style="#{medicamentoPaquete.estado != 1 ? 'color:red; width:100%;' : 'color:black; width:100%;'}">
+                <f:selectItem itemLabel="NO APLICA" itemValue="NA"/>
+                <f:selectItems value="#{negociacionPaqueteDetalleSSController.opcionesFrecuenciaUnidad}"
+                               var="entry" itemLabel="#{entry.descripcion}" itemValue="#{entry.codigo}"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarMedicamentoNegociacion(medicamentoPaquete)}"
+                        update="medicamentosPaqueteIps"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column>
+            <pe:inputNumber style="#{medicamentoPaquete.estado != 1 ? 'color:red;' : 'color:black;'}"
+                            class="text-center col-lg-12" value="#{medicamentoPaquete.frecuenciaCantidad}" label="-"
+                            maxlength="5"
+                            converterMessage="#{i18n.validacion_cantidad_tecnologias_tipo}">
+                <f:validateDoubleRange minimum="0.01" maximum="10000"/>
+                <p:ajax event="change"
+                        listener="#{negociacionPaqueteDetalleSSController.actualizarMedicamentoNegociacion(medicamentoPaquete)}"
+                        update="medicamentosPaqueteIps"/>
+            </pe:inputNumber>
+        </p:column>
+
+        <p:column>
+            <p:commandButton icon="ui-icon-trash" title="#{i18n.form_label_button_eliminar}" process="@this"
+                             actionListener="#{negociacionPaqueteDetalleSSController.borrarMedicamento}"
+                             update="medicamentosPaqueteIps">
+                <f:attribute name="medicamentoBorrar" value="#{medicamentoPaquete}"/>
+            </p:commandButton>
+        </p:column>
+    </p:dataTable>
+
+    <p:dialog header="Agregar Medicamentos" widgetVar="agregarMedicamentosDlg"
+              modal="true" width="80%" height="80%">
+        <p:dataTable id="medicamentosPaqueteDlgTabla" var="medicamento"
+                     value="#{negociacionPaqueteDetalleSSController.medicamentosVentanaModal}"
+                     widgetVar="medicamentosPaqueteTable" style="margin: 0 auto"
+                     emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="7"
+                     paginator="true" paginatorPosition="bottom" scrollable="true" scrollHeight="250"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,15"
+                     selection="#{negociacionPaqueteDetalleSSController.medicamentosSeleccionados}"
+                     rowKey="#{medicamento.id}">
+            <p:column headerText="#{i18n.tab_medicamento_paquete_codigo_atc}" styleClass="text-center col-lg-1"
+                      filterBy="#{medicamento.atc}" filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{medicamento.atc}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_medicamento_paquete_cum}" styleClass="text-center col-lg-1"
+                      filterBy="#{medicamento.cums}" filterMatchMode="contains"
+                      filterStyleClass="anchoInput">
+                <h:outputText value="#{medicamento.cums}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_medicamento_paquete_principio_activo}" styleClass="text-center col-lg-3"
+                      filterBy="#{medicamento.principioActivo}" filterMatchMode="contains"
+                      filterStyleClass="anchoInput">
+                <h:outputText value="#{medicamento.principioActivo}"/>
+            </p:column>
+            <p:column headerText="#{i18n.medicamento_label_concentracion}"
+                      styleClass="text-center col-lg-1" filterBy="#{medicamento.concentracion}"
+                      filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{medicamento.concentracion}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_medicamento_paquete_forma}"
+                      styleClass="text-center col-lg-1" filterBy="#{medicamento.formaFarmaceutica}"
+                      filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{medicamento.formaFarmaceutica}"/>
+            </p:column>
+            <p:column headerText="#{i18n.tab_medicamento_paquete_via_admin}"
+                      styleClass="text-center col-lg-1" filterBy="#{medicamento.viaAdministracion}"
+                      filterMatchMode="contains" filterStyleClass="anchoInput">
+                <h:outputText value="#{medicamento.viaAdministracion}"/>
+            </p:column>
+            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+            <f:facet name="footer">
+                <p:commandButton icon="ui-icon-plus" value="#{i18n.form_label_agregar}" process="@parent"
+                                 actionListener="#{negociacionPaqueteDetalleSSController.insertarMedicamentos}"
+                                 update="formTecnologiasTabs:tecnologiaTabs:medicamentosPaqueteDlgTabla formTecnologiasTabs:tecnologiaTabs:medicamentosPaquete formTecnologiasTabs:tecnologiaTabs:medicamentosPaqueteIps"/>
+            </f:facet>
+        </p:dataTable>
+    </p:dialog>
+
+    <p:confirmDialog id="confirmarDeleteAllMedicamentos" global="true"
+                     showEffect="fade" hideEffect="fade" widgetVar="confirmDeleteAllMed"
+                     header="Confirmar Eliminación de todos los Medicamentos en tecnologías Ips"
+                     message="#{i18n.paquete_msj_confirm_eliminar_med}">
+        <div class="ui-grid-row text-right" style="margin-top: 5px;">
+            <p:commandButton value="Aceptar" styleClass="ui-confirmdialog-yes" icon="ui-icon-check">
+                <p:ajax event="click" process="@this"
+                        listener="#{negociacionPaqueteDetalleSSController.deleteAllMedicamentos}"
+                        update="@form" oncomplete="PF('confirmDeleteAllMed').hide()"/>
+            </p:commandButton>
+            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close">
+                <p:ajax event="click" oncomplete="PF('confirmDeleteAllMed').hide()"/>
+            </p:commandButton>
+        </div>
+    </p:confirmDialog>
+</f:view>

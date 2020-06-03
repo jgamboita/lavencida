@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:composition template="/template/inner.xhtml">
+       	<ui:define name="title">
+            <h:outputLabel value="#{i18n.nota_tcn_title}" />
+        </ui:define>
+        <ui:define name="content">
+            <p:dialog header="#{i18n.nota_tcn_title_detalle}" id="detalleServicioDialog"
+                      widgetVar="detalleServicioDialog" modal="true" width="90%">
+		<p:ajax event="close" update="notaTecnica:tabTecReferente:panelTblDatosNota" />
+                <ui:include src="./procedimientos.xhtml"></ui:include>
+            </p:dialog>
+
+            <h:form id="notaTecnica">
+                <p:panel id="panelNotaTecnica">
+                    <div class="datosNotaTecnica">
+
+                        <!-- Inicio 1ra Fila -->
+                        <div class="row">
+                            <!--Columna año-->
+                            <div class="col-lg-1">
+                                <p:outputLabel for="anio" value="#{i18n.nota_tcn_lbl_anio}" /> 
+
+                                <p:selectOneMenu id="anio"
+                                                 value="#{referenteCapitaController.filtro.anio}"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 styleClass="anchoInput">
+                                    <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{listarAniosCapita}"
+                                                   var="anio" 
+                                                   itemValue="#{anio}" />
+                                    <p:ajax update="zona, UPCPromedioMensual, panelTblDistribucion, tabTecReferente"
+                                            listener="#{referenteCapitaController.refreshTipoUpc}" />
+                                </p:selectOneMenu>
+
+                                <p:message for="anio" />
+                            </div>
+                            
+                            <!-- Columna Régimen-->
+                            <div class="col-lg-offset-1 col-lg-2">
+                                <p:outputLabel for="regimen" value="#{i18n.nota_tcn_lbl_regimen}" /> 
+
+                                <p:selectOneMenu id="regimen"
+                                                 value="#{referenteCapitaController.filtro.regimenSeleccionado}"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 styleClass="anchoInput">
+                                    <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{listaRegimenes}"
+                                                   var="regimen" itemValue="#{regimen}"
+                                                   itemLabel="#{regimen.descripcion}" />
+                                    <p:ajax update="zona, UPCPromedioMensual, panelTblDistribucion, tabTecReferente"
+                                            listener="#{referenteCapitaController.refreshTipoUpc}" />
+                                </p:selectOneMenu>
+
+                                <p:message for="regimen" />
+                            </div>
+                            
+                            <!-- Columna Zona-->
+                            <div class="col-lg-offset-1 col-lg-3">
+                                <p:outputLabel for="zona" value="#{i18n.nota_tcn_lbl_tipo_upc}" />
+                                <p:selectOneMenu id="zona"
+                                                 disabled="#{referenteCapitaController.filtro.anio eq null
+								or referenteCapitaController.filtro.regimenSeleccionado eq null}"
+                                                 value="#{referenteCapitaController.filtro.zonaCapitaSeleccionado}"
+                                                 converter="omnifaces.SelectItemsConverter"
+                                                 styleClass="anchoInput">
+                                    <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{referenteCapitaController.lsZonaCapita}"
+                                                   var="zonaCapita" itemValue="#{zonaCapita}"
+                                                   itemLabel="#{zonaCapita.descripcion}" />
+                                    <p:ajax update="UPCPromedioMensual, panelTblDistribucion, tabTecReferente"
+                                            listener="#{referenteCapitaController.refreshValorUpc}" />
+                                </p:selectOneMenu>
+                                <p:message for="zona" />
+                            </div>
+
+                            <!-- Columna UPC Promedio Mensual-->
+                            <div class="col-lg-offset-1 col-lg-2">
+                                <p:outputLabel for="UPCPromedioMensual"
+                                               value="#{i18n.nota_tcn_lbl_valor_UPC}" />
+                                <p:inputText id="UPCPromedioMensual"
+                                             requiredMessage="#{i18n.form_label_required}" 
+                                             value="#{referenteCapitaController.liquidacionZona.valorPromedio}"
+                                             styleClass="form-control input-sm"
+                                             maxlength="20" 
+                                             required="true"
+                                             converterMessage="#{i18n.nota_tcn_vld_valor_UPC_numerico}"
+                                             validatorMessage="#{i18n.nota_tcn_vld_valor_UPC_negativo}"
+                                             disabled="#{referenteCapitaController.filtro.zonaCapitaSeleccionado eq null}"
+                                             onkeypress="if (event.keyCode == 13) { guardarUpcPromedio(); return false; }">
+                                    <f:validateDoubleRange minimum="0.0000001" />
+                                    <p:ajax update="UPCPromedioMensual, panelTblDistribucion, tabTecReferente"
+                                            listener="#{referenteCapitaController.guardarUpcPromedio}" />
+                                </p:inputText>
+                                <p:remoteCommand name="guardarUpcPromedio" actionListener="#{referenteCapitaController.guardarUpcPromedio}"
+                                                 update="UPCPromedioMensual, panelTblDistribucion, tabTecReferente"/>
+                                <p:message for="UPCPromedioMensual" />
+                                <pe:keyFilter for="UPCPromedioMensual" mask="num"/> 
+                            </div>
+                        </div>
+                        <!-- Fin Primera Fila -->
+                    </div>
+                </p:panel>
+                <!-- Tabla Distribución UPC -->
+                <p:panel id="panelTblDistribucion">
+                    <div class="datosTablaDistribucion">
+                        <p:dataTable id="tblDistribucion" var="distribucion"
+                                     value="#{referenteCapitaController.lsUpcDistribucionDto}"
+                                     widgetVar="notaTecnicaTable" style="margin: 0 auto;"
+                                     emptyMessage="#{i18n.form_label_datatable_noregistros}" >
+
+                            <p:column headerText="#{i18n.nota_tcn_col_dist_categoria}"
+                                      styleClass="text-center col-lg-1">
+                                <h:outputText value="#{i18n.nota_tcn_col_nivel_uno}" />
+                            </p:column>
+
+                            <p:column headerText="#{i18n.nota_tcn_col_nivel_porcentaje}"
+                                      styleClass="text-center col-lg-1">
+                                <p:inputText id="valorPorcentaje" 
+                                             value="#{distribucion.porcentaje}"
+                                             requiredMessage="#{i18n.form_label_required}"
+                                             required="true"
+                                             styleClass="form-control input-sm"
+                                             converterMessage="#{i18n.nota_tcn_vld_prc_dist_upc_numerico}"
+                                             validatorMessage="#{i18n.nota_tcn_vld_prc_dist_upc_negativo}"
+                                             onkeypress="if (event.keyCode == 13) { guardarDistribucion(); return false; }">
+                                    <f:validateDoubleRange minimum="#{referenteCapitaController.sumPorcentaje}" maximum="100"/>
+                                    <p:ajax 
+                                        listener="#{referenteCapitaController.guardarDistribucion(distribucion)}"
+                                        update="colValorDist,colTotalPerc,colTotalValor,notaTecnica:tabTecReferente:panelTblDatosNota" />
+                                </p:inputText>
+                                <p:remoteCommand name="guardarDistribucion" actionListener="#{referenteCapitaController.guardarDistribucion(distribucion)}"
+                                                 update="colValorDist,colTotalPerc,colTotalValor,notaTecnica:tabTecReferente:panelTblDatosNota"/>
+                                <p:message for="valorPorcentaje" />
+                            </p:column>
+
+                            <p:column headerText="#{i18n.nota_tcn_col_dist_valor}"
+                                      styleClass="text-center col-lg-2">
+                                <p:outputLabel id="colValorDist" value="#{distribucion.valor}" >
+                                	<f:convertNumber currencySymbol="$" type="currency" minFractionDigits="0"/>
+                                </p:outputLabel>
+                            </p:column>
+                            
+                            <p:column headerText="#{i18n.nota_tcn_col_tt_dist_perc}"
+                                      styleClass="text-center col-lg-1">
+                                <p:outputLabel id="colTotalPerc" value="#{referenteCapitaController.sumPorcentaje}%" >
+                                	<f:convertNumber pattern="#0.000" maxFractionDigits="3"/>
+                                </p:outputLabel>	
+                            </p:column>
+                            
+                            <p:column headerText="#{i18n.nota_tcn_col_tt_dist_valor}"
+                                      styleClass="text-center col-lg-1">
+                                <p:outputLabel id="colTotalValor" value="#{referenteCapitaController.sumValor}" >
+                                	<f:convertNumber currencySymbol="$" type="currency" minFractionDigits="0"/>
+                                </p:outputLabel>
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+                </p:panel>
+                <!-- Fin Tabla Distribución UPC-->
+                <p:tabView id="tabTecReferente">
+                    <p:tab title="#{i18n.nota_tcn_tab_title_servicios}">
+                        <p:panel id="panelTblDatosNota">
+                            <div class="datosTablaNota">
+                                <p:dataTable id="tblNotaTecnica" var="notaTecnica"
+                                             value="#{referenteCapitaController.lsServicios}"
+                                             widgetVar="notaTecnicaTable" style="margin: 0 auto;"
+                                             emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                                             paginator="true" paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,15">
+
+                                    <p:column headerText="#{i18n.nota_tcn_col_grupo}"
+                                              styleClass="text-center col-lg-2">
+                                        <h:outputText value="#{notaTecnica.servicioSalud.macroservicio.nombre}" />
+                                    </p:column>
+
+                                    <p:column headerText="#{i18n.nota_tcn_col_servicios}"
+                                              styleClass="text-center col-lg-3">
+                                        <h:outputText value="#{notaTecnica.servicioSalud.codigo} - #{notaTecnica.servicioSalud.nombre}" />
+                                    </p:column>
+                                    
+                                    <!-- Detalle contrato anterior -->
+                                    <p:column headerText="#{i18n.nota_tcn_col_ver}"
+                                              styleClass="text-center col-lg-1" style="text-align: center">
+                                        <p:commandButton 
+                                            id="btnVerDetalleProcedimientos"
+                                            update="procedimientosNotaTecnica"
+                                            alt="#{i18n.nota_tcn_col_ver}"
+                                            title="#{i18n.nota_tcn_col_ver}"
+                                            process="@this"
+                                            icon="fa fa-search" 
+                                            actionListener="#{referenteCapitaController.verProcedimientos(notaTecnica.id)}"/>
+                                    </p:column>
+                                    
+                                    <!-- check distribuido-->
+                                    <p:column headerText="#{i18n.nota_tcn_col_serv_distribuir}"
+                                              styleClass="text-center col-lg-1">
+                                        <p:selectBooleanCheckbox id="colDistribuido"
+                                                                 value="#{notaTecnica.distribuido}">
+                                            <p:ajax update="valorPorcentajeAsignado, valorPorcentaje"/>
+                                        </p:selectBooleanCheckbox>
+                                        <h:outputText id="colDistribuido1" />
+                                    </p:column>
+                                    
+                                    <!-- % Asignado -->
+                                    <p:column headerText="#{i18n.nota_tcn_col_porcentaje_asg}"
+                                              styleClass="text-center col-lg-1">
+                                        <p:inputText id="valorPorcentajeAsignado" 
+                                                     value="#{notaTecnica.porcentajeAsignado}"
+                                                     required="true" 
+                                                     requiredMessage="#{i18n.form_label_required}"
+                                                     disabled="#{!notaTecnica.distribuido}"
+                                                     styleClass="form-control input-sm" 
+                                                     converterMessage="#{i18n.nota_tcn_vld_serv_asg_numerico}"
+                                                     validatorMessage="#{i18n.nota_tcn_vld_serv_asg_negativo}"
+						onkeypress="if (event.keyCode == 13) { guardarPorcentajeAsignadoServicio(notaTecnica); return false; }">
+                                            <!-- Validación de caracteres especiales -->
+                                            <f:validateDoubleRange minimum="0.0000001" />
+                                            <p:ajax update="colValorServ, valorPorcentajeAsignado, valorPorcentaje, colDistribuido, notaTecnica:panelTblDistribucion"
+                                                listener="#{referenteCapitaController.guardarPorcentajeAsignadoServicio(notaTecnica)}"/>
+                                        </p:inputText>
+
+                                        <p:message for="valorPorcentajeAsignado" />
+                                    </p:column>
+
+                                    <p:column headerText="#{i18n.nota_tcn_col_porcentaje}"
+                                              styleClass="text-center col-lg-1">
+                                        <p:inputText id="valorPorcentaje" 
+                                                     value="#{notaTecnica.porcentaje}"
+                                                     required="true" 
+                                                     requiredMessage="#{i18n.form_label_required}"
+                                                     disabled="#{!notaTecnica.distribuido}"
+                                                     styleClass="form-control input-sm" 
+                                                     converterMessage="#{i18n.nota_tcn_vld_serv_numerico}"
+                                                     validatorMessage="#{i18n.nota_tcn_vld_serv_negativo}"
+						onkeypress="if (event.keyCode == 13) { guardarPorcentajeServicio(notaTecnica); return false; }">
+                                            <!-- Validación de caracteres especiales -->
+                                            <f:validateDoubleRange minimum="0.0000001" />
+                                            <p:ajax update="colValorServ, valorPorcentajeAsignado, valorPorcentaje, colDistribuido, notaTecnica:panelTblDistribucion"
+                                                listener="#{referenteCapitaController.guardarPorcentajeUpcServicio(notaTecnica)}"/>
+                                        </p:inputText>
+
+                                        <p:message for="valorPorcentaje" />
+                                    </p:column>
+                                                                        
+                                    <p:column headerText="#{i18n.nota_tcn_col_serv_valor}"
+                                              styleClass="text-center col-lg-1">
+                                        <p:outputLabel id="colValorServ" value="#{notaTecnica.valor}" >
+                                        	<f:convertNumber currencySymbol="$" type="currency" minFractionDigits="0"/>
+                                        </p:outputLabel>
+                                    </p:column>
+
+                                </p:dataTable>
+                                        <p:remoteCommand name="guardarPorcentajeServicio" 
+                                                 actionListener="#{referenteCapitaController.guardarPorcentajeServicio}"
+                                                 update="notaTecnica:tabTecReferente:tblNotaTecnica:colValorServ, 
+							notaTecnica:tabTecReferente:tblNotaTecnica:valorPorcentaje, 								notaTecnica:tabTecReferente:tblNotaTecnica:colDistribuido,
+							notaTecnica:panelTblDistribucion"/>
+                            </div>
+                        </p:panel>
+                    </p:tab>
+                    
+                    
+                    <p:tab title="#{i18n.nota_tcn_tab_title_medicamentos}">
+                        <p:panel id="panelTblRefMedicamentos">
+                            <div class="datosRefMedicamentos">
+                                <p:dataTable id="tblMedicamentos" var="medicamentos"
+                                             value="#{referenteCapitaController.lsMedicamentos}"
+                                             widgetVar="medicamentosTable" style="margin: 0 auto;"
+                                             emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+                                    <p:column headerText="#{i18n.nota_tcn_col_serv_categoria}"
+                                              styleClass="text-center col-lg-3">
+                                        <h:outputText 
+                                            value="#{fn:toUpperCase(i18n[cnx:enum_key(medicamentos.categoriaMedicamentoEnum)])}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="#{i18n.nota_tcn_col_porcentaje_asg}"
+                                              styleClass="text-center col-lg-1">
+                                        
+                                        <p:inputText id="valorPorcentajeAsignado" 
+                                                     required="true"
+                                                     value="#{medicamentos.porcentajeAsignado}"
+                                                     requiredMessage="#{i18n.form_label_required}"
+                                                     styleClass="form-control input-sm"
+                                                     converterMessage="#{i18n.nota_tcn_vld_med_numerico}"
+                                                     validatorMessage="#{i18n.nota_tcn_vld_med_negativo}"
+                                                     onkeypress="if (event.keyCode == 13) { guardarPorcentajeAsignadoMedicamento(medicamentos); return false; }">
+                                            <f:validateDoubleRange minimum="0.0000001" />
+                                            <p:ajax update="valorPorcentaje, colValorMed, notaTecnica:panelTblDistribucion"
+                                                listener="#{referenteCapitaController.guardarPorcentajeAsignadoMedicamento(medicamentos)}"/>
+                                        </p:inputText>
+
+                                        <p:message for="valorPorcentajeAsignado" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="#{i18n.nota_tcn_col_porcentaje}" styleClass="text-center col-lg-1">                                        
+                                        <p:inputText id="valorPorcentaje" 
+                                                     required="true"
+                                                     value="#{medicamentos.porcentaje}"
+                                                     requiredMessage="#{i18n.form_label_required}"
+                                                     styleClass="form-control input-sm"
+                                                     disabled="#{medicamentos.porcentajeAsignado eq null || medicamentos.porcentajeAsignado eq 0}"
+                                                     converterMessage="#{i18n.nota_tcn_vld_med_numerico}"
+                                                     validatorMessage="#{i18n.nota_tcn_vld_med_negativo}"
+                                                     onkeypress="if (event.keyCode == 13) { guardarPorcentajeMedicamento(medicamentos); return false; }">
+                                            <f:validateDoubleRange minimum="0.0000001" />
+                                            <p:ajax update="colValorMed, notaTecnica:panelTblDistribucion"
+                                                listener="#{referenteCapitaController.guardarPorcentajeMedicamento(medicamentos)}"/>
+                                        </p:inputText>
+
+                                        <p:message for="valorPorcentaje" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="#{i18n.nota_tcn_col_serv_valor}"
+                                              styleClass="text-center col-lg-1">
+                                        <p:outputLabel id="colValorMed" value="#{medicamentos.valor}" >
+                                         	<f:convertNumber currencySymbol="$" type="currency" minFractionDigits="0"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                </p:dataTable>
+                                <p:remoteCommand name="guardarPorcentajeMedicamento" 
+                                                 actionListener="#{referenteCapitaController.guardarPorcentajeMedicamento}"
+                                                 update=":notaTecnica:tabTecReferente:tblMedicamentos:colValorMed, notaTecnica:panelTblDistribucion"/>
+                            </div>
+                        </p:panel>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </ui:define>		
+    </ui:composition>
+</f:view>

@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils" 
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoAsignacionTarifaMedEnum" var="TipoAsignacionTarifaMedEnum" />
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" />
+
+	<script type="text/javascript">        
+        function  ValidarPunto(text)
+        {
+            if (text.value.match('[,]'))
+            {
+                text.value = '';
+            }
+        }
+    </script>
+     <style type="text/css">
+		.ui-fileupload-buttonbar {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    border: none;		    
+		}
+		.ui-fileupload {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    display: inline-block;
+		    border: none;
+		}
+		.ui-fileupload-content {
+		    border: none;  
+		}
+		.ui-fileupload-choose {
+        	background-color: #fda63e !important;
+        	color: #ffffff !important;
+		    font-family: 'PT Sans', arial, verdana, sans-serif;
+    		font-size: 1em;
+		    font-weight: normal;
+		}
+		span.ui-fileupload-choose > span.ui-icon-plusthick{
+		    display: none !important;
+		}
+		span.ui-fileupload-choose > span.ui-button-text{
+		    padding-left: 1em !important;
+		}
+	</style>
+	
+	
+	<!-- Pop-up para mostrar medicamentos no procesados en importación -->
+	<p:dialog header="Medicamentos no procesados" widgetVar="dlgMedicamentosNoProcesadosW" modal="true" height="500" width="1000"
+		position="center" appendTo="@(body)" id="dialogoErroresMedicamentos">
+
+		<h:commandLink title="#{i18n.form_label_file_excel}">
+			<h:outputText class="fa fa-file-excel-o fa-2x success" />
+	
+			<p:dataExporter type="xlsx" target="erroresMedicamentosTabla"
+			fileName="Listado_de_Errores_Procedimientos_PGP" />
+		</h:commandLink>
+		
+		<p:dataTable id="erroresMedicamentosTabla" var="registro"
+			paginatorAlwaysVisible="false"
+			value="#{negociacionGrupoTerapeuticoPGPController.listadoErrores}" rows="10"
+			dynamic="true" styleClass="paginated" paginator="true"
+			paginatorPosition="bottom" widgetVar="erroresMedicamentosTablaW"
+			rowsPerPageTemplate="5,10,20"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+			emptyMessage="#{i18n.form_label_datatable_noregistros}">
+	
+			<p:column headerText="Código único medicamento">
+				<h:outputText value="#{registro.codigoTecnologiaUnicaEmssanar}" />
+			</p:column>
+			<p:column headerText="Descripción única medicamento">
+				<h:outputText value="#{registro.descripcionCodigoTecnologiaUnicaEmssanar}" />
+			</p:column>
+			<p:column headerText="#{i18n.form_eliminar}">
+				<h:outputText value="#{registro.eliminarProcedimiento}" />
+			</p:column>
+			<p:column headerText="#{i18n.form_label_error}">
+				<h:outputText value="#{registro.codigo} - #{registro.mensaje}" />
+			</p:column>
+			<p:column headerText="#{i18n.form_label_linea}">
+				<h:outputText value="#{registro.linea}" />
+			</p:column>
+	
+		</p:dataTable>
+	</p:dialog>
+    
+	<p:panel id="panelGruposTerapeuticos">
+		<p:accordionPanel id="acordionPanelGruposTerapeuticos">
+			<p:tab title="#{i18n.negociacion_asignacion_masiva_titulo}">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-lg-6" style="border: 1px solid #E5E5E5;">
+						
+<!-- 							Panel Grip de PGP										 -->
+							<h:panelGroup id="opcionesMasivoGruposGridPGP" layout="block"
+									styleClass="radioButtonSpaceLeft" border="0">
+								<p:selectOneRadio id="opcionesMasivoGruposPGP" layout="custom"
+										columns="1" converter="omnifaces.SelectItemsConverter"
+										value="#{negociacionGrupoTerapeuticoPGPController.tipoAsignacionSeleccionado}">
+										<f:selectItems
+											value="#{negociacionGrupoTerapeuticoPGPController.tipoAsignacionTarifaMedicamentoEnum}"
+											var="tipoAsignacionMedicamento" itemValue="#{tipoAsignacionMedicamento}"
+											itemLabel="#{i18n[cnx:enum_key(tipoAsignacionMedicamento)]}" />
+								</p:selectOneRadio>
+								<h:panelGrid style="margin-top:10px">
+									<p:row>
+										<p:radioButton id="optGrupo1" for="opcionesMasivoGruposPGP"
+										itemIndex="0" />
+										<h:outputLabel for="optGrupo1"
+											value="#{i18n.negociacion_grupos_asigna_referente}" />
+										<h:outputLabel />
+									</p:row>
+										
+									<p:row>
+										<p:radioButton id="optGrupo2" for="opcionesMasivoGruposPGP"
+										itemIndex="1" />
+										<h:outputLabel for="optGrupo2"
+											value="#{i18n.negociacion_grupos_asigna_franja_riesgo}" />
+										<h:outputLabel />
+									</p:row>	
+										
+									<p:row>
+										<h:outputLabel for="optGrupo2"
+											value="#{i18n.negociacion_masivo_franja_inicio}" />
+										<h:outputLabel />
+										<pe:inputNumber 
+										id="inputFranjaInicio"
+										value="#{negociacionGrupoTerapeuticoPGPController.franjaInicio}"
+										decimalSeparator=","
+										thousandSeparator="."
+										decimalPlaces="2"
+										validatorMessage="#{i18n.negociacion_pgp_valor_franja}"
+										placeholder="0">                            
+										<f:validateDoubleRange minimum="0" maximum="1000" />
+										</pe:inputNumber>
+										
+										<h:outputLabel for="optGrupo2"
+											value="#{i18n.negociacion_masivo_franja_fin}" />
+										<h:outputLabel />
+										<pe:inputNumber 
+											id="inputFranjaFin"
+											value="#{negociacionGrupoTerapeuticoPGPController.franjaFin}"
+											decimalSeparator=","
+											thousandSeparator="."
+											decimalPlaces="2"
+											validatorMessage="#{i18n.negociacion_pgp_valor_franja}"
+											placeholder="1000">                            
+											<f:validateDoubleRange minimum="0" maximum="1000" />
+										</pe:inputNumber>
+									</p:row>	
+										
+									
+								</h:panelGrid>
+											<br></br>
+											<div class="row">
+												<div class="col-lg-12">
+														<p:commandButton id="btnAsignacionTarifasGrupos"
+															value="#{i18n.form_label_button_aceptar}"
+															styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+															rendered="#{negociacionGrupoTerapeuticoPGPController.tecnologiasController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+															update="@([id$=negociacionGruposPGP]),@([id$=totalNegociacion]),
+																@([id$=inputFranjaInicio]), @([id$=inputFranjaFin]), @([id$=opcionesMasivoGruposPGP])"
+															process="acordionPanelGruposTerapeuticos"
+															actionListener="#{negociacionGrupoTerapeuticoPGPController.asignarTarifasGrupos()}"
+															oncomplete="PF('negociacionGruposPGP').unselectAllRows();" />	
+												</div>
+											</div>
+								<p:spacer></p:spacer>
+							</h:panelGroup>
+						
+						</div>
+						
+						
+						<div class="col-lg-6" style="border: 1px solid #E5E5E5;">
+							<p:panelGrid style="margin-top:10px">
+							    
+							    <f:facet name="header">
+							        <p:row>
+							            <p:column style="width:600px;">
+							            	<h:outputLabel value="Importar medicamentos" />
+							            </p:column>
+							        </p:row>							 
+							    </f:facet>
+							    
+							    <br></br>
+							    
+							    <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="20">
+									<p:outputLabel value="#{i18n.form_label_generar_plantilla}" style="width:150px"/>
+	
+									<p:commandButton id="btn-generar-plantilla-medicamentos"
+											style="width:90px"
+											styleClass="btn btn-sm btn-info"
+											icon="fa fa-download" value="Descargar" partialSubmit="true"
+											immediate="true"
+											process="@this"
+											actionListener="#{negociacionGrupoTerapeuticoPGPController.descargarFormatoTecnologiasPGP()}"
+											ajax="false"
+											onsuccess="PrimeFaces.monitorDownload(start, stop);">
+											<p:fileDownload value="#{negociacionGrupoTerapeuticoPGPController.formatoDownload}" />
+									</p:commandButton>
+	
+								</h:panelGrid>
+								
+								<h:panelGrid columns="5" style="margin-bottom:10px" cellpadding="20">
+									<p:outputLabel value="Importar medicamentos" style="width:150px"/>
+	
+									<p:spacer></p:spacer>
+	
+									<p:fileUpload id="btnImportarMedicamentosPgp"
+														styleClass="btn btn-warning btn-sm"
+														auto="true" multiple="true"
+														allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+														accept="xls|xlsx|XLS|XLSX"
+														mode="advanced"
+														rendered="#{negociacionGrupoTerapeuticoPGPController.tecnologiasController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+														update = "@([id$=dialogoErrores]) @([id$=afiliadosPgpTabla]) @([id$=poblacionEventoPgp])"
+														cancelLabel="#{i18n.form_label_button_cancelar}"
+														uploadLabel="#{i18n.form_label_importar}"
+														label="#{i18n.form_label_importar}" sizeLimit="5242880"
+														invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+														invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+														fileUploadListener="#{negociacionGrupoTerapeuticoPGPController.importFiles}"
+														onstart="PF('statusDialog').show();"
+														oncomplete="PF('statusDialog').hide();">
+														<f:attribute name="foo" value="#{ArchivosNegociacionEnum.PROCEDURE_PGP_FILE}" />
+									</p:fileUpload>
+									
+									<p:spacer></p:spacer>
+									
+									<p:commandButton styleClass="btn btn-warning btn-sm"
+													id="btnMostrarNoProcesadosMedicamentos"
+													rendered="#{not empty negociacionGrupoTerapeuticoPGPController.listadoErrores}"
+													onclick="PF('dlgMedicamentosNoProcesadosW').show();"
+													value="#{i18n.form_label_button_no_procesados_asociar_poblacion}">
+									</p:commandButton>
+									
+								</h:panelGrid>
+								<p:spacer style="height:20px;"></p:spacer>
+							</p:panelGrid>
+						</div>
+							
+					</div>
+				</div>
+			</p:tab>
+		</p:accordionPanel>
+		<div class="form-group">
+			<p:toolbar>
+				<p:toolbarGroup align="right">
+					<div class="col-lg-11">
+						<p:outputLabel class="col-lg-6 text-right" for="gestionGrupos"
+							value="#{i18n.negociacion_capitulos_gestionar_grupos_terapeuticos}" />
+						<div class="col-lg-2">
+							<p:selectOneMenu id="gestionGrupos"
+								value="#{negociacionGrupoTerapeuticoPGPController.gestionSeleccionada}">
+								<f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+									itemValue="" noSelectionOption="true" />
+								<f:selectItems
+									value="#{negociacionGrupoTerapeuticoPGPController.gestionTecnologiasNegociacion}"
+									var="tipoGestionGrupo" itemValue="#{tipoGestionGrupo}"
+									itemLabel="#{i18n[cnx:enum_key(tipoGestionGrupo)]}" />
+								<p:ajax
+									listener="#{negociacionGrupoTerapeuticoPGPController.gestionarGrupos('negociacionGruposPGP','tecnologiasSSForm:tabsTecnologias:gestionGrupos')}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+			<p:outputPanel id="deleteGrupo" layout="block">
+				<p:confirmDialog widgetVar="cdDeleteGrupo" showEffect="fade"
+					header="#{i18n.negociacion_servicios_confir_borrar_grupos}"
+					icon="fa fa-warning">
+
+					<f:facet name="message">
+						<p:outputPanel>
+							<h:outputFormat
+								value="#{i18n.negociacion_grupos_mensaje_eliminar}" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:commandButton value="#{i18n.form_label_button_aceptar}"
+						actionListener="#{negociacionGrupoTerapeuticoPGPController.eliminarGruposMasivo()}"
+						styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+						onclick="PF('cdDeleteGrupo').hide()" immediate="true"
+						update="@([id$=tabsTecnologias])" />
+
+					<p:commandButton value="#{i18n.form_label_button_cancelar}"
+						type="button" styleClass="btn btn-sm btn-warning"
+						icon="fa fa-close" onclick="PF('cdDeleteGrupo').hide()" />
+				</p:confirmDialog>
+			</p:outputPanel>
+		
+		
+			<p:dataTable id="negociacionGruposPGP"
+				binding="#{negociacionGruposPGP}" var="grupoNegociacion"
+				value="#{negociacionGrupoTerapeuticoPGPController.gruposNegociacion}"
+				rowKey="#{grupoNegociacion.categoriaMedicamento.codigo}"
+				selection="#{negociacionGrupoTerapeuticoPGPController.gruposNegociacionSeleccionados}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+				widgetVar="negociacionGruposPGP" paginator="true"
+				paginatorPosition="bottom"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+				rowStyleClass="#{grupoNegociacion.negociado ? null : 'noNegociado'}">
+
+				<p:ajax event="page" update="@this" />
+				<p:ajax event="sort" update="@this" />
+				<p:ajax event="rowSelectCheckbox" update="@this" />
+				<p:ajax event="rowUnselectCheckbox" update="@this" />
+				<p:ajax event="toggleSelect" update="@this" />
+				<p:ajax event="filter" update="@this" />
+				
+				<p:columnGroup type="header">
+					<p:row>
+						<p:column colspan="2" headerText="" />
+						<p:column colspan="3" headerText="#{i18n.referente_pgp_title}" />						
+						<p:column colspan="8"
+							headerText="#{i18n.negociacion_emmsanar_header}"
+							style="min-width:35%"/>
+					</p:row>
+					<p:row>
+						<!-- codigo grupo terapeutico -->
+						<p:column
+							filterBy="#{grupoNegociacion.categoriaMedicamento.codigo}"
+							filterMatchMode="contains" 
+							headerText="Código grupo" 
+							filterStyleClass="anchoInput">							
+			                <h:outputText value="#{grupoNegociacion.categoriaMedicamento.codigo}" />
+						</p:column>
+						
+						<!-- Nombre grupo terapeutico -->
+						<p:column filterBy="#{grupoNegociacion.categoriaMedicamento.nombre}"
+							filterMatchMode="contains"
+							headerText="Grupo terapéutico"
+							filterStyleClass="anchoInput" />
+							
+						<!-- frecuencia referente -->
+						<p:column filterBy="#{grupoNegociacion.frecuenciaReferente}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_frecuencia}"
+							filterStyleClass="anchoInput" />
+							
+						<!-- Costo Medio Usuario referente -->
+						<p:column filterBy="#{grupoNegociacion.costoMedioUsuarioReferente}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_costo_medio_usuario}"
+							filterStyleClass="anchoInput" />
+							
+						<!-- Valor Referente -->
+						<p:column filterBy="#{grupoNegociacion.valorReferente}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_valor_referente}"
+							filterStyleClass="anchoInput" />
+						
+						<!-- Franja Inicio -->
+						<p:column filterBy="#{grupoNegociacion.franjaInicio}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_franja_inicio}"
+							filterStyleClass="anchoInput" />
+							
+						<!-- Franja Fin -->
+						<p:column filterBy="#{grupoNegociacion.franjaFin}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_franja_fin}"
+							filterStyleClass="anchoInput" />
+							
+						<!-- FrecuenciaNegociado -->
+						<p:column filterBy="#{grupoNegociacion.frecuenciaNegociado}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_frecuencia}"
+							filterStyleClass="anchoInput" />
+						
+						<!-- cmu negociado -->
+						<p:column filterBy="#{grupoNegociacion.costoMedioUsuarioNegociado}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_costo_medio_usuario}"
+							filterStyleClass="anchoInput" />
+							
+						<!-- valor negociado -->
+						<p:column filterBy="#{grupoNegociacion.valorNegociado}"
+							filterMatchMode="contains"
+							headerText="#{i18n.negociacion_pgp_valor_negociado}"
+							filterStyleClass="anchoInput" />	
+						
+						<p:column 
+							headerText="#{i18n.form_label_button_verdetalle}"
+							filterStyleClass="anchoInput" />
+
+						<p:column headerText="#{i18n.form_label_negociado}" />
+
+						<p:column headerText="#{i18n.form_label_seleccionado}"
+							selectionMode="multiple" />
+					</p:row>
+				</p:columnGroup>
+
+				<!-- código grupo -->
+				<p:column filterBy="#{grupoNegociacion.categoriaMedicamento.codigo}"
+					filterMatchMode="contains" width="100"
+					headerText="#{i18n.servicio_label_servicio_habilitacion}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{grupoNegociacion.categoriaMedicamento.codigo}" />
+				</p:column>
+				
+				<!-- grupo terapéutico -->
+				<p:column filterBy="#{grupoNegociacion.categoriaMedicamento.nombre}"
+					filterMatchMode="contains" width="100"
+					headerText="#{i18n.servicio_label_servicio_habilitacion}"
+					filterStyleClass="anchoInput">
+					<h:outputText
+						value="#{grupoNegociacion.categoriaMedicamento.nombre}" />
+				</p:column>
+
+				<!-- Frecuencia referente -->
+				<p:column
+					filterBy="#{grupoNegociacion.frecuenciaReferente}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{grupoNegociacion.frecuenciaReferente}" >
+						<f:convertNumber pattern="###,###.##########" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Costo medio usuario referente-->
+				<p:column
+					filterBy="#{grupoNegociacion.costoMedioUsuarioReferente}"
+					filterMatchMode="contains" class="text-center"					
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{grupoNegociacion.costoMedioUsuarioReferente}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+				
+				<!-- Valor Referente -->
+				<p:column
+					filterBy="#{grupoNegociacion.valorReferente}"
+					filterMatchMode="contains" class="text-center"					
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{grupoNegociacion.valorReferente}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+				
+				<!-- Franja inicio-->
+				<p:column
+					filterBy="#{grupoNegociacion.franjaInicio}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{grupoNegociacion.franjaInicio}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+				
+				<!-- Franja fin-->
+				<p:column
+					filterBy="#{grupoNegociacion.franjaFin}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{grupoNegociacion.franjaFin}" >
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+				
+				<!-- Frecuencia negociado-->
+				<p:column
+					filterBy="#{grupoNegociacion.frecuenciaNegociado}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText value="#{grupoNegociacion.frecuenciaNegociado}" >
+						<f:convertNumber pattern="###,###.##########" />
+					</h:outputText>
+				</p:column>
+				
+				<!-- Costo medio usuario negociado -->
+				<p:column filterBy="#{grupoNegociacion.costoMedioUsuarioNegociado}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText id="col11" value="#{grupoNegociacion.costoMedioUsuarioNegociado}">
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+
+				<!-- Valor Negociado -->
+				<p:column filterBy="#{grupoNegociacion.valorNegociado}"
+					filterMatchMode="contains" class="text-center"
+					filterStyleClass="anchoInput">
+					<h:outputText id="col12" value="#{grupoNegociacion.valorNegociado}">
+						<f:convertNumber locale="es_CO" />
+					</h:outputText>
+				</p:column>
+				
+				<!-- Detalle negociado-->
+				<p:column  class="text-center"
+					headerText="#{i18n.form_label_button_verdetalle}"
+					filterStyleClass="anchoInput">
+					<p:commandButton id="btnVerDetalleProcedimientosNegociado"
+						style="background-color: transparent; border: none;"
+						alt="#{i18n.negociacion_servicio_dt_negociacion}"
+						title="#{i18n.negociacion_servicio_dt_negociacion}"
+						icon="fa fa-search"
+						actionListener="#{negociacionGrupoTerapeuticoPGPController.verMedicamentosNegociados(grupoNegociacion)}"
+						process="@this" />				
+				</p:column>
+
+
+				<!-- check negociado-->
+				<p:column id="colNeg" headerText="#{i18n.form_label_negociado}"
+					styleClass="text-center">
+					<p:selectBooleanCheckbox value="#{grupoNegociacion.negociado}">
+					</p:selectBooleanCheckbox>
+				</p:column>
+
+				<!-- check seleccion -->
+				<p:column class="text-center" selectionMode="multiple"
+					headerText="#{i18n.form_label_seleccionado}" />
+
+			</p:dataTable>
+			<!--Fecha Concertacion Medicamentos PGP-->
+			<p:panel 
+			    header="#{i18n.form_label_fecha_concertacion_mx}"
+				id="panelFechaConcertacionMx" 
+				style="height:90px;"
+				rendered="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+				<p:calendar 
+				    id="fechaConcertacionMx" 
+				    showOn="button" 
+				    size="20"
+					converterMessage="La fecha de Concertacion debe tener formato Día Mes Año"
+					pattern="dd/MM/yyyy" 
+					required="true"
+					requiredMessage="Ingrese la fecha de concertacion"
+					value="#{tecnologiasSSController.negociacion.fechaConcertacionMx}"
+					locale="es">
+				</p:calendar>
+				<p:spacer style="width:50px"></p:spacer>
+				<p:commandButton 
+				    styleClass="btn btn-sm btn-info"
+					value="#{i18n.form_label_button_actualizar}"
+					process="panelFechaConcertacionMx"
+					actionListener="#{tecnologiasSSController.actualizarFechaConcertacion('medicamentos')}"
+					ajax="true">
+				</p:commandButton>
+			</p:panel>
+			<!---->
+		</div>
+	</p:panel>
+
+</f:view>

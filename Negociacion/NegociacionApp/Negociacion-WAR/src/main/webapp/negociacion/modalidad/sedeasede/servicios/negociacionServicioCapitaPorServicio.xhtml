@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pe="http://primefaces.org/ui/extensions"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils" 
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.GestionTecnologiasNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.OpcionesValorCapitaEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum"/>
+	                 
+                     
+	<script type="text/javascript">
+	function validarComa(text) {
+		if (text.value.match('[,]')) {
+			text.value = '';
+		}
+	}
+    </script>
+    <pe:masterDetail id="master" showBreadcrumb="false">
+        <pe:masterDetailLevel level="1">
+            <h:panelGrid columns="1" style="width:100%">
+                <f:facet name="header">
+                    <p:outputLabel value="#{i18n.negociacion_asignacion_masiva_titulo}"
+                                   styleClass="titulo-bold">
+                    </p:outputLabel>
+                    <div class="separador"></div>
+                </f:facet>
+            </h:panelGrid><br/>
+            <p:tab title="" id="opciones">
+                <div class="form-group">                    
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <p:outputLabel for="opcionesServiciosMasivo" value="Valor a Aplicar" />
+                        </div>
+                        <div class="col-lg-3">
+                            <p:selectOneMenu id="opcionesServiciosMasivo" effect="fold"                                             
+                                             styleClass="anchoInput" immediate="true" 
+                                             value="#{negociacionServiciosCapitaSSController.opcionValor}">
+                                <f:selectItem itemLabel="Seleccione" noSelectionOption="true"/> 
+                                <f:selectItems
+                                    value="#{negociacionServiciosCapitaSSController.opcionesValorCapitaEnum}"
+                                    var="opcionesValorCapita" itemValue="#{opcionesValorCapita}"
+                                    itemLabel="#{i18n[cnx:enum_key(opcionesValorCapita)]}" />
+                                <p:ajax event="change" update="master"/>
+                            </p:selectOneMenu>
+                            <p:message for="opcionesServiciosMasivo" />
+                        </div>                                      
+                        <div class="col-lg-3">
+                            <p:outputLabel id="valor" 
+                                           rendered="#{negociacionServiciosCapitaSSController.mostrarValor()}"
+                                           for="otroValor" 
+                                           value="#{negociacionServiciosCapitaSSController.opcionValor eq OpcionesValorCapitaEnum.OTRO_VALOR 
+                                                    ? 'Otro Valor' 
+                                                    : negociacionServiciosCapitaSSController.opcionValor eq OpcionesValorCapitaEnum.PORCENTAJE 
+                                                    ? 'Aumentar/Disminuir Porcentaje' : ''}"
+                                           />
+                        </div>
+                        <div class="col-lg-3">
+                            <p:inputText id="otroValor" converterMessage="El valor ingresado debe ser un número"
+                                         rendered="#{negociacionServiciosCapitaSSController.mostrarValor()}"
+                                         value="#{negociacionServiciosCapitaSSController.otroValor}"
+                                         size="9" maxlength="9">                                
+                            </p:inputText>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-offset-8 col-lg-4">
+                                    <div class="text-right">
+                                        <p:commandButton id="btnAsignacionTarifasServicio"
+                                                         styleClass="btn btn-sm btn-info"
+                                                         value="#{i18n.form_label_button_aceptar}" 
+                                                         process="opciones" update="@form"
+                                                         actionListener="#{negociacionServiciosCapitaSSController.asignarTarifasServicios()}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </p:tab>
+            <div class="form-group">
+                <p:toolbar>
+                    <p:toolbarGroup align="right">
+                    	<div class="row">
+	                    	<div class="col-lg-6">
+								<p:outputLabel class="col-lg-4" value="#{i18n.negociacion_distribuir_porcentaje}" />
+								<p:selectBooleanCheckbox class="col-lg-2" value="#{negociacionServiciosCapitaSSController.distribuirPorcentajeNegociado}">
+									<p:ajax listener="#{negociacionServiciosCapitaSSController.seleccionDistribuir}" />
+								</p:selectBooleanCheckbox>
+							</div>
+						
+							<div class="col-lg-6">
+	                            <p:outputLabel class="col-lg-3 text-right" value="Gestionar Servicios" />
+	                            <div class="col-lg-3">
+	                                <p:selectOneMenu id="gestionSeleccionadaServicio"
+	                                                 value="#{negociacionServiciosCapitaSSController.gestionSeleccionada}">
+	                                    <f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+	                                                  itemValue="" noSelectionOption="true" />
+	                                    <f:selectItems
+	                                        value="#{GestionTecnologiasNegociacionEnum.values()}"
+	                                        var="tipoGestionServ" itemValue="#{tipoGestionServ}"
+	                                        itemLabel="#{i18n[cnx:enum_key(tipoGestionServ)]}" />
+	                                    <p:ajax
+	                                        listener="#{negociacionServiciosCapitaSSController.gestionarServicios()}"
+	                                        update="@([id$=negociacionServiciosSS]), gestionSeleccionadaServicio"/>
+	                                </p:selectOneMenu>
+	                            </div>
+	                        </div>
+                        </div>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                <p:outputPanel layout="block">
+                    <p:confirmDialog widgetVar="confirmDeleteServicio" showEffect="fade"
+                                     header="Confirmar eliminar servicios"
+                                     icon="fa fa-warning">
+                        <f:facet name="message">
+                            <p:outputPanel>
+                                <h:outputFormat
+                                    value="Se eliminarán los servicios seleccionados ¿Desea continuar?" />
+                            </p:outputPanel>
+                        </f:facet>
+                        <p:commandButton value="#{i18n.form_label_button_aceptar}"
+                                         actionListener="#{negociacionServiciosCapitaSSController.eliminarServicios()}"
+                                         styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                         onclick="PF('confirmDeleteServicio').hide()"
+                                         process="@this" 
+                                         immediate="true"
+                                         update=":tecnologiasSSForm:tabsTecnologias, tecnologiasSSForm:totalNegociacion" />
+                        <p:commandButton value="#{i18n.form_label_button_cancelar}"
+                                         type="button" styleClass="btn btn-sm btn-warning"
+                                         icon="fa fa-close" onclick="PF('confirmDeleteServicio').hide()" />
+                    </p:confirmDialog>
+                </p:outputPanel>
+                <p:dataTable id="negociacionServiciosSS"
+                             var="servicioNegociacion"
+                             value="#{negociacionServiciosCapitaSSController.servicios}"
+                             rowKey="#{servicioNegociacion.servicioSalud.id}"
+                             selection="#{negociacionServiciosCapitaSSController.serviciosSeleccionados}"
+                             emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                             widgetVar="negociacionServiciosSS" paginator="true"
+                             paginatorPosition="bottom"  
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+                             rowStyleClass="#{empty servicioNegociacion.valorNegociado ? 'noNegociado' : null}">
+                    <p:ajax event="rowSelectCheckbox" />
+                    <p:ajax event="rowUnselectCheckbox" />
+                    <p:ajax event="toggleSelect" listener="#{negociacionServiciosCapitaSSController.seleccionarMasivoServicios}"/>
+                    <p:columnGroup type="header">
+                        <p:row>
+                            <p:column colspan="2" headerText="" />
+                            <p:column colspan="3"
+                                      headerText="Referente de Capita" />
+                            <p:column colspan="3" headerText="Contrato Anterior"/>
+                            <p:column colspan="#{(negociacionServiciosCapitaSSController.showPoblacion)?7:6}"
+                                      headerText="#{i18n.negociacion_emmsanar_header}"
+                                      style="min-width:35%" />
+                        </p:row>
+                        <p:row>
+                            <!-- Servicio -->
+                            <p:column
+                                filterBy="#{servicioNegociacion.servicioSalud.macroservicio.nombre}"
+                                filterMatchMode="contains"
+                                headerText="#{i18n.servicio_label_grupo_habilitacion}"
+                                filterStyleClass="anchoInput" />
+                            <p:column filterBy="#{servicioNegociacion.servicioSalud.codigo}-#{servicioNegociacion.servicioSalud.nombre}"
+                                      filterMatchMode="contains"
+                                      headerText="#{i18n.servicio_label_servicio_habilitacion}" width="200"/>
+                            <!-- Referente -->
+                            <p:column headerText="Porcentaje Asignación"/>
+                            <p:column headerText="Porcentaje UPC"/>
+                            <p:column headerText="Valor"/>
+                            <!-- Contrato anterior -->
+                            <p:column headerText="% Contrato Anterior"/>
+                            <p:column headerText="Valor Contrato Anterior"/>
+                            <p:column headerText="Valor UPC Contrato Anterior"/>                            
+                            <!-- Negociación -->
+                            <p:column headerText="Porcentaje"/>
+                            <p:column headerText="Valor" styleClass="text-right"/>
+                            <p:column headerText="Diferencia %"/>
+                            <p:column headerText="Ver"/>
+                            <p:column headerText="Poblacion" visible="#{negociacionServiciosCapitaSSController.showPoblacion}"/>
+                            <p:column headerText="#{i18n.form_label_negociado}" />
+                            <p:column headerText="#{i18n.form_label_seleccionado}"
+                                      selectionMode="multiple" />
+                        </p:row>
+                    </p:columnGroup>
+                    <!-- Grupo habilitacion  -->
+                    <p:column
+                        filterBy="#{servicioNegociacion.servicioSalud.macroservicio.nombre}"
+                        filterMatchMode="contains" width="100"
+                        headerText="#{i18n.servicio_label_grupo_habilitacion}"
+                        filterStyleClass="anchoInput">
+                        <h:outputText
+                            value="#{servicioNegociacion.servicioSalud.macroservicio.nombre}" />
+                    </p:column>
+
+                    <!-- Servicio habilitacion -->
+                    <p:column
+                        filterBy="#{servicioNegociacion.servicioSalud.codigo} - #{servicioNegociacion.servicioSalud.nombre}"
+                        filterMatchMode="contains" width="200"
+                        headerText="#{i18n.servicio_label_servicio_habilitacion}">
+                        <h:outputText value="#{servicioNegociacion.servicioSalud.codigo} - #{servicioNegociacion.servicioSalud.nombre}" />
+                    </p:column>
+
+                    <!-- Referente Capita -->
+                    <p:column styleClass="text-right">
+                        <h:outputText value="#{servicioNegociacion.porcentajeAsignado}">
+                            <pe:keyFilter mask="pnum"/> 
+                        </h:outputText>
+                    </p:column>
+                    <p:column styleClass="text-right">
+                        <h:outputText value="#{servicioNegociacion.servicioSalud.liquidacionServicio.porcentaje}">
+                            <pe:keyFilter mask="pnum"/> 
+                        </h:outputText>
+                    </p:column>
+                    <p:column styleClass="text-right">
+                        <h:outputText value="#{servicioNegociacion.servicioSalud.liquidacionServicio.valor}">
+                            <pe:keyFilter mask="pnum"/>
+                        </h:outputText>
+                    </p:column>        
+                    <!-- Valores Contrato anterior -->
+                      <p:column styleClass="text-right">
+                        <h:outputText
+                            value="#{servicioNegociacion.porcentajeContratoAnterior}">
+                            <pe:keyFilter mask="pnum"/> 
+                        </h:outputText>
+                    </p:column>
+                    <p:column styleClass="text-right">
+                        <h:outputText
+                            value="#{servicioNegociacion.valorContratoAnterior}">
+                           	<pe:keyFilter mask="pnum"/> 
+                        </h:outputText>
+                    </p:column>         
+                    <p:column styleClass="text-right">
+                        <h:outputText
+                            value="#{servicioNegociacion.valorUPCContratoAnterior}">
+                           	<pe:keyFilter mask="pnum"/> 
+                        </h:outputText>
+                    </p:column>   
+                    <!-- Negociacion Emssanar -->
+                    <!-- Porcentaje Negociado -->
+                    <p:column styleClass="text-right col-lg-2">
+                        <p:inputText 
+                            maxlength="6" size="6" onkeyup="validarComa(this);"
+                            value="#{servicioNegociacion.porcentajeNegociado}"
+                            validatorMessage="El Porcentaje a aplicar no está entre los valores permitidos 0 y 100."
+                            converterMessage="El Porcentaje a aplicar debe ser un número">
+                            <f:validateDoubleRange minimum="0" maximum="100" />
+                            <pe:keyFilter mask="pnum"/>                          
+                            <p:ajax event="change"
+                                    listener="#{negociacionServiciosCapitaSSController.guardarServicioPorcentaje(servicioNegociacion)}"
+                             		update="@form"/>
+                        </p:inputText>
+                    </p:column>
+                    <!-- valor negociado -->
+                    <p:column
+                        styleClass="text-right col-lg-2">
+                        <p:inputText                          
+                            value="#{servicioNegociacion.valorNegociado}"
+                            size="9" maxlength="9" 
+                            validatorMessage="El valor es inferior que el mínimo permitido"
+                            converterMessage="El Porcentaje a aplicar debe ser un número">
+                            <f:validateDoubleRange minimum="1"/>
+							<pe:keyFilter mask="pnum"/>
+                            <p:ajax event="change"
+                                    listener="#{negociacionServiciosCapitaSSController.guardarServicioValor(servicioNegociacion)}"
+                                    update="@form"/>
+                        </p:inputText>                        
+                    </p:column>
+                    <!-- Diferencia porcental -->
+                    <p:column
+                        styleClass="text-right col-lg-2">
+                        <h:outputText value="#{servicioNegociacion.diferenciaPorcentaje}">
+                            <pe:keyFilter mask="pnum"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <!-- Ver -->
+                    <p:column styleClass="text-center" width="50">
+                        <p:commandButton actionListener="#{negociacionServiciosCapitaSSController.loadProcedimientos(servicioNegociacion)}" 
+                                         icon="ui-icon-search"
+                                         title="Detalle" 
+                                         process="@this"
+                                         immediate="true"
+                                         update="@form, @([id$=procedimientos]), @([id$=master]), @([id$=totalNegociacion])">
+                            <pe:selectDetailLevel step="1"/>
+                            <f:setPropertyActionListener value="#{servicioNegociacion}" target="#{negociacionServiciosCapitaSSController.currentServicio}" />
+                        </p:commandButton>
+                    </p:column>
+
+                    <!-- Población -->
+                    <p:column styleClass="text-center" visible="#{negociacionServiciosCapitaSSController.showPoblacion}">
+                        <p:inputText 
+                            maxlength="6" size="4"                                                 
+                            value="#{servicioNegociacion.poblacion}"
+                            converter="javax.faces.Integer" 
+                            validatorMessage="La poblacion debe se un número positivo"
+                            converterMessage="La población debe consistir en un número de uno o mas digitos">
+                            <f:validateLongRange minimum="1" />
+                            <p:ajax event="change" update="@this" process="@this" 
+                                    listener="#{negociacionServiciosCapitaSSController.asignarPoblacionPorServicio(servicioNegociacion.sedesNegociacionServicioIds,servicioNegociacion.poblacion)}" />
+                        </p:inputText>
+                    </p:column>
+
+                    <!-- check negociado-->
+                    <p:column id="colNeg" headerText="#{i18n.form_label_negociado}"
+                              styleClass="text-center" width="50">
+                        <p:selectBooleanCheckbox value="#{servicioNegociacion.negociado}">
+                        	<p:ajax listener="#{negociacionServiciosCapitaSSController.guardarServicioValor(servicioNegociacion)}"/>
+                        </p:selectBooleanCheckbox>
+                    </p:column>
+                    <!-- check seleccion -->
+                    <p:column class="text-center" selectionMode="multiple"
+                              headerText="#{i18n.form_label_seleccionado}" width="50" />
+                </p:dataTable>
+            </div>
+        </pe:masterDetailLevel>
+        <pe:masterDetailLevel level="2">            
+            <p:toolbar>
+                <f:facet name="left">
+                    <h:outputText value="#{negociacionServiciosCapitaSSController.currentServicio.servicioSalud.codigo} - #{negociacionServiciosCapitaSSController.currentServicio.servicioSalud.nombre}" />
+                </f:facet>
+                <f:facet name="right">
+                    <div class="col-lg-11">
+                        <p:outputLabel class="col-lg-6 text-right" 
+                                       value="Gestionar Procedimientos" />
+                        <div class="col-lg-2">
+                            <p:selectOneMenu id="gestionSeleccionada"
+                                             value="#{negociacionServiciosCapitaSSController.gestionSeleccionada}">
+                                <f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+                                              itemValue="" noSelectionOption="true" />
+                                <f:selectItems
+                                    value="#{GestionTecnologiasNegociacionEnum.values()}"
+                                    var="tipoGestionServ" itemValue="#{tipoGestionServ}"
+                                    itemLabel="#{i18n[cnx:enum_key(tipoGestionServ)]}" />
+                                <p:ajax
+                                    listener="#{negociacionServiciosCapitaSSController.gestionarProcedimientos()}"
+                                    update="procedimientos, gestionSeleccionada"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </f:facet>
+            </p:toolbar>
+            <p:outputPanel layout="block">
+                <p:confirmDialog widgetVar="confirmDelete" showEffect="fade"
+                                 header="Confirmar eliminar procedimientos"
+                                 icon="fa fa-warning">
+                    <f:facet name="message">
+                        <p:outputPanel>
+                            <h:outputFormat
+                                value="Se eliminarán los procedimientos seleccionados usted quiere:" /><br/>
+                            <h:outputFormat value="Marque Si para descontar el valor de los procedimientos seleccionados" /><br/>
+                            <h:outputFormat value="Marque No para redistribuir el porcentaje"/>
+                        </p:outputPanel>
+                    </f:facet>
+                    <p:commandButton value="Si"
+                                     actionListener="#{negociacionServiciosCapitaSSController.eliminarProcedimientosSinRestribuir()}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     onclick="PF('confirmDelete').hide()"
+                                     process="@this" 
+                                     immediate="true"
+                                     update="procedimientos, tecnologiasSSForm:totalNegociacion" />
+                    <p:commandButton value="No"
+                                     actionListener="#{negociacionServiciosCapitaSSController.eliminarProcedimientos()}"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     onclick="PF('confirmDelete').hide()"
+                                     process="@this" 
+                                     immediate="true"
+                                     update="procedimientos, tecnologiasSSForm:totalNegociacion" />
+                    <p:commandButton value="#{i18n.form_label_button_cancelar}"
+                                     type="button" styleClass="btn btn-sm btn-warning"
+                                     icon="fa fa-close" onclick="PF('confirmDelete').hide()" />
+                </p:confirmDialog>
+            </p:outputPanel>
+            <p:dataTable 
+                id="procedimientos"
+                value="#{negociacionServiciosCapitaSSController.procedimientos}"
+                var="procedimiento" 
+                rowKey="#{procedimiento.procedimientoDto.id}"
+                selection="#{negociacionServiciosCapitaSSController.procedimientosSeleccionados}"
+                emptyMessage="#{i18n.form_label_datatable_noregistros}"
+                paginator="true" rows="15"
+                paginatorPosition="bottom"
+                widgetVar="negociacionProcedimientosServicioWidget"
+                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+                rowStyleClass="#{procedimiento.valorNegociado eq 0 ? 'noNegociado' : null}">
+                <p:ajax event="rowSelectCheckbox" />
+                <p:ajax event="rowUnselectCheckbox" />
+                <p:ajax event="toggleSelect"/>
+                <p:ajax event="filter" ignoreAutoUpdate="true"/>
+                <p:column headerText="CUPS"  
+                		  filterBy="#{procedimiento.procedimientoDto.cups}"
+                          filterMatchMode="contains"
+                            filterStyleClass="anchoInput">
+                    <p:outputLabel value="#{procedimiento.procedimientoDto.cups}"/>
+                </p:column>
+                <p:column headerText="Código Emssanar" 
+                			filterBy="#{procedimiento.procedimientoDto.codigoCliente}"
+                         	filterMatchMode="contains"
+                            filterStyleClass="anchoInput">
+                    <p:outputLabel value="#{procedimiento.procedimientoDto.codigoCliente}"/>
+                </p:column>
+                <p:column headerText="Descripción"
+                			filterBy="#{procedimiento.procedimientoDto.descripcion}"
+                         	filterMatchMode="contains"
+                            filterStyleClass="anchoInput">
+                    <p:outputLabel value="#{procedimiento.procedimientoDto.descripcion}"/>
+                </p:column>
+                <p:column headerText="Nivel Complejidad">
+                    <p:outputLabel value="#{procedimiento.procedimientoDto.complejidad}"/>
+                </p:column>
+                <p:column 
+                    headerText="Porcentaje Asignado"
+                    styleClass="text-right"
+                    >
+                    <p:outputLabel value="#{procedimiento.porcentajeAsignado}">
+                        <f:convertNumber maxFractionDigits="3"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column 
+                    headerText="Porcentaje Referente"
+                    styleClass="text-right"
+                    >
+                    <p:outputLabel value="#{procedimiento.liquidacionProcedimiento.porcentaje}">
+                        <f:convertNumber maxFractionDigits="3"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Valor Referente"
+                          styleClass="text-right"
+                          >
+                    <p:outputLabel value="#{procedimiento.liquidacionProcedimiento.valor}">
+                        <f:convertNumber currencySymbol="$" type="currency"/>
+                    </p:outputLabel>
+                </p:column>
+            	
+            	<p:column headerText="Porcentaje Contrato Anterior"
+            	 		  styleClass="text-right">
+            	 		  <p:outputLabel value="#{procedimiento.porcentajeContratoAnterior}">
+            	 		  <f:convertNumber maxFractionDigits="3"/>
+            	 		  </p:outputLabel>
+            	 </p:column>
+            	
+            	<p:column headerText="Valor Contrato anterior"
+                          styleClass="text-right">
+                    <p:outputLabel value="#{procedimiento.valorContratoAnterior}">
+                        <f:convertNumber currencySymbol="$" type="currency"/>
+                    </p:outputLabel>
+                </p:column>
+            	
+                <p:column headerText="Porcentaje Negociado"
+                          styleClass="text-right"
+                          >
+                    <p:outputLabel value="#{procedimiento.porcentajeNegociado}">
+                        <f:convertNumber maxFractionDigits="3"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Valor Negociado"
+                          styleClass="text-right">
+                    <p:outputLabel value="#{procedimiento.valorNegociado}">
+                        <f:convertNumber currencySymbol="$" type="currency"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column class="text-center" selectionMode="multiple" 
+                          headerText="#{i18n.form_label_seleccionado}" />
+            </p:dataTable>
+            <div class="ui-grid ui-grid-responsive">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-offset-8 col-lg-4">
+                            <div class="text-right">
+                                <p:commandButton value="Regresar"
+                                                 icon="ui-icon-arrowthick-1-w"
+                                                 process="@this" 
+                                                 onclick="PF('negociacionProcedimientosServicioWidget').clearFilters();"
+                                                 immediate="true"
+                                                 update="@form, @([id$=procedimientos]), @([id$=master])"
+                                                 styleClass="btn btn-sm btn-warning"
+                                                 actionListener="#{negociacionServiciosCapitaSSController.resetProcedimientos()}">  
+                                    <pe:selectDetailLevel step="-1"/>  
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </pe:masterDetailLevel>
+    </pe:masterDetail>
+</f:view>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id="procedimientosAgregarForm">
+
+		<div class="form-group">
+			<div class="row">
+				<div class="col-lg-12">
+					<h:panelGroup id="procedimientoAgregarPanel">
+						<p:dataTable id="procedimientosAgregarTable" var="procedimiento"
+							value="#{negociacionProcedimientoSSController.procedimientosAgregar}"
+							rowKey="#{procedimiento.id}"
+							selection="#{negociacionProcedimientoSSController.procedimientosAgregarSeleccionados}"
+							style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+							paginator="true" paginatorPosition="bottom" editable="true"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+							widgetVar="procedimientosAgregarTableWV">
+
+
+							<p:ajax update="@this" event="toggleSelect" />
+							<p:ajax update="@this" event="rowSelectCheckbox" />
+							<p:ajax update="@this" event="rowUnselectCheckbox" />
+
+							<p:column filterBy="#{procedimiento.codigoCliente}"
+								headerText="Código cliente" filterMatchMode="contains">
+								<h:outputText value="#{procedimiento.codigoCliente}" />
+							</p:column>
+
+							<p:column filterBy="#{procedimiento.cups}"
+								headerText="Código cups" filterMatchMode="contains">
+								<h:outputText value="#{procedimiento.cups}" />
+							</p:column>
+
+							<p:column filterBy="#{procedimiento.descripcion}"
+								headerText="Descripción" filterMatchMode="contains">
+								<h:outputText value="#{procedimiento.descripcion}" />
+							</p:column>
+
+							<p:column filterBy="#{procedimiento.nombreComplejidad}"
+								headerText="Complejidad" filterMatchMode="contains">
+								<h:outputText value="#{procedimiento.nombreComplejidad}" />
+							</p:column>
+
+							<p:column class="text-center" selectionMode="multiple" width="5%" />
+
+						</p:dataTable>
+					</h:panelGroup>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-2 col-lg-offset-10">
+					<p:commandButton id="btnAgregarTecnologia"
+						value="#{i18n.form_label_agregar}" update="#{componenttoupdate}" process="@this"
+						styleClass="btn btn-sm btn-primary"
+						actionListener="#{negociacionProcedimientoSSController.agregarProcedimientoNegociacion(negociacionProcedimientoSSController.procedimientosAgregarSeleccionados)}" />
+				</div>
+			</div>
+		</div>
+	</h:form>
+</f:view>

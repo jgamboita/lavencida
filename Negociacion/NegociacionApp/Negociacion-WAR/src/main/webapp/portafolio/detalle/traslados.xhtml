@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="trasladosForm">
+		<p:panel id="panelTraslados">
+			<div class="form-group">
+				<div class="row">
+					<p:outputLabel for="gruposTraslados"
+						value="#{i18n.traslado_label_grupo}"
+						class="col-lg-4" />
+					<div class="col-lg-6">
+						<p:selectOneMenu id="gruposTraslados"
+							value="#{detallePortafolioController.grupoTransporteSeleccionado}"
+							converter="omnifaces.SelectItemsConverter" effect="fold"
+							required="true" requiredMessage="#{i18n.form_label_required}"
+							styleClass="anchoInput">
+							<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"
+								itemValue="" noSelectionOption="true" />
+							<f:selectItems
+								value="#{detallePortafolioController.grupoTraslados}"
+								var="categoria" itemValue="#{categoria}"
+								itemLabel="#{categoria.descripcion}" />
+						</p:selectOneMenu>
+						<p:message for="gruposTraslados" />
+					</div>
+					<div class="col-lg-2">
+						<p:commandButton id="buscarTrasladosButton"
+							value="#{i18n.form_label_button_buscar}"
+							update="trasladosForm,tablaTrasladosForm"
+							actionListener="#{detallePortafolioController.consultarTraslados()}"
+							styleClass="btn btn-sm btn-info" icon="fa fa-search"
+							iconPos="left" 
+							oncomplete="if (PF('trasladosVar')) PF('trasladosVar').clearFilters(); PF('trasladosVar').filter();"/>
+					</div>
+				</div>
+			</div>
+		</p:panel>
+	</h:form>
+	<h:form id="tablaTrasladosForm">
+		<p:panel id="tablaTrasladosPanel" rendered="#{not empty detallePortafolioController.traslados}">
+			<div class="form-group">
+				<p:dataTable id="traslados" var="traslado"
+					value="#{detallePortafolioController.traslados}"
+					style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15"
+					widgetVar="trasladosVar">
+					
+					<p:column headerText="#{i18n.form_label_codigo}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{traslado.transporte.codigo}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{traslado.transporte.codigo}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.paq_prod_col_cod_emssanar}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{traslado.transporte.codigoCliente}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{traslado.transporte.codigoCliente}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_descripcion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{traslado.transporte.descripcion}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{traslado.transporte.descripcion}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_grupo}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{traslado.transporte.grupo}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{traslado.transporte.grupo}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_categoria}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{traslado.transporte.categoria}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{traslado.transporte.categoria}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_codigo_interno}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{traslado.codigoInterno}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{traslado.codigoInterno}" />
+					</p:column>
+					
+					<p:column headerText="#{i18n.form_label_valor}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{traslado.valor}"
+						filterMatchMode="contains" filterStyleClass="anchoInput">
+						<h:outputText
+							value="#{traslado.valor}" />
+					</p:column>
+										
+				</p:dataTable>
+			</div>
+		</p:panel>
+	</h:form>
+
+</f:view>

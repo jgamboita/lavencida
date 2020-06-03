@@ -1,0 +1,804 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        xmlns:c="http://java.sun.com/jstl/core"
+        xmlns:pe="http://primefaces.org/ui/extensions"
+        xmlns:o="http://omnifaces.org/ui" id="panelMedicamentoSS">
+
+    <script type="text/javascript">
+        
+        const input = document.querySelector("#inputValorNegociado");
+        function  ValidarPunto(text)
+        {
+            if (text.value.match('[,]'))
+            {
+                text.value = '';
+            }
+        }
+    </script>
+    <style type="text/css">
+		.ui-fileupload-buttonbar {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    border: none;
+		}
+		.ui-fileupload {
+		    margin: 0px 0px 0px 0px !important;
+		    padding: 0px 0px 0px 0px !important;
+		    display: inline-block;
+		    border: none;
+		}
+		.ui-fileupload-content {
+		    border: none;
+		}
+		.ui-fileupload-choose {
+        	background-color: #fda63e !important;
+        	color: #ffffff !important;
+		    font-family: 'PT Sans', arial, verdana, sans-serif;
+    		font-size: 1em;
+		    font-weight: normal;
+		}
+		span.ui-fileupload-choose > span.ui-icon-plusthick{
+		    display: none !important;
+		}
+		span.ui-fileupload-choose > span.ui-button-text{
+		    padding-left: 1em !important;
+		}
+	</style>
+
+	<o:importConstants type="com.conexia.contratacion.commons.constants.enums.ArchivosNegociacionEnum" var = "ArchivosNegociacionEnum" />
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoAsignacionTarifaMedEnum" var="TipoAsignacionTarifaMedEnum" />
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoAsignacionTarifaMedReguladoEnum" var="TipoAsignacionTarifaMedReguladoEnum" />
+    <o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" />
+
+
+
+	<!-- Pop up medicamentos regulados no procesados-->
+	<p:dialog header="Medicamentos regulados no procesados" closable="true"
+		widgetVar="dialogoMxReguladosNoProcesados" modal="true" height="400px"
+		width="70%">
+		<p:outputLabel
+			value="Los medicamentos que se ven a continuación son regulados y el valor contrato anterior, portafolio o aumento porcentual, es mayor al valor de referencia "
+			style="color:#FF0000" />
+		<h:commandLink title="#{i18n.form_label_file_excel}">
+					<h:outputText class="fa fa-file-excel-o fa-2x success" />
+
+					<p:dataExporter type="xlsx"
+						target="tecnologiasSSForm:tabsTecnologias:medicamentosRNoProceadosForm:erroresMedicamentosRegulados"
+						fileName="Medicamentos_Regulados_No_Procesados" />
+				</h:commandLink>
+		<ui:include src="./medicamentosReguladosNoProcesados.xhtml" />
+	</p:dialog>
+
+	<!-- Pop up medicamentos regulados negociacion -->
+	<p:dialog header="Medicamentos regulados" closable="true"
+		widgetVar="dialogoMxReguladosNegociacion" modal="true" height="400px"
+		width="70%">
+		<h:commandLink title="#{i18n.form_label_file_excel}">
+			<h:outputText class="fa fa-file-excel-o fa-2x success" />
+
+			<p:dataExporter type="xlsx" target="tecnologiasSSForm:tabsTecnologias:medicamentosReguladosForm:medicamentosRegulados"
+				fileName="Listado_Medicamentos_Regulados" />
+		</h:commandLink>
+		<ui:include src="./medicamentosRegulados.xhtml" />
+	</p:dialog>
+
+	<!-- Pop up confirmar acciones-->
+	<p:dialog header="Confirmar acción" closable="true"
+		widgetVar="dialogoMxReguladosConfirmarImport" modal="true" height="150px"
+		width="50%">
+		<ui:include src="./confirmarValorImportMedicamentos.xhtml" />
+		<p:commandButton id="btnImportarMedicamentosRegulados"
+                                     value="#{i18n.form_label_button_aceptar}"
+                                     update="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS,@([id$=totalNegociacion])"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     oncomplete="PF('dialogoMxReguladosConfirmarImport').hide();"
+                                     actionListener="#{negociacionMedicamentoSSController.importarMedicamentosTarifa}" />
+	</p:dialog>
+
+
+    <div class="form-group">
+        <h:panelGrid columns="1" style="width:100%">
+            <f:facet name="header">
+                <p:outputLabel value="#{i18n.negociacion_medicamento_titulo}"
+                               styleClass="titulo-bold">
+                </p:outputLabel>
+                <div class="separador"></div>
+            </f:facet>
+        </h:panelGrid>
+        <br/>
+        <div class="row">
+        	<div class="col-lg-5">
+            <h:panelGroup id="opcionesMasivoGrid" layout="block"
+                          styleClass="radioButtonSpaceLeft" border="0" rendered="#{!negociacionMedicamentoSSController.pgp}">
+                <p:selectOneRadio id="opcionesMasivo" layout="custom" columns="1"
+                                  value="#{negociacionMedicamentoSSController.tipoAsignacionSeleccionado}">
+                    <p:ajax update="@this"/>
+                    <f:selectItems
+                        value="#{negociacionMedicamentoSSController.tipoAsignacionTarifaMedEnum}"
+                        var="tipoAsignacion" itemValue="#{tipoAsignacion}"
+                        itemLabel="#{i18n[cnx:enum_key(tipoAsignacion)]}" />
+                </p:selectOneRadio>
+
+                <h:panelGrid columns="3" cellpadding="5" id="panelGridMasivo">
+                    <p:radioButton id="opt1" for="opcionesMasivo" itemIndex="0" />
+                    <h:outputLabel for="opt1"
+                                   value="#{i18n.enum_tipoasignaciontarifamedenum_contrato_anterior}" />
+                    <h:outputLabel />
+
+                    <p:radioButton id="opt2" for="opcionesMasivo" itemIndex="1" />
+                    <h:outputLabel for="opt2"
+                                   value="#{i18n.enum_tipoasignaciontarifamedenum_portafolio_propuesto}" />
+                    <h:outputLabel />
+
+                    <p:radioButton id="opt3" for="opcionesMasivo" itemIndex="2" />
+                    <h:outputLabel for="opt3"
+                                   value="#{i18n.enum_tipoasignaciontarifamedenum_tarifa_emssanar}" />
+                    <h:outputLabel />
+
+                    <p:radioButton id="opt4" for="opcionesMasivo" itemIndex="3" />
+                    <h:outputLabel for="opt4"
+                                   value="#{i18n.enum_tipoasignaciontarifamedenum_aplicar_porcentaje}" />
+                    <p:inputText id="porcentajeValor"
+                                 value="#{negociacionMedicamentoSSController.porcentajeValor}"
+                                 size="4" maxlength="6"
+                                 label="#{i18n.negociacion_medicamento_porcentaje}"
+                                 converterMessage="#{i18n.form_label_validar_numeros_msg}">
+                        <f:convertNumber pattern="#0.00"/>
+                        <f:validateLongRange maximum="100" minimum="-100"/>
+                    </p:inputText>
+
+                    <div class="col-lg-2">
+                    	<p:commandButton id="btnAsignacionTarifasMed"
+                                     value="#{i18n.form_label_button_aceptar}"
+                                     update="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS,@([id$=totalNegociacion])"
+                                     styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                     process="@this, porcentajeValor"
+                                     onsuccess="PF('negociacionMedicamentosSS').clearFilters()"
+                                     actionListener="#{negociacionMedicamentoSSController.asignarTarifasMedicamento}" />
+                	</div>
+
+                </h:panelGrid>
+            </h:panelGroup>
+
+            <!-- Panel Grip de PGP -->
+           <h:form id="negociacionMedicamentosForm">
+				<h:panelGroup id="opcionesMasivoGridPGP" layout="block"
+							styleClass="radioButtonSpaceLeft" border="0" rendered="#{negociacionMedicamentoSSController.pgp}">
+					<p:selectOneRadio id="opcionesMasivoPGP"
+						columns="1" converter="omnifaces.SelectItemsConverter"
+						value="#{negociacionMedicamentoSSController.tipoAsignacionSeleccionado}">
+						<f:selectItem itemLabel="#{i18n.negociacion_medicamento_asigna_referente}" itemValue="#{TipoAsignacionTarifaMedEnum.APLICAR_REFERENTE}" />
+					</p:selectOneRadio>
+						<br></br>
+						<br></br>
+						<br></br>
+						<br></br>
+						<br></br>
+						<div class="col-lg-12">
+							<div class="col-lg-3">
+								<p:commandButton id="btnAsignacionTarifasMedicamentosPGP"
+									styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+									value="#{i18n.form_label_button_aceptar}"
+									update="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS"
+									process="negociacionMedicamentosForm"
+									actionListener="#{negociacionMedicamentoSSController.asignarTarifasMedicamento}"/>
+							</div>
+						</div>
+				</h:panelGroup>
+			</h:form>
+            </div>
+
+            <div class="col-lg-7" style="border: 1px solid #E5E5E5;">
+						<h:panelGroup id="panelAgregarMedicamentosEvento" rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+							<h5 class="title ui-widget-header ui-corner-all col-lg-12">
+								<strong>#{i18n.negociacion_agregar_medicamento}</strong>
+							</h5>
+							<div class="col-lg-12">
+								<div class="col-lg-4">
+									<p:outputLabel value="Código emssanar: "
+										styleClass="col-lg-12" for="codigoTecnologiaAgregarEvento" />
+									<p:inputText id="codigoTecnologiaAgregarEvento"
+										label="#{i18n.negociacion_servicios_valor_tarifa_propia}"
+										value="#{negociacionMedicamentoSSController.medicamentoAgregar.cums}"
+										style="col-lg-12" styleClass="anchoInput" />
+									<h:message for="codigoTecnologiaAgregarEvento" />
+								</div>
+								<div class="col-lg-8">
+									<p:outputLabel value="ATC: " styleClass="col-lg-12"
+										for="AtcTecnologiaAgregarEvento" />
+									<p:inputText id="AtcTecnologiaAgregarEvento"
+										value="#{negociacionMedicamentoSSController.medicamentoAgregar.atc}"
+										style="col-lg-12" styleClass="anchoInput" />
+									<h:message for="AtcTecnologiaAgregarEvento" />
+								</div>
+								<div class="col-lg-12">
+									<p:outputLabel value="Descripción: " styleClass="col-lg-12"
+										for="descripicionTecnologiaAgregarEvento" />
+									<p:inputText id="descripicionTecnologiaAgregarEvento"
+										value="#{negociacionMedicamentoSSController.medicamentoAgregar.descripcion}"
+										style="col-lg-12" styleClass="anchoInput" />
+									<h:message for="descripicionTecnologiaAgregarEvento" />
+								</div>
+							</div>
+							<p:spacer></p:spacer>
+							<div class="col-lg-12">
+								<div class="col-lg-12">
+									<p:commandButton id="btnAgregarMxEvento"
+										value="#{i18n.form_label_agregar}"
+										process="@([id$=panelAgregarMedicamentosEvento])"
+										update="medicamentosAgregarForm:medicamentoAgregarTable"
+                                                                                styleClass="btn btn-sm btn-primary"
+										actionListener="#{negociacionMedicamentoSSController.consultarMedicamentosAgregar()}"/>
+
+									<p:commandButton id="btnLimpiarPanelAgregarMxEvento"
+										value="#{i18n.form_label_button_limpiar}"
+										update="@([id$=panelAgregarMedicamentosEvento])"
+										process="@this"
+                                                                                styleClass="btn btn-sm btn-warning"
+										actionListener="#{negociacionMedicamentoSSController.limpiarPanelAgregar()}"/>
+								</div>
+							</div>
+						</h:panelGroup>
+
+			</div>
+
+        		<div class="col-lg-3 offset-2">
+        			<h:panelGrid columns="1" cellpadding="5" id="panelGridImportar" rendered="#{!negociacionMedicamentoSSController.pgp}" >
+		                <br></br>
+		                <h:outputLabel value="#{i18n.form_label_importar_medicamentos_desde_archivo}"/>
+					<p:fileUpload id="btnImportarMedicamentos" auto="true"
+						multiple="true" allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+						accept="xls|xlsx|XLS|XLSX" mode="advanced"
+						cancelLabel="#{i18n.form_label_button_cancelar}"
+						uploadLabel="#{i18n.form_label_importar}"
+						label="#{i18n.form_label_importar}" sizeLimit="5242880"
+						invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+						invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+						fileUploadListener="#{negociacionMedicamentoSSController.importFiles}"
+						onstart="PF('statusDialog').show()"
+						oncomplete="PF('statusDialog').hide();"
+						update="negociacionMedicamentosSS" >
+					<f:attribute name="foo" value="#{ArchivosNegociacionEnum.MEDICINE_EVENTO_FILE}" />
+					</p:fileUpload>
+					</h:panelGrid>
+                </div>
+        </div>
+        <br />
+    </div>
+
+    <p:outputPanel id="PanelMxReguladosNoProcesados">
+    	<div class="row">
+			<div class="col-lg-3 offset-2">
+				<p:commandButton id="btnMostrarMxReguladosNegociacion"
+					styleClass="btn btn-sm btn-info" icon="fa fa-medkit"
+					value="#Medicamentos Regulados" update="@([id$=medicamentosRegulados])"
+					actionListener="#{negociacionMedicamentoSSController.listarMedicamentosReguladosNegociacion}"
+					onclick="PF('dialogoMxReguladosNegociacion').show();" />
+			</div>
+			<div class="col-lg-3 offset-4">
+				<p:commandButton id="btnMostrarMxReguladosNoProcesados"
+					styleClass="btn btn-warning btn-sm" icon="fa fa-times-circle"
+					value="#{i18n.form_label_button_no_procesados}"
+					rendered="#{not empty negociacionMedicamentoSSController.medicamentosReguladosValorInvalido}"
+					onclick="PF('dialogoMxReguladosNoProcesados').show();"/>
+			</div>
+		</div>
+    </p:outputPanel>
+
+
+    <!-- Pop up medicamentos no procesados -->
+    <p:dialog header="#{i18n.title_no_procesados}"
+		widgetVar="dlgMxNoProcesadosEventoW" modal="true" height="350" width="70%">
+			<h:commandLink title="#{i18n.form_label_file_excel}">
+				<h:outputText class="fa fa-file-excel-o fa-2x success" />
+
+				<p:dataExporter type="xlsx" target="erroresMxEvento"
+					fileName="Medicamentos_Evento_No_Procesados" />
+			</h:commandLink>
+
+			<p:dataTable id="erroresMxEvento" var="registroMx"
+			paginatorAlwaysVisible="false"
+			value="#{negociacionMedicamentoSSController.listadoErrores}" rows="10"
+			dynamic="true" styleClass="paginated" paginator="true"
+			paginatorPosition="bottom" widgetVar="erroresPxTablaW"
+			rowsPerPageTemplate="5,10,20"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+			emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+				<p:column headerText="#{i18n.form_label_error}">
+					<h:outputText value="#{registroMx.codigo} - #{registroMx.mensaje}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.tab_no_proces_codigo_sede}">
+					<h:outputText value="#{registroMx.codigoHabilitacionSede}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.tab_no_proces_codigo_emssanar}">
+					<h:outputText value="#{registroMx.codigoMedicamento}" />
+				</p:column>
+
+				<p:column headerText="#{i18n.form_label_linea}">
+					<h:outputText value="#{registroMx.lineaArchivo}" />
+				</p:column>
+			</p:dataTable>
+		</p:dialog>
+
+    <h:panelGrid columns="1" style="width:100%">
+        <f:facet name="header">
+            <p:outputLabel value="#{i18n.negociacion_medicamento_asignacion_manual_tarifas}" styleClass="titulo-bold">
+            </p:outputLabel>
+            <div class="separador"></div>
+        </f:facet>
+    </h:panelGrid>
+    <br/>
+    <div class="form-group">
+        <p:toolbar>
+            <p:toolbarGroup align="left">
+
+                <p:commandButton id="toggler" widgetVar="toggler" type="button"
+                                 value="#{i18n.form_label_seleccionar_columnas}"
+                                 icon="ui-icon-calculator"
+                                 onclick="$('label').each(function(index){if($(this).text().indexOf('--&#x3E;&#x3C;=') != -1)$(this).text($(this).text().substring(0, $(this).text().indexOf('--&#x3E;&#x3C;=')));});" />
+                <p:columnToggler widgetVar="medicamentosToggler"
+                                 id="medicamentosToggler"
+                                 datasource="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS"
+                                 trigger="toggler">
+                    <p:ajax event="toggle"
+                            listener="#{negociacionMedicamentoSSController.onToggle}"
+                            update="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS" />
+                </p:columnToggler>
+            </p:toolbarGroup>
+            <p:toolbarGroup align="right">
+                <div class="col-lg-12">
+                    <p:outputLabel class="col-lg-6 text-right"
+                                   for="gestionMedicamentos"
+                                   value="#{i18n.negociacion_medicamento_gestionar_medicamentos}" />
+                    <div class="col-lg-2">
+                        <p:selectOneMenu id="gestionMedicamentos"
+                                         value="#{negociacionMedicamentoSSController.gestionSeleccionada}">
+                            <f:selectItem itemLabel="#{i18n.form_label_seleccionar}"
+                                          itemValue="" noSelectionOption="true" />
+                            <f:selectItems
+                                value="#{negociacionMedicamentoSSController.gestionTecnologiasNegociacion}"
+                                var="tipoGestion" itemValue="#{tipoGestion}"
+                                itemLabel="#{i18n[cnx:enum_key(tipoGestion)]}" />
+                            <p:ajax
+                                listener="#{negociacionMedicamentoSSController.gestionarMedicamentos('negociacionMedicamentosSS','tecnologiasSSForm:tabsTecnologias:gestionMedicamentos')}" />
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+            </p:toolbarGroup>
+        </p:toolbar>
+        <p:outputPanel id="deleteMed" layout="block">
+            <p:confirmDialog widgetVar="cdDeleteMed" showEffect="fade"
+                             header="Confirmar Eliminar Medicamentos" icon="fa fa-warning">
+
+                <f:facet name="message">
+                    <p:outputPanel>
+                        <h:outputFormat
+                            value="#{i18n.medicamentos_mensaje_confirm_eliminar}" />
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:commandButton value="#{i18n.form_label_button_aceptar}"
+                                 actionListener="#{negociacionMedicamentoSSController.eliminarMedicamentosMasivo()}"
+                                 styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+                                 onclick="PF('cdDeleteMed').hide()"
+                                 update="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS"
+                                 onsuccess="PF('negociacionMedicamentosSS').clearFilters()"
+                                 immediate="true" />
+
+                <p:commandButton value="#{i18n.form_label_button_cancelar}"
+                                 type="button" styleClass="btn btn-sm btn-warning"
+                                 icon="fa fa-close" onclick="PF('cdDeleteMed').hide()" />
+            </p:confirmDialog>
+        </p:outputPanel>
+        <p:remoteCommand name="onRepintarTabla" actionListener="#{negociacionMedicamentoSSController.showMessages()}" update="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS" 
+                                  autoRun="true"/>
+        <p:dataTable id="negociacionMedicamentosSS"
+                     binding="#{negociacionMedicamentosSS}" var="medicamentoNegociacion"
+                     value="#{negociacionMedicamentoSSController.medicamentosNegociacion}"
+                     rowKey="#{medicamentoNegociacion.medicamentoDto.id}"
+                     selection="#{negociacionMedicamentoSSController.medicamentosNegociacionSeleccionados}"
+                     emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                     widgetVar="negociacionMedicamentosSS" paginator="true"
+                     paginatorPosition="bottom" scrollable="true"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     rowsPerPageTemplate="5,10,15" rowSelectMode="checkbox"
+                     rowStyleClass="#{empty medicamentoNegociacion.valorNegociado ? 'noNegociado' : null}"
+                     editable="true" editMode="cell">
+
+                        <p:ajax event="rowSelectCheckbox" update="@this" />
+			<p:ajax event="rowUnselectCheckbox" update="@this" />
+			<p:ajax event="toggleSelect" update="@this" />
+			<p:ajax event="filter" update="@this" />
+            <!-- grupo farmacologico -->
+            <p:column
+                filterBy="#{medicamentoNegociacion.grupoFarmaceutico}"
+                headerText="#{i18n.medicamento_label_grupo_farmacologico}" width="150"
+                filterMatchMode="contains" filterStyleClass="anchoInput"
+                visible="#{negociacionMedicamentoSSController.listToggler[0]}">
+                <h:outputText
+                    style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                    value="#{medicamentoNegociacion.grupoFarmaceutico}" />
+            </p:column>
+
+            <!-- atc -->
+            <p:column filterBy="#{medicamentoNegociacion.medicamentoDto.atc}"
+                      filterMatchMode="contains" style="width: 100px"
+                      headerText="#{i18n.medicamento_label_atc}"
+                      filterStyleClass="anchoInput"
+                      visible="#{negociacionMedicamentoSSController.listToggler[1]}">
+                <h:outputText 
+                    style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                    value="#{medicamentoNegociacion.medicamentoDto.atc}" />
+            </p:column>
+
+            <!-- descripcion atc -->
+            <p:column
+                filterBy="#{medicamentoNegociacion.medicamentoDto.descripcionAtc}"
+                filterMatchMode="contains"  width="150"
+                headerText="#{i18n.medicamento_label_desc_atc}"
+                filterStyleClass="anchoInput"
+                visible="#{negociacionMedicamentoSSController.listToggler[2]}">
+                <h:outputText
+                    style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                    value="#{medicamentoNegociacion.medicamentoDto.descripcionAtc}" />
+            </p:column>
+
+            <!-- cum -->
+            <p:column filterBy="#{medicamentoNegociacion.medicamentoDto.cums}"
+                      filterMatchMode="contains"
+                      headerText="#{i18n.medicamento_label_cum}"
+                      filterStyleClass="anchoInput"  width="100"
+                      visible="#{negociacionMedicamentoSSController.listToggler[3]}">
+                <h:outputText 
+                    style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                    value="#{medicamentoNegociacion.medicamentoDto.cums}" />
+            </p:column>
+
+            <!-- nombre producto -->
+            <p:column
+                filterBy="#{medicamentoNegociacion.descripcionMedicamento}"
+                filterMatchMode="contains" width="200"
+                headerText="#{i18n.medicamento_label_descripcion}"
+                filterStyleClass="anchoInput"
+                visible="#{negociacionMedicamentoSSController.listToggler[4]}">
+                <h:outputText
+                    style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                    value="#{medicamentoNegociacion.descripcionMedicamento}"  />
+            </p:column>
+
+            <!-- titular registro sanitario -->
+            <p:column
+                filterBy="#{medicamentoNegociacion.medicamentoDto.titularRegistroSanitario}"
+                filterMatchMode="contains" width="150"
+                headerText="#{i18n.medicamento_label_titular_reg_sanitario}"
+                styleClass="not-show-at-start" filterStyleClass="anchoInput"
+                visible="#{negociacionMedicamentoSSController.listToggler[5]}">
+                <h:outputText
+                    style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                    value="#{medicamentoNegociacion.medicamentoDto.titularRegistroSanitario}" />
+            </p:column>
+
+            <!-- medicamento Regulado -->
+            <p:column
+                filterBy="#{medicamentoNegociacion.esRegulado}"
+                filterMatchMode="contains" width="100"
+                headerText="#{i18n.medicamento_label_regulado}"
+                styleClass="not-show-at-start" filterStyleClass="anchoInput"
+                visible="#{negociacionMedicamentoSSController.listToggler[6]}">
+                <h:outputText
+                    style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                    value="#{medicamentoNegociacion.esRegulado}" />
+            </p:column>
+
+	            <!-- valor contrato anterior -->
+	            <p:column filterBy="#{medicamentoNegociacion.valorContratoAnterior}"
+	                      filterMatchMode="contains" width="100"
+	                      headerText="#{i18n.negociacion_medicamento_contrato_anterior}"
+	                      filterStyleClass="anchoInput"
+	                      visible="#{negociacionMedicamentoSSController.listToggler[7]}">
+	                <p:outputLabel
+                            style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+	                    value="#{medicamentoNegociacion.valorContratoAnterior}">
+	                    <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" />
+	                </p:outputLabel>
+	            </p:column>
+
+	            <!-- valor propuesta portafolio -->
+	            <p:column
+	                filterBy="#{medicamentoNegociacion.valorPropuestoPortafolio}"
+	                filterMatchMode="contains"
+	                headerText="#{i18n.negociacion_medicamento_propuesta_portafolio}"
+	                filterStyleClass="anchoInput"
+	                class="text-right" width="100"
+	                visible="#{negociacionMedicamentoSSController.listToggler[8]}">
+
+	                <p:outputLabel
+                            style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+	                    value="#{medicamentoNegociacion.valorPropuestoPortafolio}">
+	                    <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" />
+	                </p:outputLabel>
+	            </p:column>
+
+
+	            <!-- diferencia %-->
+	            <p:column
+	                headerText="#{i18n.negociacion_medicamento_diferencia_porcentaje}"
+	                filterStyleClass="anchoInput" width="100"
+	                visible="#{negociacionMedicamentoSSController.listToggler[9]}">
+	                <!-- Filtro de la columna -->
+	                <f:facet name="header">
+	                    <div class="ui-column-custom-title">
+	                        <h:outputLabel
+	                            value="#{i18n.negociacion_medicamento_diferencia_porcentaje}" />
+	                    </div>
+	                    <p:selectOneMenu id="selectFiltroPorcentaje"
+	                                     value="#{negociacionMedicamentoSSController.filtroEspecialSeleccionadoPorcentaje}"
+	                                     width="50">
+	                        <p:ajax event="change" update="@this" />
+	                        <f:selectItem
+	                            itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+	                            itemValue="" />
+	                        <f:selectItems
+	                            value="#{negociacionMedicamentoSSController.filtroEspecialEnum}"
+	                            var="filtro" itemValue="#{filtro}"
+	                            itemLabel="#{i18n[cnx:enum_key(filtro)]}" />
+
+	                    </p:selectOneMenu>
+
+	                    <p:commandButton style="vertical-align: top; padding-bottom: 2px"
+	                                     actionListener="#{negociacionMedicamentoSSController.filtroEspecial(negociacionMedicamentoSSController.diferenciaPorcentaje, 'negociacionMedicamentosSS')}"
+	                                     icon="fa fa-filter" process="@this, inputValorComparar" />
+	                    <br />
+	                    <p:inputText id="inputValorComparar"
+	                                 placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+	                                 value="#{negociacionMedicamentoSSController.filtroPorcentaje}"
+	                                 maxlength="20" width="80">
+	                    </p:inputText>
+	                </f:facet>
+	                <!-- Valor de la columna -->
+	                <h:outputText
+                            style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+	                    value="#{medicamentoNegociacion.diferenciaPorcentajeContratado}">
+	                    <f:convertNumber pattern="###,###.###" />
+	                </h:outputText>
+	            </p:column>
+
+	            <!-- diferencia $-->
+	            <p:column
+	                headerText="#{i18n.negociacion_medicamento_diferencia_valor}"
+	                filterStyleClass="anchoInput" width="100"
+	                class="text-right"
+	                visible="#{negociacionMedicamentoSSController.listToggler[10]}">
+	                <!-- Filtro de la columna -->
+	                <f:facet name="header">
+	                    <div class="ui-column-custom-title">
+	                        <h:outputText
+	                            value="#{i18n.negociacion_medicamento_diferencia_valor}" />
+	                    </div>
+	                    <p:selectOneMenu id="selectFiltroValores"
+	                                     value="#{negociacionMedicamentoSSController.filtroEspecialSeleccionadoValor}"
+	                                      width="50" converter="omnifaces.SelectItemsConverter">
+	                        <p:ajax event="change" update="@this" />
+	                        <f:selectItem
+	                            itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+	                            itemValue="" />
+	                        <f:selectItems
+	                            value="#{negociacionMedicamentoSSController.filtroEspecialEnum}"
+	                            var="filtro" itemValue="#{filtro}"
+	                            itemLabel="#{i18n[cnx:enum_key(filtro)]}" />
+
+	                        <!-- Ajax para resetaer el filtro -->
+
+	                                                        <!-- <p:ajax listener="#{negociacionMedicamentoSSController.evaluarFiltroEspecial(negociacionMedicamentoSSController.diferenciaValor)}" update="negociacionMedicamentosSS" />  -->
+
+	                    </p:selectOneMenu>
+
+	                    <p:commandButton style="vertical-align: top; padding-bottom: 2px"
+	                                     actionListener="#{negociacionMedicamentoSSController.filtroEspecial(negociacionMedicamentoSSController.diferenciaValor, 'negociacionMedicamentosSS')}"
+	                                     icon="fa fa-filter" process="@this, inputValorCompararPorc" />
+	                    <br />
+	                    <p:inputText id="inputValorCompararPorc"
+	                                 placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+	                                 value="#{negociacionMedicamentoSSController.filtroValor}"
+	                                 maxlength="20"  width="80">
+
+
+	                    </p:inputText>
+	                </f:facet>
+	                <!-- Valor de la columna -->
+	                <h:outputText
+                            style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+	                    value="#{medicamentoNegociacion.diferenciaValorContratado}">
+	                    <f:convertNumber pattern="###,###.###" />
+	                </h:outputText>
+	            </p:column>
+
+	            <!-- valor referencia -->
+	            <p:column filterBy="#{medicamentoNegociacion.valorReferencia}"
+	                      filterMatchMode="contains"
+	                      headerText="#{i18n.negociacion_medicamento_valor_referencia}"
+	                      filterStyleClass="anchoInput"
+	                      class="text-right" width="100"
+	                      visible="#{negociacionMedicamentoSSController.listToggler[11]}">
+	                <p:outputLabel 
+                            style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                            value="#{medicamentoNegociacion.valorReferencia}">
+	                    <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="0" />
+	                </p:outputLabel>
+	            </p:column>
+
+	            <!-- diferencia % Referencia-->
+	            <p:column
+	                headerText="#{i18n.negociacion_medicamento_diferencia_porcentaje_reg}"
+	                filterStyleClass="anchoInput" width="100"
+	                visible="#{negociacionMedicamentoSSController.listToggler[12]}">
+	                <!-- Filtro de la columna -->
+	                <f:facet name="header">
+	                    <div class="ui-column-custom-title">
+	                        <h:outputLabel
+	                            value="#{i18n.negociacion_medicamento_diferencia_porcentaje_reg}" />
+	                    </div>
+	                    <p:selectOneMenu id="selectFiltroPorcentajeReferencia"
+	                                     value="#{negociacionMedicamentoSSController.filtroEspecialSeleccionadoPorcentajeReferencia}"
+	                                     width="50">
+	                        <p:ajax event="change" update="@this" />
+	                        <f:selectItem
+	                            itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+	                            itemValue="" />
+	                        <f:selectItems
+	                            value="#{negociacionMedicamentoSSController.filtroEspecialEnum}"
+	                            var="filtro" itemValue="#{filtro}"
+	                            itemLabel="#{i18n[cnx:enum_key(filtro)]}" />
+
+	                    </p:selectOneMenu>
+
+	                    <p:commandButton style="vertical-align: top; padding-bottom: 2px"
+	                                     actionListener="#{negociacionMedicamentoSSController.filtroEspecial(negociacionMedicamentoSSController.diferenciaPorcentajeReferencia, 'negociacionMedicamentosSS')}"
+	                                     icon="fa fa-filter" process="@this, inputValorCompararReferencia" />
+	                    <br />
+	                    <p:inputText id="inputValorCompararReferencia"
+	                                 placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+	                                 value="#{negociacionMedicamentoSSController.filtroPorcentajeReferencia}"
+	                                 maxlength="20" width="80">
+	                    </p:inputText>
+	                </f:facet>
+	                <!-- Valor de la columna -->
+	                <h:outputText
+                            style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+	                    value="#{medicamentoNegociacion.diferenciaPorcentajeReferencia}">
+	                    <f:convertNumber pattern="###,###.###" />
+	                </h:outputText>
+	            </p:column>
+
+	            <!-- diferencia $ referencia-->
+	            <p:column
+	                headerText="#{i18n.negociacion_medicamento_diferencia_valor_reg}"
+	                filterStyleClass="anchoInput" width="100"
+	                class="text-right"
+	                visible="#{negociacionMedicamentoSSController.listToggler[13]}">
+	                <!-- Filtro de la columna -->
+	                <f:facet name="header">
+	                    <div class="ui-column-custom-title">
+	                        <h:outputText
+	                            value="#{i18n.negociacion_medicamento_diferencia_valor_reg}" />
+	                    </div>
+	                    <p:selectOneMenu id="selectFiltroValoresReferencia"
+	                                     value="#{negociacionMedicamentoSSController.filtroEspecialSeleccionadoValorReferencia}"
+	                                      width="50" converter="omnifaces.SelectItemsConverter">
+	                        <p:ajax event="change" update="@this" />
+	                        <f:selectItem
+	                            itemLabel="#{i18n.negociacion_label_filtro_especial_sin_filtro}"
+	                            itemValue="" />
+	                        <f:selectItems
+	                            value="#{negociacionMedicamentoSSController.filtroEspecialEnum}"
+	                            var="filtro" itemValue="#{filtro}"
+	                            itemLabel="#{i18n[cnx:enum_key(filtro)]}" />
+
+	                        <!-- Ajax para resetaer el filtro -->
+
+	                                                        <!-- <p:ajax listener="#{negociacionMedicamentoSSController.evaluarFiltroEspecial(negociacionMedicamentoSSController.diferenciaValor)}" update="negociacionMedicamentosSS" />  -->
+
+	                    </p:selectOneMenu>
+
+	                    <p:commandButton style="vertical-align: top; padding-bottom: 2px"
+	                                     actionListener="#{negociacionMedicamentoSSController.filtroEspecial(negociacionMedicamentoSSController.diferenciaValorReferencia, 'negociacionMedicamentosSS')}"
+	                                     icon="fa fa-filter" process="@this, inputValorCompararPorcReferencia" />
+	                    <br />
+	                    <p:inputText id="inputValorCompararPorcReferencia"
+	                                 placeholder="#{i18n.negociacion_placeholder_filtro_especial_valor}"
+	                                 value="#{negociacionMedicamentoSSController.filtroValorReferencia}"
+	                                 maxlength="20"  width="80">
+
+
+	                    </p:inputText>
+	                </f:facet>
+	                <!-- Valor de la columna -->
+	                <h:outputText
+                            style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+	                    value="#{medicamentoNegociacion.diferenciaValorReferencia}">
+	                    <f:convertNumber pattern="###,###.###" />
+	                </h:outputText>
+	            </p:column>
+
+	           <!-- valor negociado -->
+	            <p:column filterBy="#{medicamentoNegociacion.valorNegociado}"
+	                      filterMatchMode="contains" styleClass="text-center"
+	                      headerText="#{i18n.negociacion_medicamento_valor_negociar}"
+	                      filterStyleClass="anchoInput" style="width: 120px"
+	                      visible="#{negociacionMedicamentoSSController.listToggler[14]}">
+                                  <p:cellEditor >
+                                      <f:facet name="output">
+                                          <h:outputText 
+                                                style="#{medicamentoNegociacion.estadoMedicamento eq 1 ? 'color:black;' : 'color:red;'}"
+                                                class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all text-input"
+                                                value="#{medicamentoNegociacion.valorNegociado}">
+                                                       <f:convertNumber currencySymbol="$" maxFractionDigits="0" />
+                                          </h:outputText>
+                                      </f:facet>
+                                      <f:facet name="input">
+                                          <p:inputText id="inputValorNegociado"
+                                                       value="#{medicamentoNegociacion.valorNegociado}" size="12"
+                                                       label="Valor Negociado">
+                                              <f:validateLongRange minimum="1" maximum="99999999999"/>
+                                              <f:convertNumber currencySymbol="$" maxFractionDigits="0" />
+                                              <p:ajax event="blur" process="@this" listener="#{negociacionMedicamentoSSController.guardarMedicamento(medicamentoNegociacion)}" onsuccess="PF('negociacionMedicamentosSS').clearFilters()" />
+                                          </p:inputText>
+                                      </f:facet>
+                                  </p:cellEditor>
+	            </p:column>
+
+            <!-- check negociado-->
+            <p:column headerText="#{i18n.negociacion_medicamento_negociado}"
+                      styleClass="text-center" style="width: 100px"
+                      visible="#{negociacionMedicamentoSSController.listToggler[15]}">
+                <p:selectBooleanCheckbox id="col15" 
+                                         value="#{medicamentoNegociacion.negociado}">
+                </p:selectBooleanCheckbox>
+                <h:outputText id="prueba" />
+            </p:column>
+
+            <!-- check seleccion -->
+            <p:column class="text-center" selectionMode="multiple"
+                      headerText="#{i18n.negociacion_medicamento_seleccionado}"
+                      id="col16" style="width: 100px"
+                      visible="#{negociacionMedicamentoSSController.listToggler[16]}" />
+        </p:dataTable>
+		<!--Fecha Concertacion Medicamentos-->
+		<p:panel
+		    header="#{i18n.form_label_fecha_concertacion_mx}"
+			id="panelFechaConcertacionMx"
+			style="height:90px;"
+			rendered="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+			<p:calendar
+			    id="fechaConcertacionMx"
+			    showOn="button"
+			    size="20"
+				converterMessage="La fecha de Concertacion debe tener formato Día Mes Año"
+				pattern="dd/MM/yyyy"
+				required="true"
+				requiredMessage="Ingrese la fecha de concertacion"
+				value="#{tecnologiasSSController.negociacion.fechaConcertacionMx}"
+				locale="es">
+			</p:calendar>
+			<p:spacer style="width:50px"></p:spacer>
+			<p:commandButton
+			    styleClass="btn btn-sm btn-info"
+				value="#{i18n.form_label_button_actualizar}"
+				process="panelFechaConcertacionMx"
+				actionListener="#{tecnologiasSSController.actualizarFechaConcertacion('medicamentos')}"
+				ajax="true">
+			</p:commandButton>
+		</p:panel>
+                <p:growl id="growlnegociacionMedicamentosSS" life="5000"/>
+		<!---->
+	</div>
+</f:view>

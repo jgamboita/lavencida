@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.5.1.final using JasperReports Library version 6.5.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporteTarifario" pageWidth="820" pageHeight="752" columnWidth="645" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isIgnorePagination="true" uuid="43e28fd9-3776-4b06-819d-92b9d8faec6a">
+	<property name="ireport.zoom" value="0.7"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="26"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="true"/>
+	<property name="net.sf.jasperreports.page.break.no.pagination" value="apply"/>
+	<property name="net.sf.jasperreports.export.xls.first.page.number" value="1"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<style name="Base" isDefault="true" fontName="Calibri" fontSize="8"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#BABABA">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="celda color" mode="Opaque" backcolor="#999999">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="nit_razon" isBold="true"/>
+	<subDataset name="detalleProcedimientos" whenResourceMissingType="Empty" uuid="4ff86168-65e8-4e03-94b0-94f93773db35">
+		<parameter name="idNegociacion" class="java.lang.Integer">
+			<defaultValueExpression><![CDATA[302]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[SELECT DISTINCT
+sp.nombre_sede AS sedePrestador,
+ss.codigo AS codServicioHab,
+ss.nombre AS  descServicioHab,
+p.codigo_emssanar AS codTecnologiaUnica,
+p.codigo AS codTecnologiaEmssanar,
+p.descripcion AS descTecnologia,
+p.descripcion_cups_seccion AS descSeccionCups,
+CASE p.nivel_complejidad WHEN 1 THEN 'Baja' WHEN 2 THEN 'Media' WHEN 3 THEN 'Alta' END AS nivelTecnologia,
+tp.descripcion AS categoriaPos,
+t.descripcion AS tarifarioNegociado,
+snp.porcentaje_negociado AS porcentajeNegociado,
+snp.valor_negociado AS tarifaNegociada
+FROM contratacion.sedes_negociacion sn
+INNER JOIN contratacion.negociacion n ON n.id = sn.negociacion_id
+INNER JOIN contratacion.sede_prestador sp ON sp.id = sn.sede_prestador_id
+INNER JOIN contratacion.sede_negociacion_servicio sns ON sns.sede_negociacion_id = sn.id
+INNER JOIN contratacion.servicio_salud ss ON ss.id = sns.servicio_id
+INNER JOIN contratacion.sede_negociacion_procedimiento snp ON snp.sede_negociacion_servicio_id = sns.id
+INNER JOIN maestros.procedimiento p ON p.id = snp.procedimiento_id
+INNER JOIN contratacion.tarifarios t ON t.id = snp.tarifario_negociado_id
+LEFT JOIN maestros.tipo_ppm tp on tp.id = p.tipo_ppm_id
+WHERE
+	 n.id = 302
+ORDER BY descTecnologia ASC]]>
+		</queryString>
+		<field name="codHabilitacionSede" class="java.lang.String"/>
+		<field name="sedePrestador" class="java.lang.String"/>
+		<field name="codServicioHab" class="java.lang.String"/>
+		<field name="descServicioHab" class="java.lang.String"/>
+		<field name="codTecnologiaUnica" class="java.lang.String"/>
+		<field name="codTecnologiaEmssanar" class="java.lang.String"/>
+		<field name="descTecnologia" class="java.lang.String"/>
+		<field name="descSeccionCups" class="java.lang.String"/>
+		<field name="nivelTecnologia" class="java.lang.String"/>
+		<field name="categoriaPos" class="java.lang.String"/>
+		<field name="tarifarioNegociado" class="java.lang.String"/>
+		<field name="porcentajeNegociado" class="java.lang.Double"/>
+		<field name="tarifaNegociada" class="java.lang.Double"/>
+	</subDataset>
+	<subDataset name="anexoProcedimientos" whenResourceMissingType="Empty" uuid="7c85d752-9fab-4693-a204-1d4470b3f8fd">
+		<field name="codHabilitacionSede" class="java.lang.String"/>
+		<field name="sedePrestador" class="java.lang.String"/>
+		<field name="codServicioHab" class="java.lang.String"/>
+		<field name="descServicioHab" class="java.lang.String"/>
+		<field name="codTecnologiaUnica" class="java.lang.String"/>
+		<field name="codTecnologiaEmssanar" class="java.lang.String"/>
+		<field name="descTecnologia" class="java.lang.String"/>
+		<field name="descSeccionCups" class="java.lang.String"/>
+		<field name="nivelTecnologia" class="java.lang.String"/>
+		<field name="categoriaPos" class="java.lang.String"/>
+		<field name="tarifarioNegociado" class="java.lang.String"/>
+		<field name="porcentajeNegociado" class="java.lang.Double"/>
+		<field name="tarifaNegociada" class="java.lang.Double"/>
+	</subDataset>
+	<subDataset name="anexoMedicamentos" whenResourceMissingType="Empty" uuid="7c85d752-9fab-4693-a204-1d4470b3f8fd">
+		<field name="codHabilitacionSede" class="java.lang.String"/>
+		<field name="sedePrestador" class="java.lang.String"/>
+		<field name="codigoGrupoTerapeutico" class="java.lang.String"/>
+		<field name="descripcionGrupoTerapeutico" class="java.lang.String"/>
+		<field name="cum" class="java.lang.String"/>
+		<field name="atc" class="java.lang.String"/>
+		<field name="descripcionAtc" class="java.lang.String"/>
+		<field name="nombreProducto" class="java.lang.String"/>
+		<field name="principioActivo" class="java.lang.String"/>
+		<field name="formaFarmaceutica" class="java.lang.String"/>
+		<field name="concentracion" class="java.lang.String"/>
+		<field name="presentacion" class="java.lang.String"/>
+		<field name="titularRegistroSanitario" class="java.lang.String"/>
+		<field name="categoriaPos" class="java.lang.String"/>
+		<field name="regulado" class="java.lang.String"/>
+		<field name="tarifaNegociada" class="java.lang.Double"/>
+	</subDataset>
+	<subDataset name="anexoPaquetes" whenResourceMissingType="Empty" uuid="7c85d752-9fab-4693-a204-1d4470b3f8fd">
+		<field name="codHabilitacionSede" class="java.lang.String"/>
+		<field name="sedePrestador" class="java.lang.String"/>
+		<field name="descGrupoHab" class="java.lang.String"/>
+		<field name="codPaqueteEmssanar" class="java.lang.String"/>
+		<field name="descPaqueteEmssanar" class="java.lang.String"/>
+		<field name="codPaqueteIps" class="java.lang.String"/>
+		<field name="descPaqueteIps" class="java.lang.String"/>
+		<field name="categoriaPos" class="java.lang.String"/>
+		<field name="tarifaNegociada" class="java.lang.Double"/>
+		<field name="codServicioHabReps" class="java.lang.String"/>
+		<field name="descServicioHabReps" class="java.lang.String"/>
+		<field name="observacionPaquete" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="anexoDetallePaquetes" whenResourceMissingType="Empty" uuid="7c85d752-9fab-4693-a204-1d4470b3f8fd">
+		<field name="codHabilitacionSede" class="java.lang.String"/>
+		<field name="sedePrestador" class="java.lang.String"/>
+		<field name="descGrupoHab" class="java.lang.String"/>
+		<field name="codPaqueteEmssanar" class="java.lang.String"/>
+		<field name="descPaqueteEmssanar" class="java.lang.String"/>
+		<field name="codPaqueteIps" class="java.lang.String"/>
+		<field name="descPaqueteIps" class="java.lang.String"/>
+		<field name="tipoTecnologia" class="java.lang.String"/>
+		<field name="codServicioHab" class="java.lang.String"/>
+		<field name="descServicioHab" class="java.lang.String"/>
+		<field name="codTecnologiaUnica" class="java.lang.String"/>
+		<field name="codigo" class="java.lang.String"/>
+		<field name="descTecnologia" class="java.lang.String"/>
+		<field name="cantidad" class="java.lang.Integer"/>
+		<field name="observaciones" class="java.lang.String"/>
+		<field name="valorNegociado" class="java.lang.Double"/>
+	</subDataset>
+	<parameter name="idNegociacion" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[302]]></defaultValueExpression>
+	</parameter>
+	<parameter name="procedimientos" class="java.util.Collection"/>
+	<parameter name="medicamentos" class="java.util.Collection"/>
+	<parameter name="paquetes" class="java.util.Collection"/>
+	<parameter name="listaPaquetes" class="java.util.Collection"/>
+	<parameter name="detallePaquetes" class="java.util.Collection"/>
+	<parameter name="razonSocial" class="java.lang.String"/>
+	<parameter name="nit" class="java.lang.String"/>
+	<parameter name="fechaNegociacion" class="java.util.Date"/>
+	<parameter name="nroNegociacion" class="java.lang.Long"/>
+	<parameter name="cantidadSedesNegociadas" class="java.lang.Integer"/>
+	<parameter name="poblacion" class="java.lang.Integer"/>
+	<parameter name="SUB_REPORTE_DETALLE_SERVICIOS" class="net.sf.jasperreports.engine.JasperReport" isForPrompting="false"/>
+	<parameter name="listaTecnologias" class="java.util.Collection"/>
+	<parameter name="listaObservaciones" class="java.util.Collection"/>
+	<parameter name="listaExclusiones" class="java.util.Collection"/>
+	<parameter name="listaCausaRuptura" class="java.util.Collection"/>
+	<parameter name="listaRequerimientosTecnicos" class="java.util.Collection"/>
+	<queryString>
+		<![CDATA[SELECT DISTINCT sp.id, sp.nombre_sede, ss.codigo, ss.nombre,
+p.codigo_emssanar, p.descripcion, p.descripcion_cups_seccion, p.nivel_complejidad,
+t.descripcion, snp.porcentaje_negociado, snp.valor_negociado
+FROM contratacion.sedes_negociacion sn
+INNER JOIN contratacion.negociacion n ON n.id = sn.negociacion_id
+INNER JOIN contratacion.sede_prestador sp ON sp.id = sn.sede_prestador_id
+INNER JOIN contratacion.sede_negociacion_servicio sns ON sns.sede_negociacion_id = sn.id
+INNER JOIN contratacion.servicio_salud ss ON ss.id = sns.servicio_id
+INNER JOIN contratacion.sede_negociacion_procedimiento snp ON snp.sede_negociacion_servicio_id = sns.id
+INNER JOIN maestros.procedimiento p ON p.id = snp.procedimiento_id
+INNER JOIN contratacion.tarifarios t ON t.id = snp.tarifario_negociado_id
+WHERE n.id = $P{idNegociacion}]]>
+	</queryString>
+	<group name="GrupoPaquetes">
+		<groupHeader>
+			<band height="323">
+				<textField>
+					<reportElement x="0" y="0" width="806" height="12" uuid="f4428e13-2b67-411c-977d-bc17c85553c2">
+						<property name="net.sf.jasperreports.export.xls.first.page.number" value="1"/>
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+						<property name="net.sf.jasperreports.export.xls.sheet.name" value="ANEXO PAQ"/>
+					</reportElement>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{razonSocial}]]></textFieldExpression>
+				</textField>
+				<componentElement>
+					<reportElement key="tablaProcedimientos" style="table 5" x="0" y="12" width="520" height="35" uuid="7cd9eb37-04b4-4631-9921-31b20d88b237"/>
+					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+						<datasetRun subDataset="anexoPaquetes" uuid="f2b574e5-2a48-422d-a778-81eb46c6f16c">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{paquetes})]]></dataSourceExpression>
+						</datasetRun>
+						<jr:column width="92" uuid="e7f68db7-2a0e-456d-a22b-322e757044f8">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="92" height="51" uuid="25021a3a-0314-4c33-a9c8-df712af164ad"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD PRESTADOR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="92" height="42" uuid="744236c0-2d3c-4168-ad52-fcc2281732df"/>
+									<textFieldExpression><![CDATA[$F{codHabilitacionSede}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="101" uuid="9a6e88fe-7ead-4d70-87ed-28ee818148a6">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="101" height="51" uuid="25021a3a-0314-4c33-a9c8-df712af164ad"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[SEDE*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="101" height="42" uuid="744236c0-2d3c-4168-ad52-fcc2281732df"/>
+									<textFieldExpression><![CDATA[$F{sedePrestador}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="53" uuid="53878ebe-2c0f-4aa7-9fd5-0c7e6735a6de">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="53" height="51" uuid="106fb82e-1186-4c62-b376-83e140eae35b"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD SERVICIO HAB REPS*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="53" height="42" uuid="b136900b-8013-471d-b345-6f75a06756d8"/>
+									<textFieldExpression><![CDATA[$F{codServicioHabReps}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="53" uuid="4ec25571-e783-45a4-a6c8-3d8929d3993b">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="53" height="51" uuid="8da1b04d-7270-4b72-8db7-ea9ae6e96dcc"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC SERVICIO HAB REPS*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="53" height="42" uuid="c6b2239e-1f87-4ad6-992e-d763a7ee6e18"/>
+									<textFieldExpression><![CDATA[$F{descServicioHabReps}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="77" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="77" height="51" uuid="f6b7a962-c76e-42ad-b3c0-4975a57b2f9f"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA IPS]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="77" height="42" uuid="59a8b537-f043-44a8-b89c-691d447e4cef"/>
+									<textFieldExpression><![CDATA[$F{codPaqueteIps}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="80" uuid="8a9a8b68-61da-4bf2-a0c3-ab20641f3f74">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="80" height="51" uuid="7795e67e-e53e-42c4-918f-a28bd7248ce3"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC TECNOLOGIA IPS]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="80" height="42" uuid="a63f917c-1cb7-47fb-9859-93f4a126b399"/>
+									<textFieldExpression><![CDATA[$F{descPaqueteIps}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="80" uuid="6bf2c370-cd2b-45bc-acad-4f197e1c7172">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="80" height="51" uuid="76da6bcf-a3ba-4b17-bf31-af5c7885a46c"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA UNICA EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="80" height="42" uuid="43bb2bed-37e2-4207-a86b-2018e1c0ff9b"/>
+									<textFieldExpression><![CDATA[$F{codPaqueteEmssanar}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="80" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="80" height="51" uuid="dd49500e-d478-429c-be30-3d48a533a43a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA EMSSANAR* (RIPS)]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="80" height="42" uuid="59a8b537-f043-44a8-b89c-691d447e4cef"/>
+									<textFieldExpression><![CDATA[$F{codPaqueteEmssanar}.toString().substring(2)]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="105" uuid="398e47a1-9dd7-417c-bf23-d7fbeb3a5553">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="105" height="51" uuid="d54b9d0c-5193-4fd5-870c-00ed94facb79"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC TECNOLOGIA EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="105" height="42" uuid="82d92aa3-635b-4667-b650-3cc483d47289"/>
+									<textFieldExpression><![CDATA[$F{descPaqueteEmssanar}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="85" uuid="0f44394e-b666-4453-aa12-1d93a4924eca">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="85" height="51" uuid="cc10a9e7-de1e-4882-8313-4c5021d12aed"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[TARIFA NEGOCIADA*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="85" height="42" uuid="5d230c5e-b43d-4a6e-8f16-20d54c13be58">
+										<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0"/>
+									</reportElement>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{tarifaNegociada}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="85" uuid="de65a82a-e3f7-46ca-838d-c84163a6e36f">
+							<jr:tableHeader style="table 3_TH" height="51" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="85" height="51" uuid="1b889494-fca3-4d47-a471-7b134df41444"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[OBSERVACION]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="42" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="85" height="42" uuid="6ea7c57f-f866-40df-acd5-42e271131812">
+										<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+										<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0"/>
+									</reportElement>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[" "]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:table>
+				</componentElement>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="59" width="623" height="25" uuid="2ec21284-7f0d-47f6-86c4-c65337004a90">
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+					</reportElement>
+					<textElement textAlignment="Left"/>
+					<text><![CDATA[Nota: El anexo contiene ## página(s), es válido con firma de las partes en la primera y última página; las páginas restantes se entregan en medio magnético]]></text>
+				</staticText>
+				<break>
+					<reportElement x="0" y="87" width="806" height="1" uuid="858393f5-1045-4863-9121-18287d9e0ad7">
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+					</reportElement>
+				</break>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="GrupoDetallePaquetes">
+		<groupHeader>
+			<band height="326">
+				<textField>
+					<reportElement x="0" y="0" width="890" height="12" uuid="873d3875-bbbf-495f-beb8-53c793795a68">
+						<property name="net.sf.jasperreports.export.xls.first.page.number" value="1"/>
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+						<property name="net.sf.jasperreports.export.xls.sheet.name" value="DETALLE ANEXO PAQ"/>
+					</reportElement>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{razonSocial}]]></textFieldExpression>
+				</textField>
+				<componentElement>
+					<reportElement key="tablaProcedimientos" style="table 5" x="0" y="12" width="520" height="35" uuid="aea752c8-0a64-48c7-aa7d-e09fa386b367"/>
+					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+						<datasetRun subDataset="anexoDetallePaquetes" uuid="6ae82bd4-06fd-4001-be05-93e4d76cbb4f">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{detallePaquetes})]]></dataSourceExpression>
+						</datasetRun>
+						<jr:column width="92" uuid="6744d184-de89-4415-b01e-31ea9745d95a">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="92" height="55" uuid="f92dbc5a-36c7-4468-9c29-7b16ca908a3c"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD PRESTADOR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="92" height="85" uuid="5cabffa7-b418-4ab6-90de-26260d3ef73b"/>
+									<textFieldExpression><![CDATA[$F{codHabilitacionSede}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="42" uuid="11703312-c150-46ff-a13d-c80001108798">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="42" height="55" uuid="6b175b88-b849-453b-9d6f-c9894e2ed983"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[SEDE*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="42" height="85" uuid="464bb067-c855-4971-ac47-2de314241440"/>
+									<textFieldExpression><![CDATA[$F{sedePrestador}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="40" uuid="d91d7c13-4055-403c-ae6a-734191434e97">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="40" height="55" uuid="654a9f73-ace4-407d-bb4d-e6dc5091b959"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD SERVICIO HAB REPS*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="40" height="85" uuid="c21e8cfd-3b0d-41fb-8e29-9135b0b4af49"/>
+									<textFieldExpression><![CDATA[$F{codServicioHab}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="40" uuid="0f44394e-b666-4453-aa12-1d93a4924eca">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="40" height="55" uuid="cc10a9e7-de1e-4882-8313-4c5021d12aed"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC SERVICIO HAB REPS*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="40" height="85" uuid="34df5b70-76ce-488c-93f5-0d6494e76293"/>
+									<textFieldExpression><![CDATA[$F{descServicioHab}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="56" uuid="398e47a1-9dd7-417c-bf23-d7fbeb3a5553">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="56" height="55" uuid="d54b9d0c-5193-4fd5-870c-00ed94facb79"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA IPS]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="56" height="85" uuid="82d92aa3-635b-4667-b650-3cc483d47289"/>
+									<textFieldExpression><![CDATA[$F{codPaqueteIps}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="57" uuid="f75ad864-9227-402d-b4c1-d0d7eb340036">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="57" height="55" uuid="b061a499-3788-4695-96d8-05267124f5d1"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC TECNOLOGIA IPS]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="57" height="85" uuid="6decb8c7-694a-49fa-b7ea-80c7f3041ed5"/>
+									<textFieldExpression><![CDATA[$F{descPaqueteIps}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="62" uuid="b2cb6293-fa54-4609-a7a2-22492e390d63">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="62" height="55" uuid="6baacd6c-cebd-439a-82b5-6667d1f10107"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA UNICA EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="62" height="85" uuid="42c23beb-4a8d-4412-b9bb-2212b6bb5fd9"/>
+									<textFieldExpression><![CDATA[$F{codPaqueteEmssanar}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="56" uuid="b2cb6293-fa54-4609-a7a2-22492e390d63">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="56" height="55" uuid="6baacd6c-cebd-439a-82b5-6667d1f10107"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA EMSSANAR* (RIPS)]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="56" height="85" uuid="42c23beb-4a8d-4412-b9bb-2212b6bb5fd9"/>
+									<textFieldExpression><![CDATA[$F{codPaqueteEmssanar}.toString().substring(2)]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="65" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="65" height="55" uuid="f6b7a962-c76e-42ad-b3c0-4975a57b2f9f"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC TECNOLOGIA EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="65" height="85" uuid="59a8b537-f043-44a8-b89c-691d447e4cef"/>
+									<textFieldExpression><![CDATA[$F{descPaqueteEmssanar}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="74" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="74" height="55" uuid="f6b7a962-c76e-42ad-b3c0-4975a57b2f9f"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[TARIFA NEGOCIADA*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="74" height="85" uuid="44241412-cd47-4140-98b6-2af8c32b6b7f">
+										<property name="net.sf.jasperreports.export.xls.pattern" value="#,##0"/>
+									</reportElement>
+									<textFieldExpression><![CDATA[$F{valorNegociado}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="55" uuid="c02bc547-7b27-4b81-b35c-f6a2205e83d3">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="55" height="55" uuid="475baf31-fa1e-41b3-98d3-61e72aef0c12"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC TIPO TECNOLOGIA DETALLE EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="55" height="85" uuid="59632874-9d27-4331-9772-1ad6df49c392"/>
+									<textFieldExpression><![CDATA[$F{tipoTecnologia}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="67" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="67" height="55" uuid="f6b7a962-c76e-42ad-b3c0-4975a57b2f9f"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA UNICA DETALLE EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="67" height="85" uuid="b0ffd862-81dd-44ca-9b9e-768074b24a65"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{codTecnologiaUnica}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="57" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="57" height="55" uuid="f6b7a962-c76e-42ad-b3c0-4975a57b2f9f"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[COD TECNOLOGIA DETALLE EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="57" height="85" uuid="b0ffd862-81dd-44ca-9b9e-768074b24a65"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="64" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="64" height="55" uuid="f6b7a962-c76e-42ad-b3c0-4975a57b2f9f"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[DESC TECNOLOGIA DETALLE EMSSANAR*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="64" height="85" uuid="b0ffd862-81dd-44ca-9b9e-768074b24a65"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{descTecnologia}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="67" uuid="3fdd74f6-f352-4139-a17f-fcd272a44445">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="67" height="55" uuid="ee0b2757-61af-495a-9676-93af2126760a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[CANTIDAD*]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="67" height="85" uuid="20062720-9091-4bef-b439-ecd7f98c0fda"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="85" uuid="598414a4-8a4b-4e63-a9a8-f9c7e62d1598">
+							<jr:tableHeader style="table 3_TH" height="55" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="85" height="55" uuid="be00ebf6-d110-4049-a141-29648953ed26">
+										<property name="net.sf.jasperreports.export.xls.page.scale" value="65"/>
+									</reportElement>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[OBSERVACION]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="85" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="85" height="85" uuid="ea3b6b3c-921d-4a53-875a-7873db2dfd91"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{observaciones}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:table>
+				</componentElement>
+				<staticText>
+					<reportElement positionType="Float" x="0" y="59" width="857" height="25" uuid="2ec21284-7f0d-47f6-86c4-c65337004a90">
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="65"/>
+					</reportElement>
+					<textElement textAlignment="Left"/>
+					<text><![CDATA[Nota: El anexo contiene ## página(s), es válido con firma de las partes en la primera y última página; las páginas restantes se entregan en medio magnético]]></text>
+				</staticText>
+				<break>
+					<reportElement x="0" y="87" width="890" height="1" uuid="bde94ff9-b5e2-4ed7-bbd8-f4ec3bfda275">
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+					</reportElement>
+				</break>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Pruebas">
+		<groupHeader>
+			<band height="752">
+				<subreport>
+					<reportElement key="" x="0" y="0" width="820" height="741" uuid="4ecb4634-8421-43d3-a9eb-87a432178fc6">
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+						<property name="net.sf.jasperreports.export.xls.break.after.row" value="true"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<subreportParameter name="listaTecnologias">
+						<subreportParameterExpression><![CDATA[$P{listaTecnologias}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="listaObservaciones">
+						<subreportParameterExpression><![CDATA[$P{listaObservaciones}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="listaCausaRuptura">
+						<subreportParameterExpression><![CDATA[$P{listaCausaRuptura}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="listaExclusiones">
+						<subreportParameterExpression><![CDATA[$P{listaExclusiones}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="listaRequerimientosTecnicos">
+						<subreportParameterExpression><![CDATA[$P{listaRequerimientosTecnicos}]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{listaPaquetes})]]></dataSourceExpression>
+					<subreportExpression><![CDATA[$P{SUB_REPORTE_DETALLE_SERVICIOS}]]></subreportExpression>
+				</subreport>
+				<break>
+					<reportElement x="0" y="744" width="820" height="1" uuid="bde94ff9-b5e2-4ed7-bbd8-f4ec3bfda275">
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+				</break>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="GrupoTblReferencia">
+		<groupHeader>
+			<band height="158">
+				<staticText>
+					<reportElement style="celda color" x="0" y="0" width="129" height="13" uuid="f92dbc5a-36c7-4468-9c29-7b16ca908a3c">
+						<property name="net.sf.jasperreports.export.xls.first.page.number" value="1"/>
+						<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+						<property name="net.sf.jasperreports.export.xls.sheet.name" value="TBLREFERENCIA"/>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GRUPO TECNOLOGIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="129" y="0" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="258" y="0" width="258" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APLICA INGRESO A PROGRAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="516" y="0" width="258" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[UNIDAD FRECUENCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="0" y="13" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="129" y="13" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DESCRIPCION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="258" y="13" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="387" y="13" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DESCRIPCION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="516" y="13" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="645" y="13" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DESCRIPCION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="0" y="26" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[ELMT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="129" y="26" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[ELEMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="258" y="26" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="387" y="26" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="26" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[ANL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="26" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[ANUAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="0" y="39" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[IMGN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="129" y="39" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[IMAGENEOLOCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="258" y="39" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="387" y="39" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SI SEGUN NECESIDAD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="39" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[BMES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="39" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[BIMENSUAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="0" y="52" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[LABC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="129" y="52" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[LABORATORIO CLINICO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="258" y="52" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="387" y="52" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NO APLICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="52" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[DIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="52" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[DIARIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="0" y="65" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[MEDM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="129" y="65" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[MEDICAMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="258" y="65" width="258" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ES POS?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="65" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[INGR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="65" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[INGRESO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="0" y="78" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[OTRS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="129" y="78" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[OTRO SERVICIO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="258" y="78" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CODIGO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="celda color" x="387" y="78" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DESCRIPCION]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="78" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[MES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="78" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[MENSUAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="0" y="91" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PROC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="129" y="91" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PROCEDIMIENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="258" y="91" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="387" y="91" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SI]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="91" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="91" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NO APLICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="0" y="104" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SPRF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="129" y="104" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SERVICIO PROFESIONAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="258" y="104" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="387" y="104" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[NO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="104" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SEMN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="104" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SEMANAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="117" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SMES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="117" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SEMESTRAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="130" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SN]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="130" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[SEGUN NECESIDAD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="516" y="143" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[TMES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="table 5_TD" x="645" y="143" width="129" height="13" uuid="df00bc39-3b98-47b0-8963-573e2982dc54"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[TRIMESTRAL]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+</jasperReport>

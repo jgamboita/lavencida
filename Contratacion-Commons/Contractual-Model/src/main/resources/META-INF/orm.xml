@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_0.xsd"
+                 version="2.1">
+    <named-query name="ServicioReps.buscarPorCodigoHabilitacion">
+        <query>
+            select sr from ServicioReps sr where sr.codigoHabilitacion = ?1
+        </query>
+    </named-query>
+    <named-query name="SedesNegociacion.buscarSedesPorNegociacionId">
+        <query>
+            select sn from SedesNegociacion sn where sn.negociacion.id = ?1
+        </query>
+    </named-query>
+    <named-query name="SedeNegociacionServicio.buscarServiciosPorNegociacionId">
+        <query>
+            select sns from SedeNegociacionServicio sns where sns.sedeNegociacion.id = ?1
+        </query>
+    </named-query>
+    <named-stored-procedure-query name="crearTablasTemporalesPaquetes" procedure-name="contratacion.fn_crear_tablas_temporales_paquetes">
+        <parameter class="java.lang.String" mode="OUT" name="resultado"/>
+    </named-stored-procedure-query>
+
+    <named-stored-procedure-query name="copiarProcedimientosPorNegociacion" procedure-name="contratacion.fn_copiar_procedimientos_por_negociacion">
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAntualId"/>
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAnteriorId"/>
+        <parameter class="java.lang.String" mode="OUT" name="resultado"/>
+    </named-stored-procedure-query>
+    <named-stored-procedure-query name="revertirCopiadoProcedimientosPorCopiado" procedure-name="contratacion.fn_revertir_copiado_procedimientos_por_negociacion">
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAntualId"/>
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAnteriorId"/>
+        <parameter class="java.lang.String" mode="OUT" name="resultado"/>
+    </named-stored-procedure-query>
+
+    <named-stored-procedure-query name="copiarMedicamentosPorNegociacion" procedure-name="contratacion.fn_copiar_medicamentos_por_negociacion">
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAntualId"/>
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAnteriorId"/>
+        <parameter class="java.lang.String" mode="OUT" name="resultado"/>
+    </named-stored-procedure-query>
+    <named-stored-procedure-query name="revertirCopiadoMedicamentosPorCopiado" procedure-name="contratacion.fn_revertir_copiado_medicamentos_por_negociacion">
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAntualId"/>
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAnteriorId"/>
+        <parameter class="java.lang.String" mode="OUT" name="resultado"/>
+    </named-stored-procedure-query>
+
+    <named-stored-procedure-query name="copiarPaquetePorNegociacion" procedure-name="contratacion.fn_copiar_paquete_por_negociacion">
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAntualId"/>
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAnteriorId"/>
+        <parameter class="java.lang.String" mode="IN" name="codigoPortafolio"/>
+        <parameter class="java.lang.String" mode="OUT" name="resultado"/>
+    </named-stored-procedure-query>
+    <named-stored-procedure-query name="revertirCopiadoPaquetesPorCopiado" procedure-name="contratacion.fn_revertir_copiado_paquetes_por_negociacion">
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAntualId"/>
+        <parameter class="java.lang.Long" mode="IN" name="negociacionAnteriorId"/>
+        <parameter class="java.lang.String" mode="OUT" name="resultado"/>
+    </named-stored-procedure-query>
+</entity-mappings>

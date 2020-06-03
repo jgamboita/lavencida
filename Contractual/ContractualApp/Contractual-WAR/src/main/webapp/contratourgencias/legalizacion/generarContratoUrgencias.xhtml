@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core" locale="es-CO"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:o="http://omnifaces.org/ui"
+        xmlns:c="http://java.sun.com/jstl/core">
+
+
+    <h:head>
+        <base href="${request.contextPath}/"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+        <link href='//fonts.googleapis.com/css?family=PT+Sans+Caption'
+              rel='stylesheet' type='text/css'/>
+        <h:outputScript library="js" name="calendar.locale_ES.js"/>
+
+        <link rel="shortcut icon" type="image/x-icon"
+              href="#{resource['/favicon.ico']}"/>
+        <ui:insert name="estilos"/>
+
+        <script>
+            dias = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+
+            function lastday(y, m) {
+                return  new Date(y, m + 1, 0).getDate();
+            }
+
+            function diasMes(mes, anio) {
+                ultimoDia = 0;
+                if (mes === 1) {
+                    fecha = new Date(anio, 1, 29);
+                    verMes = fecha.getMonth();
+                    if (verMes !== mes) {
+                        ultimoDia === 28;
+                    }
+                }
+                if (ultimoDia === 0) {
+                    ultimoDia = dias[mes];
+                }
+                return ultimoDia;
+            }
+
+            function deshabilitarDiasFinV(date) {
+                var m = date.getMonth(),
+                        d = date.getDate(),
+                        y = date.getFullYear();
+
+                if (d === lastday(y, m)) {
+                    return [true];
+                } else {
+                    return [false];
+                }
+            }
+
+
+            function deshabilitarDiasInicioV(date) {
+                var m = date.getMonth(),
+                        d = date.getDate(),
+                        y = date.getFullYear();
+                if (d === 1) {
+                    return [true];
+                } else {
+                    return [false];
+
+                }
+
+            }
+
+        </script>
+
+        <script>
+            function permite(evt) {
+                var entrada = (evt.which) ? evt.which : event.keyCode;
+                if (entrada)
+                    return false;
+            }
+        </script>
+
+        <o:importConstants
+            type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum"/>
+        <o:importConstants
+            type="com.conexia.contratacion.commons.constants.enums.RegimenNegociacionEnum"/>
+
+        <o:importConstants
+            type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum"/>
+
+        <o:importConstants type="com.conexia.contratacion.commons.constants.enums.TipoContratoEnum"/>
+
+        <style type="text/css">
+            #formGenerarContratoUrgencias\:blockDetallePrestador_blocker {
+                background: #000000 !important;
+                opacity: 0.05 !important;
+                z-index: 1000 !important;
+            }
+        </style>
+
+    </h:head>
+
+
+
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Generar Minuta
+        </ui:define>
+
+
+        <ui:define name="content">
+            <f:event listener="#{generarContratoUrgenciasController.loadIni()}"
+                     type="preRenderView" />
+            <h:form id="formGenerarContratoUrgencias">
+                <p:panel id="pnlGenerarMinuta">
+                    <p:focus context="pnlGenerarMinuta" />
+                    <ui:include src="../../comun/detallePrestador.xhtml">
+                        <ui:param name="readonly" value="true" />
+                    </ui:include> 
+
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel
+                                value="Datos Contrato #{generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato ne null 
+                                                        ? generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato : ''  }"
+                                styleClass="titulo-bold"></p:outputLabel>
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br />
+
+
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Modalidad:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="modalidad" effect="fold" required="true"
+                                                 requiredMessage="#{i18n.form_label_required}"
+                                                 styleClass="anchoInput"
+                                                 value="#{generarContratoUrgenciasController.contratoUrgenciasDto.tipoModalidadNegociacion}">
+                                    <f:selectItems
+                                        value="#{bandejaContratoUrgenciasController.modalidades}"
+                                        var="modalidad" itemValue="#{modalidad}"
+                                        />
+                                </p:selectOneMenu>
+                                <p:message for="modalidad" />
+                            </div>
+
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Regimen:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="regimen" effect="fold" required="true"
+                                                 requiredMessage="#{i18n.form_label_required}"
+                                                 styleClass="anchoInput"
+                                                 value="#{generarContratoUrgenciasController.contratoUrgenciasDto.regimen}"
+                                                 disabled="#{generarContratoUrgenciasController.contratoUrgenciasDto.id ne null?true:false}">
+                                    <f:selectItems
+                                        value="#{generarContratoUrgenciasController.regimenNegociacionEnums}"
+                                        var="regimen" itemValue="#{regimen}"
+                                        />
+                                </p:selectOneMenu>
+                                <p:message for="regimen" />
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Población:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <h:outputText
+                                    value="General" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Regional:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="regional" class="anchoInput"
+                                                 value="#{generarContratoUrgenciasController.contratoUrgenciasDto.regionalDto}"
+                                                 converter="omnifaces.SelectItemsConverter" required="true"
+                                                 requiredMessage="Por favor seleccione la regional."
+                                                 disabled="#{generarContratoUrgenciasController.contratoUrgenciasDto.id ne null?true:false}">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="" />
+                                    <f:selectItems value="#{generarContratoUrgenciasController.regionales}"
+                                                   var="regional" itemLabel="#{regional.descripcion}"
+                                                   itemValue="#{regional}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Tipo Subsidiado:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <h:outputText
+                                    value="Total" />
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Tipo Contrato:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <h:outputText
+                                    value="Urgencias" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Vigencia del Contrato:" />
+                            </div>
+                            <div class="ui-grid-col-3">
+                                <p:calendar id="inicioVigencia" showOn="button" size="8" readonlyInput="true"
+                                            disabled = "#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZADA}"
+                                            converterMessage="La fecha de inicio debe tener formato Día Mes Año"
+                                            pattern="dd/MM/yyyy"
+                                            beforeShowDay="deshabilitarDiasInicioV"
+                                            value="#{generarContratoUrgenciasController.contratoUrgenciasDto.fechaInicioVigencia}"
+                                            locale="es" required="true"
+                                            requiredMessage="Ingrese la fecha inicial de la vigencia del contrato">
+                                    <p:ajax event="dateSelect" update="inicioVigencia,finVigencia,duracionContrato"
+                                            listener="#{generarContratoUrgenciasController.validateInicioVigencia}" />
+                                </p:calendar>
+
+                                <p:calendar id="finVigencia" showOn="button" size="8" readonlyInput="true"
+                                            disabled = "#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZADA}"
+                                            converterMessage="La fecha fin debe tener formato Día Mes Año"
+                                            pattern="dd/MM/yyyy"
+                                            beforeShowDay="deshabilitarDiasFinV"
+                                            mindate="#{generarContratoUrgenciasController.contratoUrgenciasDto.fechaInicioVigencia}"
+                                            value="#{generarContratoUrgenciasController.contratoUrgenciasDto.fechaFinVigencia}"
+                                            locale="es" required="true"
+                                            requiredMessage="Ingrese la fecha final de la vigencia del contrato">
+                                    <p:ajax event="dateSelect"
+                                            update="finVigencia, duracionContrato,inicioVigencia "
+                                            listener="#{generarContratoUrgenciasController.validateFinVigencia}" />
+                                </p:calendar>
+                                <div>
+                                    <h:outputLabel value="Duración: " />
+                                    <h:outputText id="duracionContrato"
+                                                  value=" #{generarContratoUrgenciasController.contratoUrgenciasDto.duracionContrato}" />
+                                </div>		
+
+                            </div>
+                            <div class="ui-grid-col-1 text-right">
+                                <h:outputLabel value="Elaboración contrato:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:calendar id="fechaElaboracion" showOn="button" size="12" disabled="true"
+                                            converterMessage="La fecha de elaboración debe tener formato Día Mes Año"
+                                            pattern="dd/MM/yyyy" required="true" 
+                                            mindate ="#{generarContratoUrgenciasController.today}"
+                                            requiredMessage="Ingrese la fecha de elaboración del contrato"
+                                            value="#{generarContratoUrgenciasController.contratoUrgenciasDto.fechaContrato}"
+                                            locale="es">
+                                </p:calendar>
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Nivel Atención:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="nivelContrato" class="anchoInput"
+                                                 value="#{generarContratoUrgenciasController.contratoUrgenciasDto.nivelContrato}"
+                                                 converter="omnifaces.SelectItemsConverter" required="true">
+                                    <f:selectItems
+                                        value="#{generarContratoUrgenciasController.nivelesContrato}" var="nivel"
+                                        itemLabel="#{nivel.descripcion}" itemValue="#{nivel}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div> 
+
+
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Valor Fiscal:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:inputText id="valorFiscal" 
+                                             readonly="#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZADA}"
+                                             value="#{generarContratoUrgenciasController.contratoUrgenciasDto.valorFiscal}"
+                                             styleClass="included">
+                                    <f:convertNumber locale="es_CO" />
+                                    <f:validateLongRange minimum="0" />
+                                </p:inputText>
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Valor Poliza (SMLV):" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:inputText id="valorPoliza"
+                                             readonly="#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZADA}"
+                                             value="#{generarContratoUrgenciasController.contratoUrgenciasDto.valorPoliza}"
+                                             styleClass="included">                
+                                    <f:validateLongRange minimum="0" />
+                                    <f:convertNumber locale="es_CO" />
+                                </p:inputText>
+                            </div>
+                            <div class="ui-grid-col-2 text-right">
+                                <h:outputLabel value="Días Plazo:" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:inputText id="diasPlazo" required="true"
+                                             readonly="#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZADA}"
+                                             value="#{generarContratoUrgenciasController.contratoUrgenciasDto.diasPlazo}"
+                                             styleClass="included"
+                                             requiredMessage="Los dias plazo deben ser un número mayor o igual a 1."
+                                             validatorMessage="Los dias plazo deben ser un número mayor a 1"
+                                             converterMessage="Los dias plazo deben ser un número">
+                                    <f:validateLongRange minimum="1" />
+                                    <f:convertNumber locale="es_CO" />
+                                </p:inputText>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <!-- Tipo de legalizacion -->
+
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-2">
+                                <p:outputLabel value="Tipo de legalización:"
+                                               for="selectTipoLegalizacion" />
+                            </div>
+                            <div class="ui-grid-col-2">
+                                <p:selectOneMenu id="selectTipoLegalizacion"	
+                                                 disabled = "#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum eq EstadoLegalizacionEnum.LEGALIZADA}"
+                                                 styleClass="anchoInput" required="true"
+                                                 value="#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum}"
+                                                 requiredMessage="Por favor ingrese el tipo de legalizacion.">
+                                    <f:selectItem itemLabel="Legalización preliminar"
+                                                  itemValue="#{EstadoLegalizacionEnum.LEGALIZACION_PRELIMINAR}" />
+                                    <f:selectItem itemLabel="Legalización pend. visto bueno"
+                                                  itemValue="#{EstadoLegalizacionEnum.CONTRATO_SIN_VB}" />
+                                    <f:selectItem itemLabel="Legalizada" itemDisabled="true" 
+                                                  itemValue="#{EstadoLegalizacionEnum.LEGALIZADA}" />	
+                                </p:selectOneMenu>
+
+                                <p:message for="selectTipoLegalizacion" />
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+                    <br />
+                    <!-- Fin tipo de legalizacion -->
+
+
+                    <ui:include src="../../sedes/sedesNegociacion.xhtml"></ui:include>
+
+                    <div class="ui-grid ui-grid-responsive">
+                        <div class="ui-grid-row">
+                            <div class="ui-grid-col-12  text-right">
+                                <p:commandButton value="Regresar" immediate="true"
+                                                 styleClass="btn btn-sm btn-warning" icon="fa fa-chevron-left"
+                                                 iconPos="left"
+                                                 action="#{generarContratoUrgenciasController.goTo('/contratourgencias/contratosUrgencias')}">
+                                    <f:setPropertyActionListener target="#{flash.prestador}" value="#{generarContratoUrgenciasController.prestadorSeleccionado}"/>
+                                </p:commandButton>
+                                <p:commandButton id="guardarContrato"
+                                                 styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+                                                 iconPos="left" value="Guardar"
+                                                 actionListener="#{generarContratoUrgenciasController.validarContratoUrgenciasXPermanente()}"
+                                                 ajax="true" update="@form,  @([id$=dialogConfirmSaveContractUrgency]),  @([id$=dialogConfirmUpdateContractUrgency]), @([id$=dialogDuplicateContractUrgency]), @([id$=dialogConfirmarGeneracionContratoUrgencias])"
+                                                 rendered="#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum!= EstadoLegalizacionEnum.LEGALIZADA}">
+                                </p:commandButton>
+
+                                <p:commandButton id="limpiar" value="Limpiar"
+                                                 styleClass="btn btn-sm btn-warning"
+                                                 actionListener="#{generarContratoUrgenciasController.limpiar()}"
+                                                 update="@form" immediate="true" />
+                            </div>
+                        </div>
+                    </div>
+
+                </p:panel>
+
+
+            </h:form>
+
+            <p:dialog id="dialogConfirmSaveContractUrgency" widgetVar="confirmSaveContractUrgency" modal="true" width="40%"
+                      header="Contrato Urgencias Generado Éxitosamente" closable="false">
+                <div> 
+                    <c:if test="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.numeroContrato eq null}">
+                        <h:outputText value="Contrato Urgencias Nro:  #{generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato}" />
+                    </c:if>
+                    <c:if test="#{!(generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.numeroContrato eq null)}">
+                        <h:outputFormat value="#{i18n.ctto_urgencias_creacion_ok}" escape="false">
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.numeroContrato}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.estadoLegalizacionEnum.descripcion}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.regimen}" />
+                        </h:outputFormat>
+                    </c:if>
+                </div>
+                <br></br>
+                <div>
+
+                    <div class="ui-grid-col-12  text-right">
+                        <p:commandButton value="Cerrar" icon="ui-icon-close"
+                                         oncomplete="PF('confirmSaveContractUrgency').hide()"
+                                         action="#{FacesUtils.redirect('/contratourgencias/contratosUrgencias')}" >
+                            <f:setPropertyActionListener target="#{flash.prestador}" value="#{generarContratoUrgenciasController.prestadorSeleccionado}" />
+                        </p:commandButton>
+                    </div>
+                </div>
+            </p:dialog>
+
+            <!-- Mensaje de actualizacion -->			
+            <p:dialog id="dialogConfirmUpdateContractUrgency" widgetVar="confirmUpdateContractUrgency" modal="true" width="40%"
+                      header="#{i18n.ctto_urgencias_title_update_ok}">
+                <div> 
+                    <c:if test="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.numeroContrato eq null}">
+                        <h:outputText value="#{i18n.ctto_urgencias_message_update_ok} - #{generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato}" />
+                    </c:if>
+                    <c:if test="#{!(generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.numeroContrato eq null)}">
+                        <h:outputFormat value="#{i18n.ctto_urgencias_message_update2_ok}" escape="false">
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.numeroContrato}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.estadoLegalizacionEnum.descripcion}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDto.contratoUrgenciasDuplicado.regimen}" />
+                        </h:outputFormat>
+                    </c:if>				
+                </div>
+                <br></br>
+                <div>
+
+                    <div class="ui-grid-col-12  text-right">
+                        <p:commandButton value="Cerrar" icon="ui-icon-close"
+                                         oncomplete="PF('confirmSaveContractUrgency').hide()"
+                                         action="#{FacesUtils.redirect('/contratourgencias/contratosUrgencias')}" >
+                            <f:setPropertyActionListener target="#{flash.prestador}" value="#{generarContratoUrgenciasController.prestadorSeleccionado}" />
+                        </p:commandButton>
+                    </div>
+                </div>
+            </p:dialog>
+
+            <!-- Mensaje de contrato urgencias duplicado -->			
+            <p:dialog id="dialogDuplicateContractUrgency" widgetVar="dialogDuplicateContractUrgency" modal="true" width="40%"
+                      header="#{i18n.ctto_urgencias_title_duplicate}">
+                <div> 
+                    <c:if test="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.validacionContratoOK eq 'DUPLICATE_PERM'}">
+                            <!-- <h:outputText value="#{i18n.ctto_urgencias_message_duplicate_permanente} #{generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato}" /> -->
+                        <h:outputFormat value="#{i18n.ctto_urgencias_message_duplicate_permanente}" escape="false">
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.numeroContrato}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.estadoLegalizacionEnum.descripcion}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.regimen}" />
+                        </h:outputFormat>
+                    </c:if>
+
+                    <c:if test="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.validacionContratoOK eq 'DUPLICATE_URG'}">
+                    <!--	<h:outputText value="#{i18n.ctto_urgencias_message_duplicate} #{generarContratoUrgenciasController.contratoUrgenciasDto.numeroContrato}" /> -->
+                        <h:outputFormat value="#{i18n.ctto_urgencias_message_duplicate}" escape="false">
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.numeroContrato}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.estadoLegalizacionEnum.descripcion}" />
+                            <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.regimen}" />
+                        </h:outputFormat>
+                    </c:if>
+                </div>
+                <br></br>
+                <div>
+
+                    <div class="ui-grid-col-12  text-right">
+                        <p:commandButton value="Cerrar" icon="ui-icon-close" oncomplete="PF('duplicateContractUrgency').hide()">
+                        </p:commandButton>
+                    </div>
+                </div>
+            </p:dialog>		
+
+            <!-- Modal de confirmacion para generar contrato urgencias, contratos permanentes duplicados -->
+            <p:confirmDialog id="dialogConfirmarGeneracionContratoUrgencias" closable="true" closeOnEscape="true"
+                             widgetVar="confirmGeneracionContratoUrgencias" modal="true" width="40%" header="#{i18n.title_dialog_confirm_generacion_ctto_urgencias}">
+                <f:facet name="message">
+                    <h:outputFormat value="#{i18n.confirm_generacion_ctto_urgencias_message}" escape="false">
+                        <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.numeroContrato}" />
+                        <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.estadoLegalizacionEnum.descripcion}" />
+                        <f:param value="#{generarContratoUrgenciasController.contratoUrgenciasDtoCopia.regimen}" />
+                    </h:outputFormat>
+                </f:facet>
+                <p:commandButton value="#{i18n.form_label_button_aceptar}" styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"  immediate="true" 
+                                 actionListener="#{generarContratoUrgenciasController.guardarContratoUrgencias()}"
+                                 ajax="true" update="@([id$=formGenerarContratoUrgencias]), @([id$=dialogConfirmSaveContractUrgency]),  @([id$=dialogConfirmUpdateContractUrgency]), @([id$=dialogDuplicateContractUrgency]),  @([id$=confirmGeneracionContratoUrgencias])"
+                                 rendered="#{generarContratoUrgenciasController.contratoUrgenciasDto.estadoLegalizacionEnum!= EstadoLegalizacionEnum.LEGALIZADA}"
+                                 onclick="PF('confirmGeneracionContratoUrgencias').hide()">						
+                </p:commandButton>
+
+                <p:commandButton value="#{i18n.form_label_button_cancelar}"	onclick="PF('confirmGeneracionContratoUrgencias').hide()" styleClass="btn btn-sm btn-warning" icon="fa fa-close"/>
+            </p:confirmDialog>
+            <!-- ****************************** -->
+        </ui:define>
+    </ui:composition>
+</f:view>

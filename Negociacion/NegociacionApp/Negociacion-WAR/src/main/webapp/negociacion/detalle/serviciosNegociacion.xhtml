@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="serviciosNegociacionForm">
+		<p:panel id="panelServiciosNegociacion" rendered="#{negociacionController.negociacion.id != null }">
+			<div class="form-group">
+				
+				<div class="widget-header">
+					<span class="widget-caption">#{i18n.servicio_negociacion_titulo}</span>
+				</div>
+				<h:outputText value="&#160;" />
+				<!-- row -->
+				<div class="row">
+					<div class="col-lg-3">
+						<p:outputLabel for="grupoHabilitacion"
+							value="#{i18n.servicio_label_grupo_habilitacion}"
+							styleClass="col-lg-12" />
+						<p:selectCheckboxMenu id="grupoHabilitacion"
+							styleClass="anchoInput"
+							value="#{negociacionController.macroServiciosSeleccionados}"
+							converter="omnifaces.SelectItemsConverter"
+							label="#{i18n.form_label_combo_seleccione}" filter="true"
+							filterMatchMode="startsWith"
+							onchange="#{negociacionController.consultarServiciosByMacroServicios()}">
+							<f:selectItems value="#{negociacionController.macroServicios}"
+								var="macroServicio" itemValue="#{macroServicio}"
+								itemLabel="#{macroServicio.nombre}" />
+							<p:ajax event="toggleSelect" update="serviciosNegociacionForm"/>
+							<p:ajax event="change" update="serviciosNegociacionForm" />
+						</p:selectCheckboxMenu>
+						<p:message for="grupoHabilitacion" />
+					</div>
+					<div class="col-lg-3">
+						<p:outputLabel for="servicioSalud"
+							value="#{i18n.servicio_label_servicio_habilitacion}"
+							styleClass="col-lg-12"
+							rendered="#{not empty negociacionController.macroServiciosSeleccionados}" />
+						<p:selectCheckboxMenu id="servicioSalud" styleClass="anchoInput"
+							value="#{negociacionController.serviciosSaludSeleccionados}"
+							converter="omnifaces.SelectItemsConverter"
+							label="#{i18n.form_label_combo_seleccione}" filter="true"
+							filterMatchMode="startsWith"
+							rendered="#{not empty negociacionController.macroServiciosSeleccionados}">
+							<f:selectItems value="#{negociacionController.serviciosSalud}"
+								var="servicioSalud" itemValue="#{servicioSalud}"
+								itemLabel="#{servicioSalud.nombre}" />
+							<p:ajax event="toggleSelect" update="@this"/>
+							<p:ajax event="change" update="@this"/>
+						</p:selectCheckboxMenu>
+						<p:message for="servicioSalud" />
+					</div>
+				</div>
+				<!-- Row -->
+				<h:outputText value="&#160;" />
+				<div class="row">
+					<div class="col-lg-12">
+						<p:commandButton value="#{i18n.form_label_button_siguiente}"
+							actionListener="#{negociacionController.consultarSedesPrestador()}"
+							styleClass="btn btn-sm btn-info" icon="fa fa-check-circle-o"
+							iconPos="left" />
+
+						<p:commandButton value="#{i18n.form_label_button_limpiar}"
+							update="serviciosNegociacionForm"
+							actionListener="#{negociacionController.resetSeleccionados()}"
+							styleClass="btn btn-sm btn-warning" icon="fa fa-trash-o"
+							iconPos="left" process="@this" />
+					</div>
+				</div>
+			</div>
+		</p:panel>
+	</h:form>
+
+</f:view>

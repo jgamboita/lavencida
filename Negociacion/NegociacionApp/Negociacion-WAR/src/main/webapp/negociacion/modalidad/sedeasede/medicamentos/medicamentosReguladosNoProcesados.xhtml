@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id = "medicamentosRNoProceadosForm">
+		<div class="form">
+				<p:dataTable id="erroresMedicamentosRegulados" var="registro"
+				paginatorAlwaysVisible="false"
+				value="#{negociacionMedicamentoSSController.medicamentosReguladosValorInvalido}"
+				rows="10" dynamic="true" styleClass="paginated" paginator="true"
+				paginatorPosition="bottom" widgetVar="erroresMedicamentosReguladosW"
+				rowsPerPageTemplate="5,10,20"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+				<p:column headerText="C.U.M.">
+					<h:outputText value="#{registro.medicamentoDto.cums}" />
+				</p:column>
+
+				<p:column headerText="Descripción tecnología Emssanar">
+					<h:outputText value="#{registro.descripcionMedicamento}" />
+				</p:column>
+
+				<p:column headerText="Regulado">
+					<h:outputText value="#{registro.esRegulado}" />
+				</p:column>
+
+			</p:dataTable>
+		</div>
+	</h:form>
+</f:view>

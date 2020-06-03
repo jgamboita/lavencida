@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:cnx="http://conexia.com/utils"
+        >
+
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            <h:outputLabel value="#{i18n.comparacion_tarifas_gestion_comite_titulo}" />
+
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="filtrosPrestador">
+                <p:panel id="panelFiltrosPrestador" >
+
+                    <div class="form-group">
+                        <!-- row -->
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <p:outputLabel for="justificacionComite" value="#{i18n.comparacion_tarifas_lbl_justificacion}" />							
+                                <p:inputTextarea rows="5" id="justificacionComite" cols="90" autoResize="false" value="#{gestionComparacionTarifasController.justificacionComite}" required="true" disabled="#{!gestionComparacionTarifasController.bloqueoAcciones}" />
+                                <p:message for="justificacionComite" />
+                            </div>                            
+                        </div>					
+                        <!--end row -->
+                        <h:outputText value="&#160;" />
+                        <!-- row -->
+                        
+                    </div>
+                    
+                    <!-- Separador de secciones -->
+                    <p:separator />
+                    
+                    <div class="row">
+                            <div class="col-lg-3">
+                                <p:outputLabel value="#{i18n.comparacion_tarifas_lbl_reportes_descargados}" />							
+                            </div>                            
+                    </div>
+                    <!-- Tabla de prestadores -->
+                    <p:dataTable id="tablaPrestadoresGral" var="reporte" value="#{gestionComparacionTarifasController.reportesDescargados}" 
+                                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                                 paginator="true" paginatorPosition="bottom"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15"
+                                 >
+                        <p:column headerText="#{i18n.form_label_tipo_tecnologia}" styleClass="text-center">
+                            <h:outputText value="#{reporte.tecnologia}" />
+                        </p:column>
+
+                        <p:column headerText=" #{i18n.comparacion_tarifas_tbl_sedes_prestador}" styleClass="text-center">
+                            <h:outputText value="#{reporte.sedesPrestador}" />
+                        </p:column>
+                        
+                        <p:column headerText=" #{i18n.comparacion_tarifas_tbl_sedes_comparadas}" styleClass="text-center">
+                            <h:outputText value="#{reporte.sedesComparadas}" />
+                        </p:column>
+
+                        <p:column headerText="#{i18n.comparacion_tarifas_tbl_grupo_habilitacion}" styleClass="text-center">
+                            <h:outputText value="#{reporte.gruposHabilitacion}" />
+                        </p:column>
+                        
+                        <p:column headerText="#{i18n.comparacion_tarifas_tbl_servicios_salud}" styleClass="text-center">
+                            <h:outputText value="#{reporte.serviciosSalud}" />
+                        </p:column>
+                        
+                    </p:dataTable>
+                    
+                    <h:panelGroup id="botoneraComparacion">
+                            <p:commandButton value="#{i18n.comparacion_tarifas_regresar_bandeja}" actionListener="#{gestionComparacionTarifasController.volverBandejaGestionNecesidad}"
+                                            immediate="true" styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left" iconPos="left"/>
+                            
+                            <p:commandButton value="#{i18n.comparacion_tarifas_btn_enviar_comite}" id="enviarComite"
+                                            styleClass="btn btn-success btn-sm"   icon="fa fa-download" iconPos="left"
+                                            rendered="#{gestionComparacionTarifasController.reportesDescargados.size() > 0}"
+                                            actionListener="#{gestionComparacionTarifasController.pasarComite()}"
+                                            update="panelFiltrosPrestador"
+                                            disabled="#{!gestionComparacionTarifasController.bloqueoAcciones}"/>
+                    </h:panelGroup>
+                
+                    
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

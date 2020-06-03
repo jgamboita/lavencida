@@ -1,0 +1,164 @@
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+        xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+        
+        <p:panel id="panelPrestadoresComite" rendered="#{gestionComiteController.puedeTramitar}">
+            <div class="widget-header">
+                <span class="widget-caption">#{i18n.gestionar_comite_prestadores_evaluar}</span>
+            </div>
+                <h:panelGroup>
+                    <p:dataTable id="tablaPrestadoresComite" var="prestadorComite" value="#{gestionComiteController.prestadoresComite}" 
+                            emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                            paginator="true" paginatorPosition="bottom"
+                            rowKey="#{prestadorComite.idPrestador}"
+                            paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                            rowsPerPageTemplate="5,10,15">
+
+                        <!-- Fecha Asociacion Comite -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_fecha_asociacion_comite}" 
+                                  filterBy="#{prestadorComite.fechaAsociacionComite}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.fechaAsociacionComite}">
+				<f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
+                        </p:column>
+
+                        <!-- Tipo de documento -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_tipo_documento}" 
+                                  filterBy="#{prestadorComite.tipoDocumento}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.tipoDocumento}" />
+                        </p:column>
+
+                        <!-- Numero Documento -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_numero_documento}"
+                                  filterBy="#{prestadorComite.numeroDocumento}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.numeroDocumento}" />
+                        </p:column>
+
+                        <!-- Nombre Prestador -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_nombre_prestador}"
+                                  filterBy="#{prestadorComite.nombrePrestador}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.nombrePrestador}" />
+                        </p:column>
+                        
+                        <!-- Modalidad -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_modalidad}"
+                                  filterBy="#{prestadorComite.nombrePrestador}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText
+				value="#{fn:toUpperCase(i18n[cnx:enum_key(prestadorComite.tipoModalidad)])}" />
+                        </p:column>
+
+                        <!-- Tipo Tecnologias -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_tipo_tecnologias}"
+                                  filterBy="#{prestadorComite.tipoTecnologias}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.tipoTecnologias}" />
+                        </p:column>
+
+                        <!-- ESE -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_ese}"
+                                  filterBy="#{prestadorComite.ESE}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.ESE}" />
+                        </p:column>
+
+                        <!-- Nivel Atencion -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_nivel_atencion}"
+                                  filterBy="#{prestadorComite.nivelAtencion}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.nivelAtencion}" />
+                        </p:column>
+
+                        <!-- Estado -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_estado}"
+                                  filterBy="#{prestadorComite.estado}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.estado}" />
+                        </p:column>
+
+                        <!-- Concepto Comite -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_concepto_comite}"
+                                  filterBy="#{prestadorComite.conceptoComite}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.conceptoComite}" />
+                        </p:column>
+
+
+                        <!-- Justificacion Envio Comite -->
+                        <p:column headerText="#{i18n.tbl_prestadores_comite_justificacion_envio_comite}"
+                                  filterBy="#{prestadorComite.justificacionEnvioComite}"
+                                  filterMatchMode="contains" 
+                                  filterPosition="bottom"
+                                  filterStyleClass="anchoInput"
+                                  styleClass="text-center">
+                            <h:outputText value="#{prestadorComite.justificacionEnvioComite}" />
+                        </p:column>
+
+                        <!-- Acciones -->
+                        <p:column headerText="" styleClass="text-center">
+                            <p:commandLink id="btnVerConceptoComite" 
+                                styleClass="btn btn-sm"
+                                title="#{i18n.gestionar_comite_lbl_btn_concepto}" 
+                                process="@this"
+                                actionListener="#{gestionComiteController.gestionarComite(prestadorComite)}"
+                                oncomplete="PF('dialogConceptoComiteW').show();"
+                                update="dialogConceptoComite">
+                                <span class="fa fa-pencil-square-o"></span>    
+                            </p:commandLink>
+                            <h:commandLink id="btnVerDetalleProcedimientosContrato"
+                                styleClass="btn btn-sm"
+                                actionListener="#{gestionComiteController.verPortafolio(prestadorComite.idPrestador)}"
+                                title="#{i18n.bandeja_prestador_label_ver_portafolio}" 
+                                target="_blank">
+                                <span class="fa fa-suitcase"></span>    
+                            </h:commandLink>
+                            <p:commandLink id="btnCompararTarifas" styleClass="btn btn-sm"
+                                           actionListener="#{gestionComiteController.comparacionTarifas(prestadorComite.idPrestador)}"
+                                           title="#{i18n.comparacion_tarifas_realizar}" target="_blank"
+                                           disabled="#{prestadorComite.tipoModalidad.id == 1}">
+                                <span class="fa fa-money"></span>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </p:panel>
+</f:view>

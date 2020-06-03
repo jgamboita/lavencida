@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:o="http://omnifaces.org/ui">
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            Parametrizacion de Contratos
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="formConsultaSolicitudes">
+                <p:panel id="pnlConsultaSolicitudes">
+                    <h:panelGrid columns="1" style="width:100%">
+                        <f:facet name="header">
+                            <p:outputLabel value="Consultar solicitudes a parametrizar"
+                                           styleClass="titulo-bold"></p:outputLabel>
+
+                            <div class="separador"></div>
+                        </f:facet>
+                    </h:panelGrid>
+                    <br/>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-3 text-right">
+                                <h:outputLabel value="No. Negociación:" for="txtNumeroNegociacion"/>
+                            </div>
+                            <div class="col-lg-3">
+                                <p:inputText id="txtNumeroNegociacion"
+                                             converterMessage="El número de negociación debe ser númerico."
+                                             value="#{consultaSolicitudController.filtroConsultaSolicitudDto.numeroNegociacion}">
+                                </p:inputText>
+                            </div>
+                            <div class="col-lg-3 text-right">
+                                <h:outputLabel value="Modalidad de negociación:"/>
+                            </div>
+                            <div class="col-lg-3">
+                                <p:selectOneMenu id="modalidadNegociacion" class="anchoInput"
+                                                 value="#{consultaSolicitudController.filtroConsultaSolicitudDto.negociacionModalidad}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaSolicitudController.modalidadesNegociacion}"
+                                                   var="negociacionModalidad"
+                                                   itemLabel="#{negociacionModalidad.descripcion}"
+                                                   itemValue="#{negociacionModalidad}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-lg-3 text-right">
+								<h:outputLabel value="No. de Contrato"
+									for="txtNumeroContrato" />
+							</div>
+							<div class="col-lg-3">
+								<p:inputText id="txtNumeroContrato"
+									value="#{consultaSolicitudController.filtroConsultaSolicitudDto.numeroContrato}">
+								</p:inputText>
+							</div>
+
+							<div class="col-lg-3 text-right">
+								<h:outputLabel value="Razón social"
+									for="txtRazonSocial" />
+							</div>
+							<div class="col-lg-3">
+								<p:inputText id="txtRazonSocial" class="anchoInput"
+									value="#{consultaSolicitudController.filtroConsultaSolicitudDto.razonSocial}">
+								</p:inputText>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-3 text-right">
+                                <h:outputLabel value="Trámite:"/>
+                            </div>
+                            <div class="col-lg-3">
+                                <p:selectOneMenu id="tramite" class="anchoInput"
+                                                 value="#{consultaSolicitudController.filtroConsultaSolicitudDto.tramite}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaSolicitudController.tramites}" var="tramite"
+                                                   itemLabel="#{tramite.descripcion}" itemValue="#{tramite}"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="col-lg-3 text-right">
+                                <h:outputLabel value="Estado Parametrización:"/>
+                            </div>
+                            <div class="col-lg-3">
+                                <p:selectOneMenu id="estadoParametrizacion" class="anchoInput"
+                                                 value="#{consultaSolicitudController.filtroConsultaSolicitudDto.estadoParametrizacionEnum}"
+                                                 converter="omnifaces.SelectItemsConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                    <f:selectItems value="#{consultaSolicitudController.estadoParametrizacionEnums}"
+                                                   var="estadoParametrizacion"
+                                                   itemLabel="#{estadoParametrizacion.descripcion}"
+                                                   itemValue="#{estadoParametrizacion}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <p:dialog modal="true" resizable="false" header="Values" widgetVar="dlg" showEffect="fold">
+                            <p:panelGrid id="display" columns="2" columnClasses="label,value">
+                                <h:outputText value="Popup:"/>
+                                <h:outputText
+                                    value="#{consultaSolicitudController.filtroConsultaSolicitudDto.fechaInicioPrestacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                                <h:outputText
+                                    value="#{consultaSolicitudController.filtroConsultaSolicitudDto.fechaFinPrestacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </p:panelGrid>
+                        </p:dialog>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-offset-8 col-lg-4">
+                                <div class="text-right">
+                                    <p:commandButton value="Buscar" styleClass="btn btn-sm btn-info"
+                                                     icon="fa fa-search" iconPos="left"
+                                                     update="tblListaSolicitudesPorParametrizar"/>
+                                    <p:commandButton value="Limpiar" styleClass="btn btn-sm btn-warning"
+                                                     icon="fa fa-trash" iconPos="left" actionListener="#{consultaSolicitudController.limpiar()}"
+                                                     immediate="true" update="@form"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-12">
+                            <p:scrollPanel mode="native" style="width:100%;height:100%">
+                                <p:dataTable id="tblListaSolicitudesPorParametrizar" lazy="true"
+                                             value="#{consultaSolicitudController}"
+                                             var="solicitudContratacionParametrizable"
+                                             rows="15"
+                                             paginator="true"
+                                             paginatorPosition="bottom"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="5,10,20"
+                                             emptyMessage="Sin registros...">
+                                     <f:facet name="header">
+                            			Bandeja Parametrización Contratos
+		                            	<p:commandButton id="toggler" type="button"
+													value="Columnas" icon="ui-icon-calculator" />
+										<p:columnToggler datasource="tblListaSolicitudesPorParametrizar"
+											trigger="toggler"/>
+									</f:facet>
+                                    <p:column headerText="Número de Negociación"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.numeroNegociacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{solicitudContratacionParametrizable.numeroNegociacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Número de Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.contrato.numeroContrato}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{solicitudContratacionParametrizable.contrato.numeroContrato}"/>
+                                    </p:column>
+                                    <p:column headerText="Razón Social Sede Firma Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.prestadorDto.nombre}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{solicitudContratacionParametrizable.prestadorDto.nombre}"/>
+                                    </p:column>
+                                    <p:column headerText="NIT"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.prestadorDto.numeroDocumento}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{solicitudContratacionParametrizable.prestadorDto.numeroDocumento}"/>
+                                    </p:column>
+                                     <p:column headerText="Tipo de Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.contrato.tipoContratoEnum}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{solicitudContratacionParametrizable.contrato.tipoContratoEnum}"/>
+                                    </p:column>
+                                    <p:column headerText="Regional" style="width:100px;"
+                                    	styleClass="text-center" filterStyleClass="anchoInput"
+										filterBy="#{solicitudContratacionParametrizable.regional}"
+                                  		filterMatchMode="contains">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.regional}"/>
+                                    </p:column>
+                                     <p:column headerText="Número de Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.contrato.numeroContrato}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText value="#{solicitudContratacionParametrizable.contrato.numeroContrato}"/>
+                                    </p:column>
+                                    <p:column headerText="Modalidad de Negociación"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.modalidadNegociacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{solicitudContratacionParametrizable.modalidadNegociacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Régimen"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.regimenNegociacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{solicitudContratacionParametrizable.regimenNegociacion}"/>
+                                    </p:column>
+
+                                     <p:column headerText="Tipo de Subsidio"
+                                     	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.contrato.tipoSubsidiado}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.contrato.tipoSubsidiado}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Fecha Inicio"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.contrato.fechaInicioVigencia}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.contrato.fechaInicioVigencia}">
+                                    		<f:convertDateTime pattern="dd/MM/yyyy" />
+                                    	</h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Fecha Fin"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.contrato.fechaFinVigencia}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.contrato.fechaFinVigencia}">
+                                    		<f:convertDateTime pattern="dd/MM/yyyy" />
+                                    	</h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Nivel Contrato"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.contrato.nivelContrato}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.contrato.nivelContrato}"/>
+                                    </p:column>
+
+                                     <p:column headerText="Tipo de Minuta"
+                                     	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.minuta.descripcion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.minuta.descripcion}"/>
+                                    </p:column>
+
+                                     <p:column headerText="Población"
+                                     	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.poblacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.poblacion}"/>
+                                    </p:column>
+
+                                     <p:column headerText="Responsable Creación"
+                                     	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.responsableCreacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.responsableCreacion}"/>
+                                    </p:column>
+
+                                     <p:column headerText="Fecha Creación"
+                                     	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.fechaNegociacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.fechaNegociacion}">
+                                    		<f:convertDateTime pattern="dd/MM/yyyy" />
+                                    	</h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Estado Legalización"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.estadoLegalizacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{solicitudContratacionParametrizable.estadoLegalizacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Fecha Legalización" style="width:100px;"
+                                     	styleClass="text-center"
+										filterBy="#{solicitudContratacionParametrizable.fechaLegalizacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                    	<h:outputText value="#{solicitudContratacionParametrizable.fechaLegalizacion}">
+                                    		<f:convertDateTime pattern="dd/MM/yyyy" />
+                                    	</h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Estado Parametrización"
+                                    	styleClass="text-center" style="width:100px;"
+										filterBy="#{solicitudContratacionParametrizable.estadoParametrizacion}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{solicitudContratacionParametrizable.estadoParametrizacion}"/>
+                                    </p:column>
+                                    <p:column headerText="Estado Contrato" style="width:100px;"
+                                    	styleClass="text-center"
+										filterBy="#{solicitudContratacionParametrizable.contrato.estadoContrato}"
+                                  		filterMatchMode="contains" filterStyleClass="anchoInput">
+                                        <h:outputText
+                                            value="#{solicitudContratacionParametrizable.contrato.estadoContrato}"/>
+                                    </p:column>
+                                    <p:column headerText="Acciones" class="text-center"  style="width:100px;">
+                                        <p:commandLink title="Parametrizar Solicitud"
+                                                       action="#{FacesUtils.redirect('/parametrizacion/parametrizarContrato.page')}"
+                                                       rendered="#{solicitudContratacionParametrizable.modalidadNegociacion eq 'Evento'}">
+                                            <i class="fa fa-cog fa-lg"/>
+                                            <f:setPropertyActionListener value="#{solicitudContratacionParametrizable.idSolicitudContratacion}"
+                                                                         target="#{flash.idSolicitudContratacion}"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:scrollPanel>
+                            </div>
+                        </div>
+                    </div>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</f:view>

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.EstadoComiteEnum" />
+	<ui:composition template="/template/inner.xhtml">
+		<ui:define name="title">
+			<h:outputLabel value="#{i18n.bandeja_comite_title}" />
+		</ui:define>
+		<ui:define name="content">
+			<h:form id="formConsultaSolicitudes">
+				<p:panel id="pnlConsultaSolicitudes">
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.acta_comite_ttl_acta_comite}"
+								styleClass="titulo-bold"></p:outputLabel>
+
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+					<div class="form-group">
+						<div class="row">
+							<div class="col-lg-3 text-right">
+								<h:outputLabel value="#{i18n.acta_comite_lbl_lugar}" for="lugar" />
+							</div>
+							<div class="col-lg-3">
+								<p:inputText id="lugar" 
+									value="#{actaComite.acta.lugar}"
+									required="true" 
+									requiredMessage="#{i18n.acta_comite_msg_lugar}"
+									maxlength="100"/>
+							</div>
+							<div class="col-lg-3 text-right">
+								<h:outputLabel value="#{i18n.acta_comite_lbl_fecha_hora}" />
+							</div>
+							<div class="col-lg-3">
+								<h:outputText value="#{actaComite.acta.fechaActa}">
+									<f:convertDateTime pattern="dd/MM/yyyy kk:mm" timeZone="GMT-5" />
+								</h:outputText>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="row">
+							<div class="col-lg-3 text-right">
+								<h:outputLabel value="#{i18n.acta_comite_lbl_cordinador}" />
+							</div>
+							<div class="col-lg-3">
+								<p:inputText value="#{actaComite.acta.cordinador}" 
+									required="true" 
+									requiredMessage="#{i18n.acta_comite_msg_cordinador}"
+									maxlength="100"/>
+							</div>
+							<div class="col-lg-3 text-right">
+								<h:outputLabel value="#{i18n.acta_comite_lbl_cargo}" />
+							</div>
+							<div class="col-lg-3">
+								<p:inputText value="#{actaComite.acta.cargo}" 
+									required="true" 
+									requiredMessage="#{i18n.acta_comite_msg_cargo}"
+									maxlength="100"/>
+							</div>
+						</div>
+					</div>
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.acta_comite_ttl_participantes}"
+								styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+					</h:panelGrid>
+					<br />
+					<p:dataTable var="asistente" value="#{actaComite.asistentes}"
+						emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+						<p:column headerText="#{i18n.acta_comite_lbl_cargo}">
+							<h:outputText value="#{asistente.cargo}" />
+						</p:column>
+
+						<p:column headerText="#{i18n.acta_comite_lbl_nombre_participante}">
+							<h:outputText value="#{asistente.nombre}" />
+						</p:column>
+
+						<p:column headerText="#{i18n.acta_comite_lbl_voz_participante}">
+							<h:outputText value="#{asistente.siTieneVoz ? 'Si' : 'NO'}" />
+						</p:column>
+
+						<p:column headerText="#{i18n.acta_comite_lbl_voto_participante}">
+							<h:outputText value="#{asistente.siTieneVoto ? 'Si' : 'NO'}" />
+						</p:column>
+					</p:dataTable>
+					<br />
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.acta_comite_ttl_objetivos}"
+								styleClass="titulo-bold"></p:outputLabel>
+							<div class="separador"></div>
+						</f:facet>
+
+						<br />
+						<p:inputTextarea style="width: 100%;"
+							value="#{actaComite.acta.objetivos}" 
+									required="true" 
+									requiredMessage="#{i18n.acta_comite_msg_objetivos}"
+									maxlength="2000" counter="display"  class="form-control"
+                                                                        counterTemplate="{0} caracteres restantes." autoResize="false"/>
+                                                <h:outputText id="display" class="pull-right" />
+					</h:panelGrid>
+					<br />
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.acta_comite_ttl_desarrollo}"
+								styleClass="titulo-bold" />
+							<div class="separador"></div>
+						</f:facet>
+
+						<br />
+						<p:inputTextarea style="width: 100%;"
+							value="#{actaComite.acta.desarrolloReunion}" 
+									required="true" 
+									requiredMessage="#{i18n.acta_comite_msg_desarrollo}"
+									maxlength="2000" counter="displayDos"  class="form-control"
+                                                                        counterTemplate="{0} caracteres restantes." autoResize="false"/>
+                                                <h:outputText id="displayDos" class="pull-right" />
+					</h:panelGrid>
+					<br />
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.acta_comite_ttl_acta_anterior}"
+								styleClass="titulo-bold" />
+							<div class="separador"></div>
+						</f:facet>
+
+						<br />
+						<p:inputTextarea style="width: 100%;"
+							value="#{actaComite.acta.lecturaActaAnterior}" 
+									required="true" 
+									requiredMessage="#{i18n.acta_comite_msg_acta_anterior}"
+									maxlength="2000" counter="displayTres" class="form-control"
+                                                                        counterTemplate="{0} caracteres restantes." autoResize="false"/>
+                                                <h:outputText id="displayTres" class="pull-right" />
+					</h:panelGrid>
+					<br />
+
+					<br />
+					<h:panelGrid columns="1" style="width:100%">
+						<f:facet name="header">
+							<p:outputLabel value="#{i18n.acta_comite_ttl_compromisos}"
+								styleClass="titulo-bold" />
+							<div class="separador"></div>
+						</f:facet>
+
+						<br />
+						<p:dataTable editable="true" editMode="cell"
+							id="tablaCompromisosComite"
+							value="#{actaComite.acta.compromisos}" var="compromiso"
+							emptyMessage="#{i18n.acta_comite_lbl_compromiso_vacio}">
+							<f:facet name="header">
+								<div class="text-right">
+									<p:commandButton styleClass="btn btn-sm btn-success"
+										value="Agregar compromiso"
+										action="#{actaComite.adicionarCompromiso}"
+										update="tablaCompromisosComite" 
+										process="@this"/>
+								</div>
+							</f:facet>
+
+							<p:column headerText="#{i18n.acta_comite_lbl_compromiso_tarea}"
+								styleClass="col-lg-6 col-md-6 col-sm-5">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{compromiso.tarea}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{compromiso.tarea}" style="width:96%"
+											label="#{i18n.acta_comite_lbl_compromiso_tarea}"
+											required="true"
+											requiredMessage="#{i18n.acta_comite_msg_compromiso_tarea}" 
+											maxlength="200"/>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column
+								headerText="#{i18n.acta_comite_lbl_compromiso_responsable}"
+								styleClass="col-lg-3 col-md-3 col-sm-4">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{compromiso.responsable}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{compromiso.responsable}"
+											style="width:96%"
+											label="#{i18n.acta_comite_lbl_compromiso_responsable}"
+											required="true"
+											requiredMessage="#{i18n.acta_comite_msg_compromiso_responsable}" 
+											maxlength="100"/>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column headerText="#{i18n.acta_comite_lbl_compromiso_fecha}"
+								styleClass="col-lg-2 col-md-2 col-sm-2">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{compromiso.fechaCompromiso}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:calendar value="#{compromiso.fechaCompromiso}"
+                                                                                            style="width:96%"
+                                                                                        mindate="#{actaComite.acta.fechaActa}"
+											label="#{i18n.acta_comite_lbl_compromiso_fecha}"
+                                                                                        pattern="dd/MM/yyyy" required="true"
+                                                                                        readonlyInput="true" autocomplete="false"
+											requiredMessage="#{i18n.acta_comite_msg_compromiso_fecha}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column styleClass="col-lg-1 col-md-1 col-sm-1">
+								<p:commandButton icon="fa fa-ban" styleClass="btn btn-sm"
+                                                                                 action="#{actaComite.eliminarCompromiso(compromiso)}" process="@this"
+                                                                        update="tablaCompromisosComite">
+                                                                    <p:confirm header="#{i18n.acta_comite_msg_confit_eliminar_compromiso}"
+                                                                               message="#{i18n.acta_comite_msg_eliminar_compromiso}"
+                                                                               icon="fa fa-exclamation-triangle" />
+                                                                </p:commandButton>
+							</p:column>
+						</p:dataTable>
+					</h:panelGrid>
+				</p:panel>
+
+				<p:panel>
+					<!-- Boton regresar -->
+					<div class="row">
+						<div class="col-lg-12">
+							<p:commandButton value="#{i18n.form_label_button_regresar}"
+								action="#{actaComite.regresar}" process="@this"
+								styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left"
+								iconPos="left">
+
+								<p:confirm header="#{i18n.form_ttl_confirm_button_regresar_acta}" 
+									message="#{i18n.form_msg_confirm_button_regresar_acta}"
+									icon="ui-icon-alert"/>	
+							</p:commandButton>
+							
+							<p:commandButton value="#{i18n.form_label_button_generar_acta}"								
+								styleClass="btn btn-sm btn-info"
+								actionListener="#{actaComite.generarActa}"
+								iconPos="left" oncomplete="">
+
+								<p:confirm header="#{i18n.form_ttl_confirm_button_generar_acta}" 
+									message="#{i18n.form_msg_confirm_button_generar_acta}"
+									icon="ui-icon-info"/>				
+							</p:commandButton>
+						</div>
+					</div>					
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</f:view>

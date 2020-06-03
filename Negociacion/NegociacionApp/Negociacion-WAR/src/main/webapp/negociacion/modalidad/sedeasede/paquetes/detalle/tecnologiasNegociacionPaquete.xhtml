@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:form id="formTecnologiasTabs">
+        <p:tabView id="tecnologiaTabs">
+            <p:tab title="#{i18n.enum_tipotecnologiaenum_procedimientos}">
+                <ui:include src="./tablaProcedimientos.xhtml"/>
+            </p:tab>
+            <p:tab title="#{i18n.enum_tipotecnologiaenum_medicamentos}">
+                <ui:include src="./tablaMedicamentos.xhtml"/>
+            </p:tab>
+            <p:tab title="#{i18n.enum_tipotecnologiaenum_insumos}">
+                <ui:include src="./tablaInsumos.xhtml"/>
+            </p:tab>
+        </p:tabView>
+    </h:form>
+</f:view>

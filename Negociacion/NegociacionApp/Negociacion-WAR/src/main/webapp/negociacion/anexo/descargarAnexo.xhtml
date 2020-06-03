@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:o="http://omnifaces.org/ui">
+	
+	<o:importConstants
+		type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" />
+	
+	<h:form id="descargarAnexoForm">
+        <h:panelGroup layout="block"
+                    rendered="#{gestionNegociacionController.tieneProcedimientos()}">
+            <span style="float: left">#{i18n.descarga_anexo_procedimientos}</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton
+                    id="btnDescargarAnexoProcedimientos"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{gestionNegociacionController.descargarAnexoExcel('procedimientos')}" />
+            </span>
+            <div style="clear: both"></div>
+        </h:panelGroup>
+        <h:panelGroup layout="block"
+                    rendered="#{gestionNegociacionController.tieneAnexosSinTarifarioProcedimientos()
+                                 and not gestionNegociacionController.negociacionEsCapita() 
+                                and gestionNegociacionController.modalidadNegociacion != NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+            <span style="float: left">#{i18n.descarga_anexo_procedimientos_sin_tarifa}</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton 
+                    id="btnDescargarAnexoProcedimientosSinDetalles"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{gestionNegociacionController.descargarAnexoExcel('procedimientosSinDetalles')}" />
+            </span>
+            <div style="clear: both"></div>
+        </h:panelGroup>
+        <h:panelGroup layout="block"
+                    rendered="#{gestionNegociacionController.tieneMedicamentos()}">
+            <span style="float: left">#{i18n.descarga_anexo_medicamentos}</span>
+            <span style="float: right; width: 50%">
+            <p:commandButton 
+                id="btnDescargarAnexoMedicamentos"
+                alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                icon="fa fa-file-excel-o"
+                actionListener="#{gestionNegociacionController.descargarAnexoExcel('medicamentos')}" />
+            </span>
+            <div style="clear: both"></div>
+        </h:panelGroup>
+        <h:panelGroup layout="block"
+                    rendered="#{gestionNegociacionController.tieneProcedimientosRecuperacion() 
+                    and not (gestionNegociacionController.negociacionEsRiasCapita or gestionNegociacionController.negociacionESRiasCapitaGrupoEtario)}">
+            <span style="float: left">#{i18n.descarga_anexo_procedimientos_recuperacion}</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton
+                    id="btnDescargarAnexoProcedimientosRecuperacion"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{gestionNegociacionController.descargarAnexoExcel('procedimientosRecuperacion')}" />
+            </span>
+            <div style="clear: both"></div>
+        </h:panelGroup> 
+        
+        <h:panelGroup layout="block"
+                    rendered="#{gestionNegociacionController.tienePaquetes()}">
+            <span style="float: left">#{i18n.descarga_anexo_paquetes}</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton 
+                    id="btnDescargarAnexoPaquetes"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{gestionNegociacionController.descargarAnexoExcel('paquetes')}" />
+            </span>
+        </h:panelGroup>
+        
+        <h:panelGroup layout="block"
+                    rendered="#{gestionNegociacionController.tienePoblacion()}">
+            <span style="float: left">#{i18n.descarga_anexo_poblacion}</span>
+            <span style="float: right; width: 50%">
+                <p:commandButton 
+                    id="btnDescargarAnexoPoblacion"
+                    alt="#{i18n.negociacion_btn_alt_des_anexo}"
+                    title="#{i18n.negociacion_btn_alt_des_anexo}" ajax="false"
+                    icon="fa fa-file-excel-o"
+                    actionListener="#{gestionNegociacionController.descargarAnexoExcel('poblacion')}" />
+            </span>
+        </h:panelGroup>
+    </h:form>
+</f:view>

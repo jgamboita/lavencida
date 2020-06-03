@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.5.1.final using JasperReports Library version 6.5.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteAnexoProcedimientosPGP" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" isIgnorePagination="true" uuid="af9a8941-a862-480b-b78e-d8917cfb1b36">
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="true"/>
+	<property name="net.sf.jasperreports.page.break.no.pagination" value="apply"/>
+	<property name="net.sf.jasperreports.export.xls.sheet.names.1" value="ANEXO PRO"/>
+	<property name="net.sf.jasperreports.export.xls.first.page.number" value="1"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.page.scale" value="85"/>
+	<style name="Base" isDefault="true" fontName="Calibri" fontSize="8"/>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#BABABA">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="anexoMedicamentos" whenResourceMissingType="Empty" uuid="7c85d752-9fab-4693-a204-1d4470b3f8fd">
+		<field name="codigoGrupo" class="java.lang.String"/>
+		<field name="grupo" class="java.lang.String"/>
+		<field name="codTecnologiaUnicaEmssanar" class="java.lang.String"/>
+		<field name="descripcionTecnologiaUnicaEmssanar" class="java.lang.String"/>
+		<field name="frecuencia" class="java.math.BigDecimal"/>
+		<field name="cmu" class="java.math.BigDecimal"/>
+		<field name="numeroAtenciones" class="java.lang.Integer"/>
+		<field name="numeroUsuarios" class="java.lang.Integer"/>
+		<field name="pgp" class="java.math.BigDecimal"/>
+	</subDataset>
+	<parameter name="medicamentos" class="java.util.Collection"/>
+	<group name="GrupoMedicamentos">
+		<groupHeader>
+			<band height="323">
+				<componentElement>
+					<reportElement key="tablaMedicamentos" style="table 5" x="0" y="0" width="550" height="20" isPrintWhenDetailOverflows="true" uuid="7cd9eb37-04b4-4631-9921-31b20d88b237"/>
+					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+						<datasetRun subDataset="anexoMedicamentos" uuid="248a6427-9576-4081-bf78-7bf88abcf399">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{medicamentos})]]></dataSourceExpression>
+						</datasetRun>
+						<jr:column width="50" uuid="741303c2-bbad-450a-9de7-1cba6d226ecd">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="50" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Código grupo]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="50" height="20" uuid="23f89722-0579-4ebf-a9d1-656710142e64"/>
+									<textFieldExpression><![CDATA[$F{codigoGrupo}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="50" uuid="ea8f6898-ab89-4390-a3f3-d5537233a8e9">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="50" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Grupo terapéutico]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="50" height="20" uuid="23f89722-0579-4ebf-a9d1-656710142e64"/>
+									<textFieldExpression><![CDATA[$F{grupo}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="30" uuid="b2cb6293-fa54-4609-a7a2-22492e390d63">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="30" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Código tecnología única Emssanar]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="30" height="20" uuid="42c23beb-4a8d-4412-b9bb-2212b6bb5fd9"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{codTecnologiaUnicaEmssanar}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="150" uuid="95a22bcb-c4b4-486b-8e79-766bfceca90b">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="150" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Descripción código tecnología única Emssanar]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="150" height="20" uuid="59a8b537-f043-44a8-b89c-691d447e4cef"/>
+									<textFieldExpression><![CDATA[$F{descripcionTecnologiaUnicaEmssanar}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="59" uuid="398e47a1-9dd7-417c-bf23-d7fbeb3a5553">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="59" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Frecuencia]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="59" height="20" uuid="82d92aa3-635b-4667-b650-3cc483d47289"/>
+									<textFieldExpression><![CDATA[$F{frecuencia}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="59" uuid="398e47a1-9dd7-417c-bf23-d7fbeb3a5553">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="59" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[CMU]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="59" height="20" uuid="82d92aa3-635b-4667-b650-3cc483d47289"/>
+									<textFieldExpression><![CDATA[$F{cmu}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="60" uuid="c02bc547-7b27-4b81-b35c-f6a2205e83d3">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="60" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Nro de atenciones]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="60" height="20" uuid="59632874-9d27-4331-9772-1ad6df49c392"/>
+									<textFieldExpression><![CDATA[$F{numeroAtenciones}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="60" uuid="94c6adc6-cf0f-47c8-aadd-b9ef26999908">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="60" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[Nro de usuarios]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="60" height="20" uuid="1782879c-90c7-42bf-94cc-7db5e2c60cc2"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{numeroUsuarios}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="30" uuid="cd69d304-8d93-4b94-b4d8-d06bd5e05ae3">
+							<jr:tableHeader style="table 3_TH" height="20" rowSpan="1">
+								<staticText>
+									<reportElement x="0" y="0" width="30" height="20" uuid="3d211daf-23d8-47ed-a135-b5318b8a987a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<text><![CDATA[PGP]]></text>
+								</staticText>
+							</jr:tableHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField isBlankWhenNull="true">
+									<reportElement x="0" y="0" width="30" height="20" uuid="ebb1b0ad-53ae-4503-9ec6-fffd73ae8d0a"/>
+									<textElement textAlignment="Right"/>
+									<textFieldExpression><![CDATA[$F{pgp}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:table>
+				</componentElement>
+			</band>
+		</groupHeader>
+	</group>
+</jasperReport>

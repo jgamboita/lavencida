@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<h:form id="serviciosPropiosForm">
+		<p:panel id="panelServiciosPropios">
+			<div class="form-group">
+				<p:dataTable id="serviciosPropios" var="servicio"
+					value="#{detallePortafolioController.serviciosPropio}"
+					style="margin: 0 auto;"
+					emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+					paginator="true" paginatorPosition="bottom"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15"
+					widgetVar="serviciosPropiosVar">
+					
+					<p:column
+						headerText="#{i18n.servicio_label_grupo_habilitacion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.procedimientoPropio.servicioSalud.macroservicio.nombre}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.procedimientoPropio.servicioSalud.macroservicio.nombre}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.servicio_label_servicio_habilitacion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.procedimientoPropio.servicioSalud.nombre}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.procedimientoPropio.servicioSalud.nombre}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.form_label_codigo}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.codigoNormativo}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.codigoNormativo}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.form_label_descripcion}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.descripcion}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.descripcion}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.form_label_valor}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.valor}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.valor}" />
+					</p:column>
+					
+					<p:column
+						headerText="#{i18n.form_label_estado}"
+						styleClass="text-center col-lg-1"
+						filterBy="#{servicio.estado}" filterMatchMode="contains"
+						filterStyleClass="anchoInput">
+						<h:outputText value="#{servicio.estado}" />
+					</p:column>
+					
+				</p:dataTable>
+			</div>
+		</p:panel>
+	</h:form>
+
+</f:view>

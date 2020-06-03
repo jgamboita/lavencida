@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+	
+     <ui:composition template="/template/inner.xhtml">
+     <ui:define name="content">
+		<p:panel>
+			<f:facet name="header">
+				<p:outputLabel value="Guía Rápida" styleClass="titulo-bold"/>
+				<div class="separador"></div>
+			</f:facet>
+				<object type="application/pdf"
+					data="./resources/pdf/contratacion_capita_guia_rapida.pdf"
+					height="450" width="100%" />
+		</p:panel>
+		</ui:define>
+	</ui:composition>
+	
+</f:view>

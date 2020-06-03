@@ -1,0 +1,1598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:c="http://java.sun.com/jstl/core"
+        xmlns:o="http://omnifaces.org/ui" xmlns:pe="http://primefaces.org/ui/extensions">
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.NegociacionModalidadEnum" var="NegociacionModalidadEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.RegimenNegociacionEnum" var="RegimenNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.ComplejidadNegociacionEnum" var="ComplejidadNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoNegociacionEnum" var="EstadoNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.EstadoLegalizacionEnum" var="EstadoLegalizacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.ReportesAnexosNegociacionEnum" var="ReportesAnexosNegociacionEnum"/>
+    <o:importConstants type="com.conexia.contratacion.commons.constants.enums.ArchivosNegociacionEnum" var="ArchivosNegociacionEnum"/>
+    <script type="text/javascript">
+        function validarComa(text) {
+            if (text.value.match('[,]')) {
+                text.value = '';
+            }
+        }
+
+        function anular(e) {
+            tecla = (document.all) ? e.keyCode : e.which;
+            return (tecla != 13);
+        }
+    </script>
+    <style type="text/css">
+        #tecnologiasSSForm\:blockGpEtario_blocker {
+            background: #000000 !important;
+            opacity: 0.05 !important;
+            z-index: 1000 !important;
+        }
+    </style>
+    <ui:composition template="/template/inner.xhtml">
+        <ui:define name="title">
+            <h:outputLabel value="#{i18n.negociacion_detalle_titulo}: #{tecnologiasSSController.negociacion.id}"/>
+        </ui:define>
+        <ui:define name="content">
+            <!-- Pop-up de medicamentos agregar evento -->
+            <p:dialog header="Medicamentos agregar" closable="true"
+                      widgetVar="medicamentosAgregarDlg" modal="true" width="90%"
+                      height="400px">
+                <ui:include src="./medicamentos/medicamentosAgregar.xhtml"/>
+            </p:dialog>
+            <!-- Pop-up de agregar paquetes -->
+            <p:dialog header="Agregar paquetes" closable="true" widgetVar="paquetesAgregarDlg" modal="true" width="90%"
+                      height="500px"
+                      rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+                <ui:include src="./paquetes/agregar/paquetesAgregar.xhtml"/>
+            </p:dialog>
+            <!-- Pop up paquetes no cruzados habilitacion prestador -->
+            <p:dialog header="Paquetes no cruzados" closable="true" widgetVar="paquetesNoCruzadosDlg" modal="true"
+                      width="70%" height="500px"
+                      rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+                <ui:include src="./paquetes/desahabilitados/paquetesNoCruzadosReps.xhtml"/>
+            </p:dialog>
+            <!-- Pop-up de procedimientos agregar evento -->
+            <p:dialog header="Servicios agregar" closable="true" widgetVar="serviciosAgregarDlg" modal="true"
+                      height="500px" width="90%"
+                      rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+                <ui:include src="./servicios/serviciosAgregar.xhtml">
+                    <ui:param name="componenttoupdate" value="tecnologiasSSForm:tabsTecnologias:panelServicioSS"/>
+                </ui:include>
+            </p:dialog>
+            <p:dialog header="Referente Pgp" closable="true" widgetVar="referenteDlgW" modal="true" height="500px"
+                      width="90%">
+                <ui:include src="/referentePGP/detalleReferenteDialog.xhtml">
+                </ui:include>
+            </p:dialog>
+            <!-- Pop-up mostrar ayuda para creación de reglas de la negociación -->
+            <p:dialog header="Tips para la creación de reglas de la negociación" closable="true"
+                      widgetVar="reglasPoblacionDlg" modal="true" height="200px" width="550px">
+                <p:outputLabel style="text-align:justify"
+                               value="1. Pueden existir múltiples reglas con el mismo género siempre y cuando los rangos de edad no se intersequen o no existan reglas con la selección de género AMBOS con rangos de edad que se intersequen con el de la regla en creación."/>
+                <p:outputLabel style="text-align:justify"
+                               value="2. Si existe un regla con solamente el criterio de filtrado GÉNERO en la selección AMBOS, no se permitirá la creación de otras reglas, puesto que al especificar dicha regla se  entiende que se permite toda la población en todos los rangos de edad."/>
+                <p:outputLabel style="text-align:justify"
+                               value="3. Pueden existir rangos de edad iguales siempre y cuando la selección GÉNERO sea del género opuesto o no corresponda a la selección AMBOS."/>
+                <p:outputLabel style="text-align:justify"
+                               value="4. Si se crea una regla con solamente el criterio de filtrado EDAD se entiende que la regla considera la selección de género AMBOS."/>
+            </p:dialog>
+            <!-- Pop-up para asociar población a la negociación PGP -->
+            <p:dialog header="Asociar población a negociación" widgetVar="dlg-asociar-poblacion" modal="true"
+                      height="140" width="550">
+                <h:form id="PopUpAsociarPoblacionPGP">
+                    <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="20">
+                        <p:outputLabel value="#{i18n.form_label_generar_plantilla}" style="width:125px"/>
+                        <p:commandButton id="btn-generar-plantilla-poblacion" style="width:100px"
+                                         styleClass="btn btn-sm btn-info" icon="fa fa-download" value="Descargar"
+                                         partialSubmit="true" process="@this"
+                                         actionListener="#{tecnologiasSSController.descargarFormatoReporte()}"
+                                         ajax="false" onsuccess="PrimeFaces.monitorDownload(start, stop);">
+                            <p:fileDownload value="#{tecnologiasSSController.formatoDownload}"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                    <h:panelGrid columns="5" style="margin-bottom:10px" cellpadding="20">
+                        <p:outputLabel value="#{i18n.form_label_importar_poblacion}" style="width:125px"/>
+                        <p:spacer/>
+                        <p:fileUpload id="btnImportarPoblacionPgp" styleClass="btn btn-warning btn-sm" auto="true"
+                                      multiple="true" allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/"
+                                      accept="xls|xlsx|XLS|XLSX" mode="advanced"
+                                      update="@([id$=PanelBtnNoProcesados]) @([id$=dialogoErrores]) @([id$=afiliadosPgpTabla]) @([id$=poblacionEventoPgp]) @([id$=tablaMunicipiosNegociacion])"
+                                      cancelLabel="#{i18n.form_label_button_cancelar}"
+                                      uploadLabel="#{i18n.form_label_importar}" label="#{i18n.form_label_importar}"
+                                      sizeLimit="5242880" invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                                      invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                                      fileUploadListener="#{tecnologiasSSController.importFiles}"
+                                      onstart="PF('statusDialog').show();" oncomplete="PF('statusDialog').hide();">
+                            <f:attribute name="foo" value="#{ArchivosNegociacionEnum.POPULATIONPGP_FILE}"/>
+                        </p:fileUpload>
+                        <p:spacer style="width:10px"/>
+                        <p:outputPanel id="PanelBtnNoProcesados">
+                            <p:commandButton styleClass="btn btn-warning btn-sm" icon="fa fa-times-circle"
+                                             id="btnMostrarNoProcesados"
+                                             rendered="#{not empty tecnologiasSSController.listadoErrores}"
+                                             onclick="PF('dialogoErrores').show();"
+                                             value="#{i18n.form_label_button_no_procesados_asociar_poblacion}">
+                            </p:commandButton>
+                        </p:outputPanel>
+                        <p:dialog header="#{i18n.form_label_dialog_listado_errores_afiliados_no_procesados}"
+                                  widgetVar="dialogoErrores" height="500" width="1000" position="center" modal="true"
+                                  appendTo="@(body)" id="dialogoErrores">
+                            <h:commandLink title="#{i18n.form_label_file_excel}">
+                                <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                                <p:dataExporter type="xlsx" target="erroresTabla" fileName="Listado_de_Errores"/>
+                            </h:commandLink>
+                            <p:dataTable id="erroresTabla" var="registro" paginatorAlwaysVisible="false"
+                                         value="#{tecnologiasSSController.listadoErrores}" rows="10" dynamic="true"
+                                         styleClass="paginated" paginator="true" paginatorPosition="bottom"
+                                         widgetVar="erroresTabla" rowsPerPageTemplate="5,10,20"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         emptyMessage="#{i18n.form_label_datatable_noregistros}">
+                                <p:column headerText="#{i18n.form_cod_habilitacion_sede}">
+                                    <h:outputText value="#{registro.codHabilitacionSedeIps}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_cod_unico_afiliado}">
+                                    <h:outputText value="#{registro.codigoUnicoAfiliado}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_tipo_documento_afiliado}">
+                                    <h:outputText value="#{registro.tipoDocumentoAfiliado}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_numero_documento_afiliado}">
+                                    <h:outputText value="#{registro.numeroDocumentoAfiliado}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_eliminar}">
+                                    <h:outputText value="#{registro.eliminarAfiliado}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_error}">
+                                    <h:outputText value="#{registro.codigo} - #{registro.mensaje}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_linea}">
+                                    <h:outputText value="#{registro.linea}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="20">
+                        <p:outputLabel value="#{i18n.form_label_exportar_poblacion}" style="width:125px"/>
+                        <p:commandButton styleClass="btn btn-sm btn-info" id="btn-exportar" style="width:100px"
+                                         immediate="true"
+                                         update="@([id$=afiliadosPgpTabla]) @([id$=poblacionEventoPgp])"
+                                         actionListener="#{tecnologiasSSController.obtenerPoblacionNegociacionPgp(false)}"
+                                         onstart="PF('statusDialog').show();" oncomplete="PF('statusDialog').hide();"
+                                         onclick="PF('dialogoAfiliadosPgp').show();" icon="fa fa-arrow-circle-down"
+                                         value="#{i18n.form_label_button_exportar_asociar_poblacion}">
+                        </p:commandButton>
+                        <p:dialog header="#{i18n.form_label_dialog_listado_afiliados_negociacion_pgp}"
+                                  widgetVar="dialogoAfiliadosPgp" height="500" width="1200" position="center"
+                                  modal="true" appendTo="@(body)" id="dialogoAfiliadosPgp" dynamic="true">
+                            <h:commandLink title="#{i18n.form_label_file_excel}">
+                                <h:outputText class="fa fa-file-excel-o fa-2x success"/>
+                                <p:dataExporter type="xlsx" target="afiliadosPgpTabla"
+                                                fileName="Listado_de_Afiliados_Negociacion"/>
+                            </h:commandLink>
+                            <p:dataTable id="afiliadosPgpTabla" var="registro" paginatorAlwaysVisible="false"
+                                         value="#{tecnologiasSSController.afiliadosNegociacionPgp}" rows="10"
+                                         dynamic="true" styleClass="paginated" paginator="true"
+                                         paginatorPosition="bottom" widgetVar="afiliadosPgpTabla"
+                                         rowsPerPageTemplate="5,10,20"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         emptyMessage="#{i18n.form_label_datatable_noregistros}">
+                                <p:column headerText="#{i18n.form_cod_unico_afiliado}">
+                                    <h:outputText value="#{registro.codigoUnicoAfiliado}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_tipo_documento}">
+                                    <h:outputText value="#{registro.tipoIdentificacion.descripcion}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_numero_documento}">
+                                    <h:outputText value="#{registro.numeroIdentificacion}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_primer_nombre}">
+                                    <h:outputText value="#{registro.primerNombre}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_segundo_nombre}">
+                                    <h:outputText value="#{registro.segundoNombre}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_primer_apellido}">
+                                    <h:outputText value="#{registro.primerApellido}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_segundo_apellido}">
+                                    <h:outputText value="#{registro.segundoApellido}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_fecha_nacimiento}">
+                                    <h:outputText value="#{registro.fechaNacimiento}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_municipio_residencia}">
+                                    <h:outputText value="#{registro.municipio.descripcion}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_fecha_afiliacion_eps}">
+                                    <h:outputText value="#{registro.fechaAfiliacionEps}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_sede_prestador}">
+                                    <h:outputText value="#{registro.sedePrestador}"/>
+                                </p:column>
+                                <p:column headerText="#{i18n.form_label_nombre_sede}">
+                                    <h:outputText value="#{registro.nombreSedePrestador}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+            <h:form id="tecnologiasSSForm" onkeypress="return anular(event)">
+                <p:panel id="panelTecnologiasDetalle">
+                    <p:panel id="panelDatosCapita">
+                        <h:panelGrid columns="1" style="width:100%">
+                            <f:facet name="header">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p:outputLabel value="#{i18n.negociacion_prestador_label_datos_generales}:
+                                                       #{gestionNegociacionController.prestadorSeleccionado.nombre}
+                                                       #{gestionNegociacionController.prestadorSeleccionado.numeroDocumento}"
+                                                       styleClass="titulo-bold">
+                                        </p:outputLabel>
+                                    </div>
+                                    <p:outputLabel
+                                            value="#{i18n.negociacion_detalle_titulo}: #{tecnologiasSSController.negociacion.id}"
+                                            styleClass="titulo-bold col-lg-5"/>
+                                    <p:outputLabel id="negociacionModalidadLabel"
+                                                   value="#{i18n.negociacion_label_modalidad}: #{tecnologiasSSController.negociacion.tipoModalidadNegociacion.descripcion} "
+                                                   styleClass="titulo-bold col-lg-5"/>
+                                </div>
+                                <div class="separador"></div>
+                            </f:facet>
+                            <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+                                <div class="form-group" style="width: 100px">
+                                    <div class="ui-grid-col-3 text-right">
+                                        <p:outputLabel for="poblacionEvento" value="#{i18n.negociacion_label_poblacion}"
+                                                       rendered="#{tecnologiasSSController.negociacion.poblacionServicio != true}"/>
+                                    </div>
+                                    <div>
+                                        <p:inputText id="poblacionEvento"
+                                                     converterMessage="#{i18n.validacion_negociacion_poblacion}"
+                                                     value="#{tecnologiasSSController.negociacion.poblacion}"
+                                                     validatorMessage="#{i18n.validacion_negociacion_poblacion_valor}"
+                                                     requiredMessage="#{i18n.validacion_negociacion_poblacion_requerida}"
+                                                     maxlength="5"
+                                                     rendered="#{tecnologiasSSController.negociacion.poblacionServicio != true}">
+                                            <p:ajax event="blur"
+                                                    listener="#{tecnologiasSSController.actualizarPoblacionEvento}"
+                                                    update="@form" process="@this"/>
+                                            <f:validateLongRange minimum="0"/>
+                                        </p:inputText>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </h:panelGrid>
+                        <br/>
+                        <!-- Condicional para pago global prospectivo -->
+                        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+                            <div class="form-group">
+                                <!-- row -->
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <p:outputLabel value="#{i18n.referente_referente}"/>
+                                        <p:panelGrid columns="2" cellpadding="10">
+                                            <p:selectOneMenu id="referentePgp" required="true"
+                                                             requiredMessage="#{i18n.referente_referente_seleccion}"
+                                                             style="width:250px"
+                                                             label="#{i18n.form_label_combo_seleccione}"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.referenteDto}"
+                                                             filter="true" filterMatchMode="contains">
+                                                <p:ajax update="fechaInicioEventoPgp, fechaFinEventoPgp, NumeroMesesEventoPgp"
+                                                        listener="#{tecnologiasSSController.getListaReferentePGP}"/>
+                                                <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"/>
+                                                <f:selectItems value="#{tecnologiasSSController.referentes}"
+                                                               var="referente" itemLabel="#{referente.descripcion}"
+                                                               itemValue="#{referente}"/>
+                                            </p:selectOneMenu>
+                                            <p:commandButton styleClass="btn btn-sm btn-info"
+                                                             id="btnDetalleReferenteDialog"
+                                                             rendered="#{tecnologiasSSController.negociacion.referenteDto.id != null}"
+                                                             style="width:60px" immediate="true"
+                                                             actionListener="#{tecnologiasSSController.mostrarDetalleReferente}"
+                                                             value="#{i18n.form_label_button_detalle_referente}">
+                                            </p:commandButton>
+                                        </p:panelGrid>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <p:outputLabel value="#{i18n.negociacion_label_fecha_inicio}"/>
+                                        <br/>
+                                        <p:inputText id="fechaInicioEventoPgp" required="true"
+                                                     value="#{tecnologiasSSController.negociacion.referenteDto.fechaInicio}"
+                                                     name="fechaInicioEventoPgp" style="width:120px"
+                                                     aria-required="true" readonly="true" size="8" role="textbox"
+                                                     aria-disabled="false"
+                                                     aria-readonly="true" type="text">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </p:inputText>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <p:outputLabel value="#{i18n.negociacion_label_fecha_fin}"/>
+                                        <br/>
+                                        <p:inputText id="fechaFinEventoPgp" required="true"
+                                                     value="#{tecnologiasSSController.negociacion.referenteDto.fechaFin}"
+                                                     name="fechaFinEventoPgp" style="width:120px" aria-required="true"
+                                                     readonly="true" size="8" role="textbox" aria-disabled="false"
+                                                     aria-readonly="true"
+                                                     type="text">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </p:inputText>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <p:outputLabel value="#{i18n.negociacion_label_numero_meses}"/>
+                                        <br/>
+                                        <p:inputText id="NumeroMesesEventoPgp" required="true"
+                                                     value="#{tecnologiasSSController.negociacion.referenteDto.cantidadMeses}"
+                                                     name="NumeroMesesEventoPgp" style="width:150px"
+                                                     aria-required="true" readonly="true" size="8" role="textbox"
+                                                     aria-disabled="false"
+                                                     aria-readonly="true" type="text"/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <p:outputLabel value="Área de influencia"/>
+                                    </div>
+                                </div>
+                                <br/>
+                                <!-- row -->
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+                                            <p:outputLabel value="#{i18n.form_label_regional}"/>
+                                            <p:selectOneMenu id="listRegional" style="width:320px"
+                                                             label="#{i18n.form_label_combo_seleccione}"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.regionalDto}">
+                                                <p:ajax update="listDepartamento, listMunicipio"
+                                                        listener="#{tecnologiasSSController.buscarDepartamentos}"/>
+                                                <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"/>
+                                                <f:selectItems value="#{tecnologiasSSController.regionales}"
+                                                               var="regional" itemLabel="#{regional.descripcion}"
+                                                               itemValue="#{regional}"/>
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p:outputLabel value="#{i18n.form_label_departamento}"/>
+                                        <p:selectOneMenu id="listDepartamento" styleClass="anchoInput"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         value="#{tecnologiasSSController.negociacion.departamentoDto}">
+                                            <p:ajax update="@([id$=listMunicipio])"
+                                                    listener="#{tecnologiasSSController.buscarMunicipios}"/>
+                                            <f:selectItem itemLabel="Seleccionar..."/>
+                                            <f:selectItems value="#{tecnologiasSSController.departamentos}"
+                                                           var="departamento" itemLabel="#{departamento.descripcion}"
+                                                           itemValue="#{departamento}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="col-lg-offset-1 col-lg-3">
+                                        <p:outputLabel value="#{i18n.form_label_municipio}"/>
+                                        <p:selectOneMenu id="listMunicipio" styleClass="anchoInput"
+                                                         converter="omnifaces.SelectItemsConverter"
+                                                         value="#{tecnologiasSSController.negociacionMunicipioSeleccionado}">
+                                            <p:ajax update="@([id$=tablaMunicipiosNegociacion])"
+                                                    listener="#{tecnologiasSSController.addMunicipiosNegociacion}"/>
+                                            <f:selectItem itemLabel="Seleccionar..."/>
+                                            <f:selectItems value="#{tecnologiasSSController.municipios}" var="municipio"
+                                                           itemLabel="#{municipio.descripcion}"
+                                                           itemValue="#{municipio}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+                                <br/>
+                                <!-- row -->
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <p:panel id="panelPoblacionPgp">
+                                            <p:outputLabel value="#{i18n.negociacion_label_poblacion_pgp}"
+                                                           rendered="#{tecnologiasSSController.negociacion.poblacionServicio != true}"/>
+                                            <br/>
+                                            <p:inputText id="poblacionEventoPgp"
+                                                         converterMessage="#{i18n.validacion_negociacion_poblacion}"
+                                                         value="#{tecnologiasSSController.negociacion.poblacion}"
+                                                         required="true"
+                                                         validatorMessage="#{i18n.validacion_negociacion_poblacion_valor}"
+                                                         requiredMessage="#{i18n.validacion_negociacion_poblacion_requerida}"
+                                                         maxlength="5"
+                                                         rendered="#{tecnologiasSSController.negociacion.poblacionServicio != true}"
+                                                         readonly="true">
+                                                <f:validateLongRange minimum="0"/>
+                                            </p:inputText>
+                                        </p:panel>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Panel para visualizar los municipios asociados a la negociación -->
+                            <p:accordionPanel id="PanelMunicipiosNegociacionPGP">
+                                <p:tab title="#{i18n.negociacion_label_title_municipios_negociacion}">
+                                    <p:panelGrid columns="1">
+                                        <p:dataTable id="tablaMunicipiosNegociacion" var="municipio"
+                                                     emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="5"
+                                                     paginator="true" paginatorPosition="bottom"
+                                                     value="#{tecnologiasSSController.municipiosNegociacion}"
+                                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     rowsPerPageTemplate="5,10,15"
+                                                     widgetVar="tablaMunicipiosNegociacionW">
+                                            <p:ajax event="page" update="@this"/>
+                                            <p:ajax event="sort" update="@this"/>
+                                            <p:ajax event="filter" update="@this"/>
+                                            <p:columnGroup type="header">
+                                                <p:row>
+                                                    <!-- Código municipio -->
+                                                    <p:column headerText="Código"
+                                                              filterBy="#{municipio.municipio.codigo}"
+                                                              filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                              styleClass="text-center">
+                                                        <h:outputText value="#{municipio.municipio.codigo}"/>
+                                                    </p:column>
+                                                    <!-- Nombre municipio -->
+                                                    <p:column headerText="Municipio"
+                                                              filterBy="#{municipio.municipio.descripcion}"
+                                                              filterMatchMode="contains" filterStyleClass="anchoInput">
+                                                    </p:column>
+                                                    <p:column headerText="Departamento"/>
+                                                    <p:column headerText="Regional"/>
+                                                    <!-- 			                        				<p:column headerText="Población asociada"/> -->
+                                                    <p:column
+                                                            headerText="#{i18n.negociacion_tabla_regla_header_acciones}"/>
+                                                </p:row>
+                                            </p:columnGroup>
+                                            <p:column headerText="Código" filterBy="#{municipio.municipio.codigo}"
+                                                      filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                <h:outputText value="#{municipio.municipio.codigo}"/>
+                                            </p:column>
+                                            <p:column headerText="Municipio"
+                                                      filterBy="#{municipio.municipio.descripcion}"
+                                                      filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                      styleClass="text-center">
+                                                <h:outputText value="#{municipio.municipio.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="Departamento" filterBy="" filterMatchMode="contains"
+                                                      filterStyleClass="anchoInput" styleClass="text-center">
+                                                <h:outputText
+                                                        value="#{municipio.municipio.departamentoDto.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="Regional" filterBy="" filterMatchMode="contains"
+                                                      filterStyleClass="anchoInput" styleClass="text-center">
+                                                <h:outputText
+                                                        value="#{municipio.municipio.departamentoDto.regional.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="#{i18n.negociacion_tabla_regla_header_acciones}">
+                                                <p:commandButton id="btnEliminarMunicipio" icon="fa fa-ban"
+                                                                 alt="#{i18n.negociacion_tabla_municipio_alt_eliminar}"
+                                                                 title="#{i18n.negociacion_tabla_municipio_alt_eliminar}"
+                                                                 ajax="true"
+                                                                 rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                                 actionListener="#{tecnologiasSSController.eliminarMunicipioNegociacion(municipio)}"
+                                                                 update="@([id$=tablaMunicipiosNegociacion])"
+                                                                 process="@([id$=PanelMunicipiosNegociacionPGP])"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:panelGrid>
+                                </p:tab>
+                            </p:accordionPanel>
+                            <!-- Panel para añadido de reglas a la negociación -->
+                            <p:accordionPanel id="panelReglasNegociacion">
+                                <p:tab title="#{i18n.negociacion_label_title_reglas_negociacion}">
+                                    <h:panelGrid id="panelGeneroRegla" columns="3" cellpadding="20">
+                                        <p:outputLabel value="#{i18n.negociacion_label_genero}" style="width:80px"/>
+                                        <p:selectBooleanCheckbox value="#{tecnologiasSSController.habilitarGenero}"
+                                                                 style="width:80px">
+                                            <p:ajax event="change" update="@([id$=panelSelectGenero])"
+                                                    listener="#{tecnologiasSSController.setTipoRegla}"/>
+                                        </p:selectBooleanCheckbox>
+                                        <p:outputPanel id="panelSelectGenero">
+                                            <p:selectOneMenu id="reglaGeneroLista"
+                                                             value="#{tecnologiasSSController.generoSeleccionado}"
+                                                             rendered="#{tecnologiasSSController.habilitarGenero}">
+                                                <f:selectItem itemLabel="Seleccione el género" itemValue=""/>
+                                                <f:selectItems value="#{tecnologiasSSController.listGenero}"
+                                                               var="genero" itemLabel="#{genero.descripcion}"
+                                                               itemValue="#{genero}"/>
+                                            </p:selectOneMenu>
+                                        </p:outputPanel>
+                                    </h:panelGrid>
+                                    <h:panelGrid id="panelEdadRegla" columns="3" cellpadding="10">
+                                        <p:outputLabel value="#{i18n.negociacion_label_edad}" style="width:80px"/>
+                                        <p:selectBooleanCheckbox value="#{tecnologiasSSController.habilitarEdad}"
+                                                                 style="width:80px">
+                                            <p:ajax event="change"
+                                                    update="@([id$=panelSelectEdad]), @([id$=panelEdadFin])"
+                                                    listener="#{tecnologiasSSController.setTipoRegla}"/>
+                                        </p:selectBooleanCheckbox>
+                                        <p:outputPanel id="panelSelectEdad">
+                                            <h:panelGrid columns="5" cellpadding="10">
+                                                <p:selectOneMenu id="operacionReglaLista"
+                                                                 value="#{tecnologiasSSController.operacionSeleccionada}"
+                                                                 rendered="#{tecnologiasSSController.habilitarEdad}"
+                                                                 process="@this">
+                                                    <p:ajax update="@([id$=panelEdadFin])"
+                                                            listener="#{tecnologiasSSController.validarOperacionSeleccionada}"/>
+                                                    <f:selectItem itemLabel="Seleccione tipo comparación" itemValue=""/>
+                                                    <f:selectItems value="#{tecnologiasSSController.listOperacionRegla}"
+                                                                   var="operacion" itemLabel="#{operacion.nombre}"
+                                                                   itemValue="#{operacion}"/>
+                                                </p:selectOneMenu>
+                                                <p:spacer width="10"/>
+                                                <pe:inputNumber id="inputEdadInicio" name="inputEdadInicio"
+                                                                style="width:40px"
+                                                                value="#{tecnologiasSSController.valorInicio}"
+                                                                rendered="#{tecnologiasSSController.habilitarEdad}"
+                                                                size="3" minValue="0" maxValue="150"/>
+                                                <p:outputPanel id="panelEdadFin">
+                                                    <p:outputLabel value="a" style="width:20px; text-align:center;"
+                                                                   rendered="#{tecnologiasSSController.mostrarAmbosEdad and tecnologiasSSController.habilitarEdad}"/>
+                                                    <pe:inputNumber id="inputEdadFin" name="inputEdadFin"
+                                                                    style="width:40px"
+                                                                    value="#{tecnologiasSSController.valorFin}"
+                                                                    rendered="#{tecnologiasSSController.mostrarAmbosEdad and tecnologiasSSController.habilitarEdad}"
+                                                                    size="3" minValue="0" maxValue="150"
+                                                    />
+                                                </p:outputPanel>
+                                            </h:panelGrid>
+                                        </p:outputPanel>
+                                    </h:panelGrid>
+                                    <br/>
+                                    <p:commandButton id="btnCrearRegla" styleClass="btn btn-sm btn-info"
+                                                     style="width:80px" value="#{i18n.negociacion_button_crear_regla}"
+                                                     icon="fa fa-floppy-o"
+                                                     rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                     update="@([id$=panelGeneroRegla]), @([id$=panelEdadRegla]), @([id$=tablaReglasNegociacion])"
+                                                     actionListener="#{tecnologiasSSController.crearNuevaRegla}"
+                                                     process="@([id$=panelReglasNegociacion])"/>
+                                    <p:spacer style="width:5px"/>
+                                    <p:commandButton id="btnLimpiarRegla" styleClass="btn btn-sm btn-info"
+                                                     style="width:80px" value="#{i18n.negociacion_button_limpiar_regla}"
+                                                     icon="fa fa-eraser"
+                                                     rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                     update="@([id$=panelGeneroRegla]), @([id$=panelEdadRegla])"
+                                                     actionListener="#{tecnologiasSSController.limpiarVariables}"
+                                                     process="@([id$=panelReglasNegociacion])"/>
+                                    <p:spacer style="width:5px;"/>
+                                    <p:commandButton id="btnTipsReglas" styleClass="btn btn-sm btn-info"
+                                                     style="width:80px" value="#{i18n.form_label_button_ayuda_reglas}"
+                                                     icon="fa fa-life-saver"
+                                                     rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                     onclick="PF('reglasPoblacionDlg').show();" process="@this"/>
+                                    <br/>
+                                    <br/>
+                                    <p:dataTable id="tablaReglasNegociacion" var="regla"
+                                                 emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+                                                 paginator="true" paginatorPosition="bottom"
+                                                 value="#{tecnologiasSSController.listReglasNegociacion}"
+                                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                 rowsPerPageTemplate="5,10,15" widgetVar="reglasTable" lazy="true">
+                                        <p:ajax event="page"/>
+                                        <p:ajax event="sort"/>
+                                        <p:ajax event="filter"/>
+                                        <p:column headerText="#{i18n.negociacion_tabla_regla_header_tipo_regla}"
+                                                  filterBy="" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                  styleClass="text-center">
+                                            <h:outputText value="#{regla.tipoRegla.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n.negociacion_tabla_regla_header_genero}" filterBy=""
+                                                  filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                  styleClass="text-center">
+                                            <h:outputText value="#{regla.genero.descripcion}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n.negociacion_tabla_regla_header_validacion_edad}"
+                                                  filterBy="" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                  styleClass="text-center">
+                                            <h:outputText value="#{regla.operacionRegla.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n.negociacion_tabla_regla_header_edad_inicial}"
+                                                  filterBy="" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                  styleClass="text-center">
+                                            <h:outputText value="#{regla.valorInicio}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n.negociacion_tabla_regla_header_edad_final}"
+                                                  filterBy="" filterMatchMode="contains" filterStyleClass="anchoInput"
+                                                  styleClass="text-center">
+                                            <h:outputText value="#{regla.valorFin}"/>
+                                        </p:column>
+                                        <p:column headerText="#{i18n.negociacion_tabla_regla_header_acciones}">
+                                            <p:commandButton id="btnEditarRegla" icon="fa fa-edit"
+                                                             alt="#{i18n.negociacion_tabla_regla_alt_editar}"
+                                                             title="#{i18n.negociacion_tabla_regla_alt_editar}"
+                                                             ajax="true"
+                                                             rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                             actionListener="#{tecnologiasSSController.verInfoRegla(regla)}"
+                                                             update="@([id$=panelGeneroRegla]), @([id$=panelEdadRegla]), @([id$=tablaReglasNegociacion])"
+                                                             process="@([id$=panelReglasNegociacion])"/>
+                                            <p:commandButton id="btnEliminarRegla" icon="fa fa-ban"
+                                                             alt="#{i18n.negociacion_tabla_regla_alt_eliminar}"
+                                                             title="#{i18n.negociacion_tabla_regla_alt_eliminar}"
+                                                             ajax="true"
+                                                             rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                             actionListener="#{tecnologiasSSController.eliminarRegla(regla.id)}"
+                                                             update="@([id$=tablaReglasNegociacion])"
+                                                             process="@([id$=panelReglasNegociacion])"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab>
+                            </p:accordionPanel>
+                            <p:separator/>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <p:outputLabel value="#{i18n.negociacion_label_fecha_corte}" style="width:130px"/>
+                                    <p:calendar id="fechaCorteCalendar"
+                                                value="#{tecnologiasSSController.negociacion.fechaCorte}"
+                                                requiredMessage="#{i18n.form_label_required}" pattern="dd/MM/yyyy"
+                                                showOn="button" locale="es" required="true">
+                                        <p:ajax update="@this" event="dateSelect"
+                                                listener="#{tecnologiasSSController.guardarFechaCortePGP}"/>
+                                    </p:calendar>
+                                </div>
+                            </div>
+                            <p:separator/>
+                            <br/>
+                            <p:accordionPanel id="panelAsociarPoblacion">
+                                <p:tab title="#{i18n.negociacion_label_title_poblacion_negociacion}">
+                                    <p:selectOneRadio id="opcionesAsociarPoblacionPGP"
+                                                      value="#{tecnologiasSSController.opcionImportPoblacion}"
+                                                      layout="custom">
+                                        <p:ajax update="@([id$=PanelSelectSedesNegociacion])"/>
+                                        <f:selectItem itemLabel="Importar población desde archivo" itemValue="1"/>
+                                        <f:selectItem itemLabel="Asociación interna de población" itemValue="2"/>
+                                    </p:selectOneRadio>
+                                    <h:panelGrid columns="1" cellpadding="10">
+                                        <p:panelGrid columns="2" cellpadding="10">
+                                            <h:outputLabel for="opt1" value="Importar población desde archivo"
+                                                           style="width:200px"/>
+                                            <p:radioButton id="opt1" for="opcionesAsociarPoblacionPGP" itemIndex="0"/>
+                                        </p:panelGrid>
+                                        <h:panelGrid columns="4" cellpadding="10">
+                                            <h:outputLabel for="opt2" value="Asociación interna de población"
+                                                           style="width:200px"/>
+                                            <p:radioButton id="opt2" for="opcionesAsociarPoblacionPGP" itemIndex="1"/>
+                                            <p:outputPanel id="PanelSelectSedesNegociacion">
+                                                <p:spacer style="width:10px"/>
+                                                <p:selectCheckboxMenu id="sedesNegociacionPgp" style="width:300px"
+                                                                      value="#{tecnologiasSSController.sedesNegociacionImportPoblacion}"
+                                                                      converter="omnifaces.SelectItemsConverter"
+                                                                      rendered="#{tecnologiasSSController.opcionImportPoblacion eq 2}"
+                                                                      multiple="true"
+                                                                      process="@this">
+                                                    <f:selectItems
+                                                            value="#{tecnologiasSSController.negociacion.sedesNegociacion}"
+                                                            var="sede" itemLabel="#{sede.sedePrestador.nombreSede}"
+                                                            itemValue="#{sede}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:spacer style="width:10px"/>
+                                                <p:outputLabel value="*"
+                                                               rendered="#{tecnologiasSSController.opcionImportPoblacion eq 2}"/>
+                                            </p:outputPanel>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                    <br/>
+                                    <p:commandButton id="btn-asociar-poblacion" styleClass="btn btn-sm btn-info"
+                                                     style="width:80px" icon="fa fa-upload"
+                                                     value="#{i18n.form_label_button_asociar}"
+                                                     actionListener="#{tecnologiasSSController.gestionarAsociarPoblacion}"
+                                                     rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                     ajax="true" process="@([id$=panelAsociarPoblacion])">
+                                    </p:commandButton>
+                                </p:tab>
+                            </p:accordionPanel>
+                            <p:separator/>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-12  text-right">
+                                        <p:commandButton styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+                                                         iconPos="left" value="#{i18n.form_label_button_guardar}"
+                                                         process="panelDatosCapita, panelTotalPorRia"
+                                                         actionListener="#{tecnologiasSSController.guardarDatosPgp()}"
+                                                         validateClient="true"
+                                                         rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                         ajax="true" update="@form"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:if>
+                        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA}">
+                            <div class="form-group">
+                                <div class="ui-grid ui-grid-responsive">
+                                    <div class="ui-grid-row">
+                                        <div class="ui-grid-col-1 text-right">
+                                            <p:outputLabel value="Tipo UPC: " for="zonaCapita"/>
+                                        </div>
+                                        <div class="ui-grid-col-3">
+                                            <p:selectOneMenu id="zonaCapita"
+                                                             value="#{tecnologiasSSController.negociacion.zonaCapita}"
+                                                             converter="omnifaces.SelectItemsConverter" required="true"
+                                                             requiredMessage="Por favor seleccione el Tipo de UPC"
+                                                             styleClass="anchoInput">
+                                                <f:selectItem itemLabel="Seleccione" noSelectionOption="true"/>
+                                                <f:selectItems value="#{listaZonasCapita}" var="zonaCapita"
+                                                               itemValue="#{zonaCapita}"
+                                                               itemLabel="#{zonaCapita.descripcion}"/>
+                                                <p:ajax event="change" update="panelDatosCapita"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="ui-grid-col-2 text-right">
+                                            <p:outputLabel value="Valor UPC Mensual: "
+                                                           rendered="#{tecnologiasSSController.negociacion.zonaCapita.editValue}"
+                                                           for="valorUpcAnual"/>
+                                        </div>
+                                        <div class="ui-grid-col-2">
+                                            <p:inputText id="valorUpcAnual" onkeyup="validarComa(this);"
+                                                         value="#{tecnologiasSSController.negociacion.valorUpcMensual}">
+                                                <p:ajax event="change" update="panelDatosCapita" process="@this"
+                                                        listener="#{tecnologiasSSController.actualizarUpcMensual}"/>
+                                            </p:inputText>
+                                            <p:message for="valorUpcAnual"/>
+                                        </div>
+                                        <!-- Rias -->
+                                        <c:if test="#{not empty tecnologiasSSController.negociacion.zonaCapita and
+                                                      tecnologiasSSController.negociacion.zonaCapita.rias}">
+                                            <div class="ui-grid-col-3">
+                                                <p:selectCheckboxMenu id="rias"
+                                                                      value="#{tecnologiasSSController.negociacion.listaNegociacionRiaDto.ria}"
+                                                                      converter="omnifaces.SelectItemsConverter"
+                                                                      effect="fold" required="true"
+                                                                      requiredMessage="#{i18n.form_label_required}"
+                                                                      styleClass="anchoInput"
+                                                                      label="#{i18n.form_label_rias_titulo}">
+                                                    <p:ajax update="panelDatosCapita"
+                                                            listener="#{tecnologiasSSController.consultaRangoPoblacionRia}"/>
+                                                    <f:selectItems value="#{listaRias}" var="ria" itemValue="#{ria}"
+                                                                   itemLabel="#{ria.descripcion}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:message for="rias"/>
+                                            </div>
+                                            <div class="ui-grid-col-2">
+                                                <p:selectCheckboxMenu id="rangoPoblacion"
+                                                                      value="#{tecnologiasSSController.negociacion.negociacionRangoPoblacionDto.rangoPoblacionDto}"
+                                                                      converter="omnifaces.SelectItemsConverter"
+                                                                      effect="fold" required="false"
+                                                                      requiredMessage="#{i18n.form_label_required}"
+                                                                      styleClass="anchoInput"
+                                                                      label="#{i18n.form_label_rias_rango_poblacion}">
+                                                    <f:selectItems value="#{listaRangoPoblacion}" var="rangoPoblacion"
+                                                                   itemValue="#{rangoPoblacion}"
+                                                                   itemLabel="#{rangoPoblacion.descripcion}"/>
+                                                </p:selectCheckboxMenu>
+                                                <p:message for="rangoPoblacion"/>
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                    <br/>
+                                    <div class="ui-grid-row">
+                                        <div class="ui-grid-col-2 text-right">
+                                            <p:outputLabel value="Aplicar giro directo: " for="pagoDirecto"/>
+                                        </div>
+                                        <div class="ui-grid-col-2">
+                                            <p:selectBooleanCheckbox id="pagoDirecto"
+                                                                     value="#{tecnologiasSSController.negociacion.giroDirecto}"/>
+                                        </div>
+                                        <div class="ui-grid-col-2 text-right">
+                                            <c:if test="#{tecnologiasSSController.negociacion.regimen eq RegimenNegociacionEnum.SUBSIDIADO}">
+                                                <p:outputLabel
+                                                        value="¿El recaudo del copago se realizara por el prestador?: "
+                                                        for="coutaModeradora"/>
+                                            </c:if>
+                                            <c:if test="#{tecnologiasSSController.negociacion.regimen eq RegimenNegociacionEnum.CONTRIBUTIVO}">
+                                                <p:outputLabel
+                                                        value="¿El recaudo de la cuota moderadora se realizara por el prestador?: "
+                                                        for="coutaModeradora"/>
+                                            </c:if>
+                                        </div>
+                                        <div class="ui-grid-col-2">
+                                            <p:selectBooleanCheckbox id="coutaModeradora"
+                                                                     value="#{tecnologiasSSController.negociacion.recaudoPrestador}">
+                                                <p:ajax event="change" update="panelDatosCapita" process="@this"/>
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="ui-grid-row">
+                                        <div class="ui-grid-col-3 text-right">
+                                            <p:outputLabel for="efectivamenteRecaudado"
+                                                           rendered="#{tecnologiasSSController.negociacion.recaudoPrestador}"
+                                                           value="¿Efectivamente recaudado?: "/>
+                                        </div>
+                                        <div class="ui-grid-col-1">
+                                            <p:selectBooleanCheckbox id="efectivamenteRecaudado"
+                                                                     disabled="#{tecnologiasSSController.negociacion.porcentajeFacturacion}"
+                                                                     rendered="#{tecnologiasSSController.negociacion.recaudoPrestador}"
+                                                                     value="#{tecnologiasSSController.negociacion.efectivamenteRecaudado}">
+                                                <p:ajax event="change" update="panelDatosCapita"/>
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                        <div class="ui-grid-col-3 text-right">
+                                            <p:outputLabel for="porcentajeFacturacion"
+                                                           rendered="#{tecnologiasSSController.negociacion.recaudoPrestador}"
+                                                           value="Porcentaje de facturación: "/>
+                                        </div>
+                                        <div class="ui-grid-col-1">
+                                            <p:selectBooleanCheckbox id="porcentajeFacturacion"
+                                                                     disabled="#{tecnologiasSSController.negociacion.efectivamenteRecaudado}"
+                                                                     rendered="#{tecnologiasSSController.negociacion.recaudoPrestador}"
+                                                                     value="#{tecnologiasSSController.negociacion.porcentajeFacturacion}">
+                                                <p:ajax event="change" update="panelDatosCapita"/>
+                                            </p:selectBooleanCheckbox>
+                                        </div>
+                                        <div class="ui-grid-col-2 text-right">
+                                            <p:outputLabel rendered="#{tecnologiasSSController.negociacion.recaudoPrestador
+                                                                       and tecnologiasSSController.negociacion.porcentajeFacturacion}"
+                                                           value="Porcentaje a aplicar: " for="porcentajeAplicar"/>
+                                        </div>
+                                        <div class="ui-grid-col-2">
+                                            <p:inputText id="porcentajeAplicar"
+                                                         disabled="#{tecnologiasSSController.negociacion.efectivamenteRecaudado}"
+                                                         maxlength="5" onkeyup="validarComa(this);" rendered="#{tecnologiasSSController.negociacion.recaudoPrestador
+                                                                                            and tecnologiasSSController.negociacion.porcentajeFacturacion}"
+                                                         size="4"
+                                                         converterMessage="El porcentaje ingresado debe ser un número"
+                                                         value="#{tecnologiasSSController.negociacion.porcentajeAplicar}"
+                                                         validatorMessage="El Porcentaje a aplicar no está entre los valores permitidos 0 y 100.">
+                                                <f:convertNumber minFractionDigits="2"/>
+                                                <f:validateLongRange minimum="0" maximum="100"/>
+                                            </p:inputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Porcentaje de P Y P y Recuperacion -->
+                            <h:panelGroup id="panelTemaCapita">
+                                <div class="form-group">
+                                    <div class="ui-grid ui-grid-responsive">
+                                        <div class="ui-grid-row">
+                                            <div class="ui-grid-col-1 text-right">
+                                                <p:outputLabel for="porcentajePYP" value="Porcentaje PYP"/>
+                                            </div>
+                                            <div class="ui-grid-col-1 text-right">
+                                                <p:outputLabel id="porcentajePYP"
+                                                               value="#{tecnologiasSSController.negociacion.porcentajePYP}">
+                                                    <f:convertNumber maxFractionDigits="3"/>
+                                                </p:outputLabel>
+                                            </div>
+                                            <div class="ui-grid-col-1 text-right">
+                                                <p:outputLabel for="porcentajeRecuparacion" value="Recuperacion"/>
+                                            </div>
+                                            <div class="ui-grid-col-1 text-right">
+                                                <p:outputLabel id="porcentajeRecuparacion"
+                                                               value="#{tecnologiasSSController.negociacion.porcentajeRecuperacion}">
+                                                    <f:convertNumber maxFractionDigits="3"/>
+                                                </p:outputLabel>
+                                            </div>
+                                            <div class="ui-grid-col-3 text-right">
+                                                <p:outputLabel for="poblacionCapita" value="Población"
+                                                               rendered="#{tecnologiasSSController.negociacion.poblacionServicio == false}"/>
+                                            </div>
+                                            <div class="ui-grid-col-1 text-right">
+                                                <p:inputText id="poblacionCapita"
+                                                             validatorMessage="La población no puede ser cero o un valor negativo"
+                                                             styleClass="anchoInput"
+                                                             converterMessage="La poblacion debe ser un número"
+                                                             value="#{tecnologiasSSController.negociacion.poblacion}"
+                                                             required="true"
+                                                             requiredMessage="Por favor ingrese la población"
+                                                             maxlength="7"
+                                                             rendered="#{tecnologiasSSController.negociacion.poblacionServicio == false}">
+                                                    <f:validateLongRange minimum="1"/>
+                                                </p:inputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-12  text-right">
+                                        <p:commandButton styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+                                                         iconPos="left" value="Guardar" process="panelDatosCapita"
+                                                         actionListener="#{tecnologiasSSController.guardarDatosCapita()}"
+                                                         ajax="true" update="tecnologiasSSForm">
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:if>
+                        <c:if test="#{tecnologiasSSController.negociacionEsRias()}">
+                            <div class="form-group">
+                                <div class="ui-grid ui-grid-responsive">
+                                    <div class="ui-grid-row">
+                                        <div class="col-lg-offset-0 col-lg-2">
+                                            <p:outputLabel value="Tipo Referente"/>
+                                        </div>
+                                        <div class="ui-grid-col-2 text-right">
+                                            <p:selectOneMenu id="referenteRias" required="true"
+                                                             requiredMessage="#{i18n.referente_referente_seleccion}"
+                                                             styleClass="anchoInput"
+                                                             label="#{i18n.form_label_combo_seleccione}"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.referenteDto}"
+                                                             disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                                <p:ajax event="change" update="panelDatosCapita" process="@this"/>
+                                                <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"/>
+                                                <f:selectItems
+                                                        value="#{tecnologiasSSController.getListaReferenteCapitaPorRias()}"
+                                                        var="referente" itemLabel="#{referente.descripcion}"
+                                                        itemValue="#{referente}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="ui-grid-col-2 text-right">
+                                            <p:outputLabel value="Valor UPC Mensual: " for="valorUpcMensual"
+                                                           rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}"/>
+                                        </div>
+                                        <div class="ui-grid-col-2">
+                                            <p:inputText id="valorUpcMensual" onkeyup="validarComa(this);"
+                                                         value="#{tecnologiasSSController.negociacion.valorUpcMensual}"
+                                                         required="true"
+                                                         requiredMessage="Por favor escriba el valor UPC Mensual"
+                                                         rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                                                <f:validateDoubleRange minimum="0"/>
+                                                <p:ajax event="change" update="panelDatosCapita" process="@this"
+                                                        listener="#{tecnologiasSSController.actualizarUpcMensual}"/>
+                                            </p:inputText>
+                                            <p:message for="valorUpcMensual"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="ui-grid-col-12 text-left">
+                                        <p:outputLabel value="Area de Influencia" styleClass="titulo-bold"/>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-2 text-right">
+                                            <p:outputLabel value="#{i18n.form_label_regional}"/>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <p:selectOneMenu id="listRegional" required="true"
+                                                             requiredMessage="Por favor seleccione una regional"
+                                                             styleClass="anchoInput"
+                                                             label="#{i18n.form_label_combo_seleccione}"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.regionalDto}"
+                                                             disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                                <p:ajax update="listDepartamento, listMunicipio"
+                                                        listener="#{tecnologiasSSController.buscarDepartamentos}"/>
+                                                <f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}"/>
+                                                <f:selectItems value="#{tecnologiasSSController.regionales}"
+                                                               var="regional" itemLabel="#{regional.descripcion}"
+                                                               itemValue="#{regional}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-lg-1 text-right">
+                                            <p:outputLabel value="Departamento" for="listDepartamento"/>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <p:selectOneMenu id="listDepartamento" required="true"
+                                                             requiredMessage="Por favor seleccione un departamento"
+                                                             styleClass="anchoInput"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.departamentoDto}"
+                                                             disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                                <p:ajax update="listMunicipio"
+                                                        listener="#{tecnologiasSSController.buscarMunicipios}"/>
+                                                <f:selectItem itemLabel="Seleccionar..."/>
+                                                <f:selectItems value="#{tecnologiasSSController.departamentos}"
+                                                               var="departamento"
+                                                               itemLabel="#{departamento.descripcion}"
+                                                               itemValue="#{departamento}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-lg-1 text-right">
+                                            <p:outputLabel value="Municipio " for="listMunicipio"/>
+                                        </div>
+                                        <div class="ui-grid-col-2">
+                                            <p:selectOneMenu id="listMunicipio" required="true"
+                                                             requiredMessage="Por favor seleccione un municipio"
+                                                             styleClass="anchoInput"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.municipioDto}"
+                                                             disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                                <f:selectItem itemLabel="Seleccionar..."/>
+                                                <f:selectItems value="#{tecnologiasSSController.municipios}"
+                                                               var="municipio" itemLabel="#{municipio.descripcion}"
+                                                               itemValue="#{municipio}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 5px;">
+                                        <div class="col-lg-2 text-right">
+                                            <p:outputLabel value="Zona " for="listZona"/>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <p:selectOneMenu id="listZona" styleClass="anchoInput"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.zona}"
+                                                             disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                                <f:selectItem itemLabel="Seleccionar..."/>
+                                                <f:selectItems value="#{tecnologiasSSController.zonas}" var="zona"
+                                                               itemLabel="#{zona.description}" itemValue="#{zona}"/>
+                                                <f:selectItem itemLabel="Todas"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div class="col-lg-1 text-right">
+                                            <p:outputLabel value="Etnia " for="listEtnia"/>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <p:selectOneMenu id="listEtnia" styleClass="anchoInput"
+                                                             converter="omnifaces.SelectItemsConverter"
+                                                             value="#{tecnologiasSSController.negociacion.grupoEtnico}"
+                                                             disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                                <f:selectItem itemLabel="Seleccionar..."/>
+                                                <f:selectItems value="#{tecnologiasSSController.gruposEtnicos}"
+                                                               var="grupoEtnico" itemLabel="#{grupoEtnico.descripcion}"
+                                                               itemValue="#{grupoEtnico}"/>
+                                                <f:selectItem itemLabel="Todas"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-2 text-right">
+                                            <p:outputLabel value="Población " for="poblacionInput"
+                                                           rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}"/>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <p:inputText id="poblacionInput"
+                                                         value="#{tecnologiasSSController.negociacion.poblacion}"
+                                                         rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion ne NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                                                <p:ajax event="blur"
+                                                        listener="#{tecnologiasSSController.actualizarPoblacionRiasCapita}"
+                                                        process="@this"/>
+                                                <f:validateDoubleRange minimum="0"/>
+                                            </p:inputText>
+                                            <p:message for="poblacionInput"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ui-grid ui-grid-responsive">
+                                    <div class="ui-grid-col-2 text-right">
+                                        <p:outputLabel value="Aplicar giro directo: " for="pagoDirecto"/>
+                                    </div>
+                                    <div class="ui-grid-col-2">
+                                        <p:selectBooleanCheckbox id="pagoDirecto"
+                                                                 value="#{tecnologiasSSController.negociacion.giroDirecto}"
+                                                                 disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}"/>
+                                    </div>
+                                    <div class="ui-grid-col-2 text-right">
+                                        <p:outputLabel value="¿El recaudo del copago se realizará por el prestador?: "/>
+                                    </div>
+                                    <div class="ui-grid-col-2">
+                                        <p:selectBooleanCheckbox id="coutaModeradora"
+                                                                 value="#{tecnologiasSSController.negociacion.recaudoPrestador}"
+                                                                 disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                        </p:selectBooleanCheckbox>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-2 text-right">
+                                    <p:outputLabel value="#{i18n.form_label_rias_titulo}"/>
+                                </div>
+                                <div class="col-lg-2">
+                                    <p:selectCheckboxMenu id="rias"
+                                                          value="#{tecnologiasSSController.negociacion.listaNegociacionRiaDto}"
+                                                          converter="omnifaces.SelectItemsConverter" effect="fold"
+                                                          required="true"
+                                                          requiredMessage="Por favor seleccione las RIAS"
+                                                          styleClass="anchoInput"
+                                                          label="#{i18n.form_label_combo_seleccione}"
+                                                          disabled="#{tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                        <p:ajax update="panelTotalPorRia"
+                                                listener="#{tecnologiasSSController.consultaRias}"/>
+                                        <f:selectItems value="#{tecnologiasSSController.listaRiasDisponibles()}"
+                                                       var="ria" itemValue="#{ria}" itemLabel="#{ria.ria.descripcion}"/>
+                                    </p:selectCheckboxMenu>
+                                </div>
+                                <c:if test="${tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                                    <p:outputLabel value="${i18n.form_label_fecha_corte} " for="fechaCorte"
+                                                   styleClass="col-lg-2 text-right"/>
+                                    <div class="col-lg-2">
+                                        <p:calendar id="fechaCorte" locale="es" title="${i18n.tooltip_fecha_corte}"
+                                                    styleClass="mycalendar"
+                                                    value="#{tecnologiasSSController.negociacion.fechaCorte}"
+                                                    required="true" disabled="true"
+                                                    mindate="#{tecnologiasSSController.negociacion.fechaCorteMin}"
+                                                    maxdate="#{tecnologiasSSController.negociacion.fechaCreacion}"
+                                                    requiredMessage="#{i18n.validacion_rias_grupo_fecha_corte}"/>
+                                        <p:tooltip id="toolTipFechaCorte" for="@(.mycalendar :input)" showEvent="focus"
+                                                   hideEvent="blur" position="top"/>
+                                    </div>
+                                </c:if>
+                            </div>
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-12  text-right">
+                                        <p:commandButton styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+                                                         iconPos="left" value="Guardar" process="panelDatosCapita"
+                                                         actionListener="#{tecnologiasSSController.guardarDatosRiasCapita()}"
+                                                         ajax="true"
+                                                         update="tecnologiasSSForm, tecnologiasSSForm:poblacionInput"
+                                                         rendered="#{tecnologiasSSController.negociacion.estadoNegociacion != EstadoNegociacionEnum.FINALIZADA}">
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:if>
+                    </p:panel>
+                    <p:blockUI block="panelDatosCapita" blocked="true" id="blockGpEtario" rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO
+                                                                                                      and tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.EN_TRAMITE
+                                                                                                      and tecnologiasSSController.negociacion.municipioDto!=null}"/>
+                    <p:outputPanel id="pnlAsignarPoblacion">
+                        <div class="row" style="margin-top:20px;">
+                            <div class="col-lg-12">
+                                <p:outputLabel rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO
+                                                           and tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.EN_TRAMITE
+                                                           and tecnologiasSSController.negociacion.municipioDto!=null}"
+                                               value="${i18n.form_label_asignar_poblacion}"
+                                               style="font-size:16px !important;"/>
+                                <p:commandButton id="btnAsignarPoblacion" rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO
+                                                                                      and tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.EN_TRAMITE
+                                                                                      and tecnologiasSSController.negociacion.municipioDto!=null}"
+                                                 style="margin-left:10px;" styleClass="btn btn-sm btn-info"
+                                                 value="${i18n.form_label_button_asignar_poblacion}"
+                                                 icon="fa fa-users" type="button" immediate="true"
+                                                 onclick="PF('modalAsignarPoblacion').show();"/>
+                            </div>
+                        </div>
+                    </p:outputPanel>
+                    <div class="form-group">
+                        <h:outputText value="&#160;"/>
+                        <div class="row">
+                            <p:tabView id="tabsTecnologias" widgetVar="tabsTecnologias" dynamic="true" cache="false"
+                                       activeIndex="#{tecnologiasSSController.tabIndex}">
+                                <p:tab title="#{i18n.negociacion_medicamentos_tab_title}" id="tabMedicamentos"
+                                       rendered="#{(tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA)
+                                                or (tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO)
+                                                or (tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO)	}">
+                                    <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA}">
+                                        <ui:include src="./medicamentos/negociacionMedicamentoPorCategoria.xhtml"/>
+                                    </c:if>
+                                    <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+                                        <ui:include src="./medicamentos/negociacionMedicamentoSS.xhtml"/>
+                                    </c:if>
+                                    <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+                                        <ui:include src="./grupoTerapeutico/negociacionGrupoTerapeuticoPGP.xhtml"/>
+                                    </c:if>
+                                    <c:if test="#{(tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA)
+                                                  or tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                                        <p:inputText id="negociacionMedicamentosSS" rendered="false"/>
+                                    </c:if>
+                                </p:tab>
+                                <p:tab title="#{i18n.negociacion_paquetes_tab_title}" id="tabPaquetes"
+                                       rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+                                    <ui:include src="./paquetes/negociacionPaqueteSS.xhtml"/>
+                                </p:tab>
+                                <p:tab title="#{i18n.enum_tipotecnologiaenum_procedimientos}" id="tabServicios"
+                                       rendered="#{(tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO)
+                                                or (tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA
+                                                and not empty negociacionServiciosCapitaSSController.servicios)
+                                                or (tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO)}">
+                                    <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA}">
+                                        <ui:include src="./servicios/negociacionServicioCapitaPorServicio.xhtml"/>
+                                    </c:if>
+                                    <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}">
+                                        <ui:include src="./servicios/negociacionServicioSS.xhtml"/>
+                                    </c:if>
+                                    <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+                                        <ui:include src="./servicios/negociacionServicioPgpSS.xhtml"/>
+                                    </c:if>
+                                </p:tab>
+                            </p:tabView>
+                            <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+                                <br/>
+                                <h:panelGroup id="panelTotalPorRia" style="horizontal-align:center">
+                                    <div class="ui-grid ui-grid-responsive">
+                                        <div class="ui-grid-row">
+                                            <p:dataTable var="totales" rendered="#{tecnologiasSSController.negociacion.esRia != null and
+                                                                                   tecnologiasSSController.negociacion.esRia eq true}"
+                                                         value="#{tecnologiasSSController.listTotalesRias}"
+                                                         emptyMessage="#{i18n.negociacion_pgp_sin_ruta_seleccionada}">
+                                                <p:column headerText="Ria">
+                                                    <h:outputText value="#{totales.descripcion}"/>
+                                                </p:column>
+                                                <p:column headerText="#{i18n.negociacion_pgp_valor_ruta}"
+                                                          class="text-center">
+                                                    <h:outputText value="#{totales.valor}">
+                                                        <f:convertNumber locale="es_CO"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="#{i18n.negociacion_pgp_valor_total}"
+                                                          class="text-center">
+                                                    <h:outputText value="#{totales.valorTotal}">
+                                                        <f:convertNumber locale="es_CO"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+                                            <br/>
+                                            <h:panelGrid columns="4" rendered="#{tecnologiasSSController.negociacion.esRia != null and
+                                                                                 tecnologiasSSController.negociacion.esRia eq false}">
+                                                <p:spacer width="20"/>
+                                                <h:outputLabel value="#{i18n.negociaicon_label_valor_total}"
+                                                               styleClass="titulo-bold"/>
+                                                <p:spacer width="20"/>
+                                                <h:outputLabel value="#{tecnologiasSSController.negociacion.valorTotal}"
+                                                               styleClass="titulo-bold">
+                                                    <f:convertNumber type="currency" currencySymbol="$"
+                                                                     minFractionDigits="0"/>
+                                                </h:outputLabel>
+                                            </h:panelGrid>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+                                <br/>
+                            </c:if>
+                            <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA
+                                          or tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                                <ui:include src="./servicios/negociacionRiaCapitaSS.xhtml"/>
+                            </c:if>
+                            <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA
+                                          and (not empty negociacionServiciosCapitaSSController.servicios
+                                          or not empty negociacionServiciosCapitaController.servicios
+                                          or not empty negociacionMedicamentoCapitaController.medicamentosNegociacion
+                                          or not empty negociacionMedicamentoCapitaSSController.medicamentosNegociacion)}">
+                                <!-- INCENTIVOS -->
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-12 ui-widget-content ui-state-default">
+                                            <div class="text-right form-group form-group-sm" style="margin-top: 10px;">
+                                                <h:outputText id="totalPorcentajeUpc" style="visibility:hidden"
+                                                              value="#{tecnologiasSSController.totalPorcentajeUpc}">
+                                                </h:outputText>
+                                                <p:outputLabel for="totalNegociacion" value="Total Negociación: "/>
+                                                <h:outputText id="totalNegociacion"
+                                                              value="#{tecnologiasSSController.totalNegociacion}"
+                                                              style="padding-right:5px">
+                                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                                </h:outputText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ui:include src="../incentivosModelos.xhtml">
+                                    <ui:param name="form" value="tecnologiasSSForm"/>
+                                    <ui:param name="controller" value="#{tecnologiasSSController}"/>
+                                </ui:include>
+                            </c:if>
+                            <c:if test="#{(tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO
+                                          and tecnologiasSSController.negociacion.complejidad eq ComplejidadNegociacionEnum.BAJA)
+                                          or (tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO)
+                                          or (tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA)}">
+                                <!-- Incentivos -->
+                                <ui:include src="../incentivosModelos.xhtml">
+                                    <ui:param name="form" value="tecnologiasSSForm"/>
+                                    <ui:param name="controller" value="#{tecnologiasSSController}"/>
+                                </ui:include>
+                            </c:if>
+                            <!--Fecha Concertacion-->
+                            <p:panel header="#{i18n.form_label_fecha_concertacion}" id="panelFechaConcertacion"
+                                     style="height:90px;" rendered="#{tecnologiasSSController.mostrarTablaRutasCapitaGrEtareo and
+                                               (tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA
+                                               or tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO)
+                                               and tecnologiasSSController.negociacion.estadoNegociacion == EstadoNegociacionEnum.FINALIZADA}">
+                                <p:calendar id="fechaConcertacion" showOn="button" size="20"
+                                            converterMessage="La fecha de Concertacion debe tener formato Día Mes Año"
+                                            pattern="dd/MM/yyyy" required="true"
+                                            requiredMessage="Ingrese la fecha de concertacion"
+                                            value="#{tecnologiasSSController.negociacion.fechaConcertacionMx}"
+                                            locale="es">
+                                </p:calendar>
+                                <p:spacer style="width:50px"/>
+                                <p:commandButton styleClass="btn btn-sm btn-info"
+                                                 value="#{i18n.form_label_button_actualizar}"
+                                                 process="panelFechaConcertacion"
+                                                 actionListener="#{tecnologiasSSController.actualizarFechaConcertacion()}"
+                                                 ajax="true"/>
+                            </p:panel>
+                            <!---->
+                            <p:panel id="panelObservaciones"
+                                     rendered="#{tecnologiasSSController.mostrarTablaRutasCapitaGrEtareo}">
+                                <div class="form-group">
+                                    <div class="ui-grid ui-grid-responsive">
+                                        <div class="ui-grid-row">
+                                            <div class="ui-grid-col-2 text-right">
+                                                <p:outputLabel for="observaciones" value="Observaciones"
+                                                               styleClass="col-lg-12"/>
+                                            </div>
+                                            <div class="ui-grid-col-10">
+                                                <p:inputTextarea id="observaciones" rows="5" cols="200"
+                                                                 maxlength="10000" autoResize="true"
+                                                                 value="#{tecnologiasSSController.negociacion.observacion}"
+                                                                 styleClass="anchoInput"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ui-grid ui-grid-responsive">
+                                    <div class="ui-grid-row">
+                                        <div class="ui-grid-col-12 text-right">
+                                            <p:commandButton styleClass="btn btn-sm btn-info" icon="fa fa-floppy-o"
+                                                             iconPos="left" value="Guardar" process="panelObservaciones"
+                                                             rendered="#{tecnologiasSSController.negociacion.estadoLegalizacion != EstadoLegalizacionEnum.LEGALIZADA}"
+                                                             actionListener="#{tecnologiasSSController.guardarObservaciones()}"
+                                                             ajax="true"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:panel>
+                        </div>
+                        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.PAGO_GLOBAL_PROSPECTIVO}">
+
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-12  text-right">
+                                        <p:commandButton value="#{i18n.form_label_button_regresar}"
+                                                         action="#{FacesUtils.urlRedirect('/gestionNegociaciones')}"
+                                                         styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left"
+                                                         iconPos="left" process="@this" immediate="true"/>
+                                        <p:commandButton id="btnValidarTarifas"
+                                                         value="#{i18n.negociacion_medicamento_label_boton_guardar}"
+                                                         actionListener="#{tecnologiasSSController.guardarValidar()}"
+                                                         rendered="#{tecnologiasSSController.terminarAsignacionTarifas()}"
+                                                         update="tecnologiasSSForm:tabsTecnologias:negociacionGruposPGP, errorsDialog"
+                                                         immediate="true" process="@this"
+                                                         styleClass="btn btn-sm btn-yellow">
+                                            <p:confirm header="#{i18n.form_label_confirmacion}"
+                                                       message="#{i18n.negociacion_confirm_boton_terminar_tarifas}"
+                                                       icon="fa fa-exclamation-triangle"/>
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:if>
+                        <c:if test="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO
+                                      or tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.CAPITA
+                                      or tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA
+                                      or tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}">
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-12  text-right">
+                                        <p:commandButton value="#{i18n.form_label_button_regresar}"
+                                                         action="#{FacesUtils.urlRedirect('/gestionNegociaciones')}"
+                                                         styleClass="btn btn-sm btn-warning" icon="fa fa-angle-left"
+                                                         iconPos="left" process="@this" immediate="true"/>
+                                        <p:commandButton styleClass="btn btn-sm btn-info" value="Validar Tarifario"
+                                                         actionListener="#{tecnologiasSSController.actionGetTecnologiaTarif}"
+                                                         immediate="true" process="@this"
+                                                         rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.EVENTO}"
+                                                         update=":formDialogValidarTarif,:formDialogValidarTarif:selectTipoTecnolog,:formDialogValidarTarif:selectDatoRef"/>
+                                        <p:commandButton id="btnValidarTarifas"
+                                                         value="#{i18n.negociacion_medicamento_label_boton_guardar}"
+                                                         actionListener="#{tecnologiasSSController.guardarValidar()}"
+                                                         rendered="#{tecnologiasSSController.terminarAsignacionTarifas()}"
+                                                         update="tecnologiasSSForm:tabsTecnologias:negociacionMedicamentosSS, errorsDialog"
+                                                         immediate="true" process="@this"
+                                                         styleClass="btn btn-sm btn-yellow"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:if>
+                    </div>
+                </p:panel>
+            </h:form>
+            <!--Modal requerimientos para legalizar -->
+            <p:dialog modal="true" id="errorsDialog" widgetVar="errorsDialog" width="800" height="500">
+                <ui:include src="../validacionesNegociacion.xhtml"/>
+            </p:dialog>
+            <p:dialog modal="true" id="modalAsignarPoblacion" widgetVar="modalAsignarPoblacion" width="500"
+                      header="#{i18n.form_label_asignar_poblacion}"
+                      rendered="#{tecnologiasSSController.negociacion.tipoModalidadNegociacion eq NegociacionModalidadEnum.RIAS_CAPITA_GRUPO_ETAREO}"
+                      resizable="false" closable="false" closeOnEscape="false">
+                <h:form>
+                    <div class="row" style="margin-bottom:20px;">
+                        <p:outputLabel styleClass="col-lg-6" value="#{i18n.form_label_importar_poblacion}"/>
+                        <p:fileUpload styleClass="btn btn-sm"
+                                      fileUploadListener="#{negociacionCapitaGrupoEtareoController.importarPoblacionNegociacion}"
+                                      allowTypes="/(\.|\/)(xlsx)$/" sizeLimit="25690112"
+                                      label="#{i18n.form_label_importar}" skinSimple="true" mode="advanced"
+                                      auto="true" invalidSizeMessage="#{i18n.form_label_tamanio_invalido}"
+                                      invalidFileMessage="#{i18n.form_label_formato_no_soportado}"
+                                      onstart="PF('statusDialog').show();" oncomplete="PF('statusDialog').hide();"
+                                      update="tecnologiasSSForm, tecnologiasSSForm:tablaRias"
+                        />
+                        <p:commandButton styleClass="btn btn-info" ajax="false"
+                                         value="#{i18n.form_label_button_no_procesados}">
+                            <p:fileDownload
+                                    value="#{negociacionCapitaGrupoEtareoController.consultarNoProcesadosGrupoEtareo}"/>
+                        </p:commandButton>
+                    </div>
+                    <div class="row" style="margin-bottom:20px;">
+                        <p:outputLabel styleClass="col-lg-6" value="#{i18n.form_label_exportar_poblacion}"/>
+                        <p:commandButton styleClass="btn btn-warning" ajax="false"
+                                         value="#{i18n.form_label_button_exportar}">
+                            <p:fileDownload
+                                    value="#{negociacionCapitaGrupoEtareoController.consultarPoblacionNegociaion}"/>
+                        </p:commandButton>
+                    </div>
+                </h:form>
+                <f:facet name="footer">
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            <p:commandButton value="#{i18n.form_label_button_regresar}"
+                                             onclick="PF('modalAsignarPoblacion').hide();" type="button"
+                                             styleClass="btn btn-danger"/>
+                        </div>
+                    </div>
+                </f:facet>
+            </p:dialog>
+
+            <p:dialog styleClass="dialogTarifario" widgetVar="dialogValidarTarif" height="600" width="1100"
+                      position="center" modal="true" appendTo="@(body)" id="idDialogValidarTarif">
+                <h:form id="formDialogValidarTarif">
+                    <p:panel styleClass="panelDialogoTari" id="panelDialogoTari" header="Tarifario Emssanar">
+                        <h:panelGrid id="panelGridDialogTari" columns="2" style="align-items: center;">
+                            <h:outputLabel style="width: 100px" for="selectTipoTecnolog" value="Tipo Tecnología:"/>
+                            <p:selectOneMenu style="width:200px" id="selectTipoTecnolog"
+                                             converter="omnifaces.SelectItemsConverter"
+                                             value="#{tecnologiasSSController.negociacion.dialogoTarifarioDTO.tipoTecnologiaSelect}">
+                                <f:selectItems value="#{tecnologiasSSController.listTipoTecnologia}" var="objeto"
+                                               itemValue="#{objeto}" itemLabel="#{objeto.descripcion}"/>
+                                <p:ajax event="change" update="selectDatoRef"
+                                        listener="#{tecnologiasSSController.onChangeTipoTecnolSelect()}"/>
+                            </p:selectOneMenu>
+                            <h:outputLabel style="width: 100px" for="selectDatoRef" value="Dato Referente:"/>
+                            <p:selectOneMenu style="width:200px" id="selectDatoRef"
+                                             value="#{tecnologiasSSController.negociacion.dialogoTarifarioDTO.datoReferentSelect}">
+                                <f:selectItems value="#{tecnologiasSSController.listDatoReferenteTipoTecnoEnum}"
+                                               var="objeto" itemLabel="#{objeto.descripcion}" itemValue="#{objeto}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <p:row>
+                            <h:outputLabel style="height: 20px"/>
+                        </p:row>
+                        <p:row style="height: 15px">
+                            <h:outputLabel rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                           value="ingrese porcentaje de desviacion para validacion del valor negociado"/>
+                        </p:row>
+
+                        <h:panelGrid columns="6">
+                            <p:selectBooleanCheckbox id="selectCodigoNormativ"
+                                                     value="#{tecnologiasSSController.negociacion.dialogoTarifarioDTO.selectCodigoNormativo}"
+                                                     styleClass="anchoInput"
+                                                     rendered="#{tecnologiasSSController.checkHiddeMedicamento}"/>
+                            <h:outputLabel style="width: 10px"/>
+                            <h:outputLabel rendered="#{not tecnologiasSSController.checkHiddeMedicamento}"/>
+                            <h:outputLabel rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                           value="Codigos Normativos:" for="selectCodigoNormativ"/>
+                            <h:outputLabel rendered="#{not tecnologiasSSController.checkHiddeMedicamento}"/>
+                            <h:outputLabel style="width: 40px"/>
+                            <pe:inputNumber rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                            id="porcenCodigoNormat" style="width: 20px"
+                                            value="#{tecnologiasSSController.negociacion.dialogoTarifarioDTO.porcentajeCodigNormativ}"
+                                            thousandSeparator="." decimalSeparator=","/>
+                            <h:outputLabel rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                           for="porcenCodigoNormat" value="%"/>
+                            <p:selectBooleanCheckbox rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                                     id="selectCodigoPropio"
+                                                     value="#{tecnologiasSSController.negociacion.dialogoTarifarioDTO.selectCodigoPropio}"
+                                                     styleClass="anchoInput"/>
+                            <h:outputLabel rendered="#{not tecnologiasSSController.checkHiddeMedicamento}"/>
+                            <h:outputLabel style="width: 10px"/>
+                            <h:outputLabel rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                           id="lblCodigoPropio"
+                                           value="Codigos Propios:" for="selectCodigoPropio"/>
+                            <h:outputLabel rendered="#{not tecnologiasSSController.checkHiddeMedicamento}"/>
+                            <h:outputLabel style="width: 40px"/>
+                            <pe:inputNumber rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                            id="porcenCodigoPropio" style="width: 20px"
+                                            value="#{tecnologiasSSController.negociacion.dialogoTarifarioDTO.porcentajeCodigPropio}"
+                                            thousandSeparator="." decimalSeparator=",">
+                                <h:outputLabel rendered="#{not tecnologiasSSController.checkHiddeMedicamento}"/>
+                            </pe:inputNumber>
+                            <h:outputLabel rendered="#{tecnologiasSSController.checkHiddeMedicamento}"
+                                           id="sigPorcentCodProp"
+                                           for="porcenCodigoPropio" value="%"/>
+                            <h:outputLabel rendered="#{not tecnologiasSSController.checkHiddeMedicamento}"/>
+                        </h:panelGrid>
+                        <p:row style="height: 20px"/>
+
+                        <div class="row" style="margin-top:10px">
+                            <div class="col-lg-12 text-center">
+                                <p:commandButton styleClass="btn btn-sm btn-info"
+                                                 actionListener="#{tecnologiasSSController.ejecutarTarifNegociacion()}"
+                                                 value="Aceptar"/>
+                                <h:outputLabel style="width:10px"/>
+                                <p:commandButton rendered="#{tecnologiasSSController.isPressFinalNegociacion}"
+                                                 value="Omitir" styleClass="btn btn-sm btn-warning"
+                                                 icon="fa fa-angle-left" iconPos="left"
+                                                 actionListener="#{tecnologiasSSController.omitirDialogTarif()}"
+                                                 process="@this" immediate="true">
+                                    <p:confirm header="#{i18n.form_label_confirmacion}"
+                                               message="#{i18n.negociacion_confirm_boton_terminar_tarifas}"
+                                               icon="fa fa-exclamation-triangle"/>
+                                </p:commandButton>
+
+                                <p:commandButton rendered="#{not tecnologiasSSController.isPressFinalNegociacion}"
+                                                 value="Omitir" styleClass="btn btn-sm btn-warning"
+                                                 icon="fa fa-angle-left" iconPos="left"
+                                                 actionListener="#{tecnologiasSSController.omitirDialogTarif()}"
+                                                 process="@this" immediate="true"/>
+                            </div>
+                        </div>
+
+                    </p:panel>
+
+                    <!-- Tabla de reporte tarifario -->
+                    <p:dataTable rendered="#{tecnologiasSSController.tablaReporteTarifa}" id="tablaReporteTarifario"
+                                 var="objeto"
+                                 value="#{tecnologiasSSController.negociacion.dialogoTarifarioDTO.reporteTarifarioDTO}"
+                                 widgetVar="tablaReporteTarifario"
+                                 style="font-size: 10px"
+                                 scrollable="true"
+                                 scrollHeight="290">
+                        <p:ajax event="page" update="tablaReporteTarifario"/>
+                        <p:column rendered="#{tecnologiasSSController.columnHiddeMedicamento}"
+                                  style="font-size: 10px" headerText="Código Capitulo Cups"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.codigoCupsCapitulo}"/>
+                        </p:column>
+                        <p:column rendered="#{tecnologiasSSController.columnHiddeMedicamento}"
+                                  style="font-size: 10px" headerText="Descripción Capitulo Cups"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.descripcionCupsCapitulo}"/>
+                        </p:column>
+                        <p:column style="font-size: 10px" headerText="#{tecnologiasSSController.titCodigoServicio}"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.codigoServicio}"/>
+                        </p:column>
+                        <p:column style="font-size: 10px" headerText="#{tecnologiasSSController.titNombreServicio}"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.nombreServicio}"/>
+                        </p:column>
+                        <p:column rendered="#{tecnologiasSSController.columnHiddeMedicamento}"
+                                  style="font-size: 10px" headerText="Código Tencología Unica"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.codigoTecnologiaUnica}"/>
+                        </p:column>
+                        <p:column style="font-size: 10px" headerText="#{tecnologiasSSController.titDescripcion}"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.descripcionProcedimiento}"/>
+                        </p:column>
+                        <p:column style="font-size: 10px" headerText="Valor Negociado"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.valorNegociado}"/>
+                        </p:column>
+                        <p:column rendered="#{tecnologiasSSController.columnHiddeMedicamento}"
+                                  styleClass="text-center"
+                                  style="font-size: 10px" headerText="Valor Referencia">
+                            <h:outputText value="#{objeto.valorReferecia}"/>
+                        </p:column>
+                        <p:column rendered="#{!tecnologiasSSController.columnHiddeMedicamento}"
+                                  styleClass="text-center"
+                                  style="font-size: 10px" headerText="Valor Referente Minimo">
+                            <h:outputText value="#{objeto.valorReferenteMenor}"/>
+                        </p:column>
+                        <p:column rendered="#{!tecnologiasSSController.columnHiddeMedicamento}"
+                                  styleClass="text-center"
+                                  style="font-size: 10px" headerText="Valor Referente Maximo">
+                            <h:outputText value="#{objeto.valorReferenteMayor}"/>
+                        </p:column>
+                        <p:column style="font-size: 10px" headerText="Diferencia"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.diferencia}"/>
+                        </p:column>
+                        <p:column style="font-size: 10px" headerText="Observacion"
+                                  styleClass="text-center">
+                            <h:outputText value="#{objeto.observacion}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            <p:commandLink
+                                    rendered="#{tecnologiasSSController.tablaReporteTarifa}"
+                                    actionListener="#{tecnologiasSSController.generarExcelTarifario()}"
+                                    immediate="true" ajax="false">
+                                <p:graphicImage library="img" name="export-excel.png" width="18"/>
+                                <p:fileDownload value="#{tecnologiasSSController.reporteComparacionFile}"/>
+                            </p:commandLink>
+                        </div>
+                    </div>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+</f:view>

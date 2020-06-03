@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <script type="text/javascript">
+        PrimeFaces.locales['es'] = {
+            closeText: 'Cerrar',
+            prevText: 'Anterior',
+            nextText: 'Siguiente',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+            dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+            weekHeader: 'Semana',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: '',
+            timeOnlyTitle: 'Sólo hora',
+            timeText: 'Tiempo',
+            hourText: 'Hora',
+            minuteText: 'Minuto',
+            secondText: 'Segundo',
+            currentText: 'Fecha actual',
+            ampm: false,
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            allDayText: 'Todo el día'
+        };
+    </script>
+    
+    <h:form id="invitacionNegociacionForm">
+        <p:outputPanel id="invitacionOfertarPanel">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="widget-header">
+                        <span class="widget-caption">
+                            <h:outputText value="#{gestionNegociacionController.prestadorSeleccionado.nombre}"/>  
+                            <h:outputText value=" - "/>
+                            <h:outputText value="#{gestionNegociacionController.prestadorSeleccionado.numeroDocumento}"/>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p:dataTable value="#{gestionNegociacionController.prestadorSeleccionado}">
+                        <p:column headerText="#{i18n.invitacion_neg_razon_social}">
+                            <h:outputText value="#{gestionNegociacionController.prestadorSeleccionado.nombre}"/>
+                        </p:column>
+                        <p:column headerText="#{i18n.invitacion_neg_correo}">
+                            <c:choose>
+                                 <c:when test="#{not empty gestionNegociacionController and not empty gestionNegociacionController.prestadorSeleccionado and not empty gestionNegociacionController.prestadorSeleccionado.correoElectronico}">
+                                    <h:outputText value="#{gestionNegociacionController.prestadorSeleccionado.correoElectronico}" />
+                                </c:when>
+                                <c:otherwise>
+                                    <p class="info" style="text-align:center;padding:0">
+                                        <h:outputText value="#{i18n.invitacion_neg_prestador_sin_correo}"/>
+                                    </p>
+                                    <p:inputText id="correoPrestador" 
+                                                 style="width:100%;border:1px solid #ccc" 
+                                                 placeholder="#{i18n.invitacion_neg_placeholder_correo}"
+                                                 required="true" requiredMessage="#{i18n.invitacion_neg_correo_required}" 
+                                                 value="#{gestionNegociacionController.invitacionNegociacion.correo}"
+                                                 validatorMessage="#{i18n.form_validar_correo_mensaje}"
+                                                 maxlength="50"
+                                                 >
+                                        <f:validateRegex pattern="#{i18n.form_validar_correo}"/>
+                                    </p:inputText>
+
+                                </c:otherwise>
+                            </c:choose>
+
+                        </p:column>
+                        <p:column headerText="#{i18n.invitacion_neg_persona_contacto}">
+                            <h:outputText value="#{gestionNegociacionController.prestadorSeleccionado.contactoNegociacion}" />
+                        </p:column>
+                        <p:column headerText="#{i18n.invitacion_neg_fecha_hora}" styleClass="text-center">
+                            <p:calendar id="fechaHoraCita" 
+                                        value="#{gestionNegociacionController.invitacionNegociacion.fechaHoraCita}" 
+                                        pattern="yyyy/MM/dd HH:mm"
+                                        showOn="button"
+                                        required="true" requiredMessage="#{i18n.invitacion_neg_fecha_hora_required}" 
+                                        lang="es"
+                                        readonlyInput="true"
+                                        autocomplete="false"
+                                        mindate="#{gestionNegociacionController.fechaActual}"
+                                        >
+                                <p:ajax event="dateSelect"
+                                        listener="#{gestionNegociacionController.seleccionarFecha}" 
+                                        update="invitacionNegociacionForm:labelFechaHoraCita"/>
+                            </p:calendar>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+            <br/>
+            <!--
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="widget-header">
+                        <span class="widget-caption"><h:outputText value="#{i18n.invitacion_neg_mensaje}"/></span>
+                    </div>
+                </div>
+            </div>
+            -->
+            <br/>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p:editor id="mensaje" widgetVar="editorWidget" style="border:1px solid #ccc; width:100%;"
+                              value="#{gestionNegociacionController.invitacionNegociacion.mensaje}"
+                              rendered="true" maxlength="5000"  height="120"  
+                              required="true" requiredMessage="#{i18n.invitacion_neg_mensaje_required}"  
+                            />
+                </div>      
+            </div>
+            <div class="row" style="margin-top:10px">
+                <div class="col-lg-3">
+                    <span style="font-weight: bold;color:black"><h:outputText value="#{i18n.invitacion_neg_fecha_hora}"/></span>
+                </div>
+                <div class="col-lg-9">
+                    <h:outputText id="labelFechaHoraCita" value="#{gestionNegociacionController.fechaHoraCitaSeleccionada}"  />
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+                <div class="col-lg-3">
+                    <span>Cordialmente, </span>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+                <div class="col-lg-3">
+                    <span><h:outputText value="#{gestionNegociacionController.user.primerNombre} #{gestionNegociacionController.user.primerApellido}"  /></span><br/>
+                    <span>Cargo Funcionario </span><br/>
+                    <span>Nombre EPS </span><br/>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-lg-12 text-right">
+                    <c:choose>
+                        <c:when test="#{not empty gestionNegociacionController.invitacionNegociacion.id}">
+                            <p:commandButton
+                                value="#{i18n.invitacion_neg_btn_actualizar}"
+                                styleClass="btn btn-sm btn-info" icon="fa fa-suitcase"
+                                actionListener="#{gestionNegociacionController.actualizarInvitacionNegociacion()}" 
+                                iconPos="left" />
+                        </c:when>
+                        <c:otherwise>
+                            <p:commandButton
+                                value="#{i18n.invitacion_neg_btn_enviar}"
+                                styleClass="btn btn-sm btn-info" icon="fa fa-suitcase"
+                                actionListener="#{gestionNegociacionController.crearInvitacionNegociacion()}" 
+                                iconPos="left" />
+                        </c:otherwise>
+                    </c:choose>                            
+                    <p:commandButton value="#{i18n.form_label_button_cancelar}"
+                                     styleClass="btn btn-sm btn-warning" icon="fa fa-file"
+                                     actionListener="#{gestionNegociacionController.cancelarInvitacionNegociacion()}" 
+                                     iconPos="left" 
+                                     process="@this"
+                                     />
+                </div>
+            </div>
+        </p:outputPanel>
+    </h:form>
+
+</f:view>

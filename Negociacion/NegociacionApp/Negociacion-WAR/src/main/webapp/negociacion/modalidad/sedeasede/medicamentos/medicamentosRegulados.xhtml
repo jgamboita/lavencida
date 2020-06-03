@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id = "medicamentosReguladosForm">
+
+		<p:dataTable id="medicamentosRegulados" var="mx"
+			value="#{negociacionMedicamentoSSController.medicamentosReguladosNegociacion}" rows="5"
+			dynamic="true" styleClass="paginated" paginator="true"
+			paginatorPosition="bottom" widgetVar="medicamentosReguladosW"
+			rowsPerPageTemplate="5,10,20" scrollable="true"
+			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+			emptyMessage="#{i18n.form_label_datatable_noregistros}">
+
+			<p:ajax event="page" update="@this" />
+			<p:ajax event="sort" update="@this" />
+			<p:ajax event="rowSelectCheckbox" update="@this" />
+			<p:ajax event="rowUnselectCheckbox" update="@this" />
+			<p:ajax event="toggleSelect" update="@this" />
+			<p:ajax event="filter" update="@this" />
+
+			<p:column headerText="#{i18n.tb_med_regulados_cum}"
+				filterBy="#{mx.medicamentoDto.cums}"
+				filterMatchMode="contains" filterStyleClass="anchoInput">
+				<h:outputText value="#{mx.medicamentoDto.cums}" />
+			</p:column>
+
+			<p:column headerText="#{i18n.tb_med_regulados_descripcion}">
+				<h:outputText value="#{mx.medicamentoDto.descripcion}" />
+			</p:column>
+
+			<p:column headerText="#{i18n.tb_med_regulados_valor_maximo}">
+				<h:outputText value="#{mx.medicamentoDto.valorReferenteMaximo}">
+					<f:convertNumber currencySymbol="$" maxFractionDigits="0" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="#{i18n.tb_med_regulados_valor_minimo}">
+				<h:outputText value="#{mx.medicamentoDto.valorReferenteMinimo}">
+					<f:convertNumber currencySymbol="$" maxFractionDigits="0" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="#{i18n.tb_med_regulados_valor_importado}">
+				<h:outputText value="#{mx.valorImportado}">
+					<f:convertNumber currencySymbol="$" maxFractionDigits="0" />
+				</h:outputText>
+			</p:column>
+
+			<p:column headerText="#{i18n.tb_med_regulados_valor_negociado}">
+				<h:outputText value="#{mx.valorNegociado}">
+	                <f:convertNumber currencySymbol="$" maxFractionDigits="0" />
+				</h:outputText>
+			</p:column>
+		</p:dataTable>
+	</h:form>
+</f:view>

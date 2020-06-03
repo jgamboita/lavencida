@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:composite="http://java.sun.com/jsf/composite">
+
+	<composite:interface>
+	
+		<composite:attribute name="methodListenerUploadFile"
+			method-signature="void methodListenerUploadFile(org.primefaces.event.FileUploadEvent)" />
+		<composite:attribute name="methodListenerRemoveUploadFile"
+			method-signature="void methodListenerUploadFile()" />
+		<composite:attribute name="targetUploadFile" />
+		<composite:attribute name="filesUpload" />
+		<composite:attribute name="formToUpdate" />
+		<composite:attribute name="targetFile" />
+	
+	</composite:interface>
+
+	<div class="ui-grid-row">
+		<div class="ui-grid-col-5">
+			<p:fileUpload multiple="true" 
+				allowTypes="/(\.|\/)(gif|jpe?g|png|docx?|pdf)$/" mode="advanced"
+				dragDropSupport="false" label="Agregar" uploadLabel="Subir"
+				cancelLabel="Cancelar" sizeLimit="5242880"
+				invalidSizeMessage="El archivo no debe superar 5MB."
+				invalidFileMessage="El formato de archivo no es soportado."
+				styleClass="ui-grid-col-11" update="@form"
+				fileUploadListener="#{cc.attrs.methodListenerUploadFile}" />
+		</div>
+	
+		<div class="ui-grid-col-7">
+			<p:panel header="Documentos subidos" id="panelDocumentoCargados">
+				<p:dataTable var="adjunto" value="#{cc.attrs.filesUpload}"
+					emptyMessage="Sin documentos adjuntos.">
+					<p:column>
+						<div class="ui-grid-col-11">
+							<h:commandLink
+								actionListener="#{archivosAdjuntosController.prepararDescarga(adjunto)}"
+								value="#{adjunto.nombreOriginal}" immediate="true">
+		
+								<p:fileDownload value="#{archivosAdjuntosController.descarga}" />
+							</h:commandLink>
+						</div>
+	
+						<div class="ui-grid-col-1" style="padding: 0px 4px;">
+							<p:commandButton icon="ui-icon-close"
+								action="#{cc.attrs.methodListenerRemoveUploadFile}"
+								update="#{cc.attrs.formToUpdate}" immediate="true">
+	
+								<f:setPropertyActionListener value="#{adjunto}"
+									target="#{cc.attrs.targetUploadFile}" />
+							</p:commandButton>
+						</div>
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</div>
+	</div>
+
+</html>

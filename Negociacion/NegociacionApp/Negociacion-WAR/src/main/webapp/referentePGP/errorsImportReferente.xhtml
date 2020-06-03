@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+
+	<h:form id="formErrorsImportReferente">
+		<p:outputPanel id="panelErrorsImportReferente"  rendered="#{not empty gestionReferentePgpController.validator.getListErrors()}">
+		 <h:outputLabel  value="#{i18n.form_label_importar_errores_tecnologia}" />  
+			<p:dataTable id="tableErrorsImportReferente"
+				value="#{gestionReferentePgpController.validator.getListErrors()}"
+				var="error" paginator="true" paginatorPosition="bottom"
+				style="font-size:10px;"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink}  {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,20" emptyMessage="Sin Registros...">
+				<p:column headerText="Fila" style = "width: 10%">
+					<h:outputText value="#{error.fila}" />
+				</p:column>
+				<p:column headerText="Columna" style= "width: 20%">
+					<h:outputText value="#{error.columna}" />
+				</p:column>
+				<p:column headerText="Código Tecnología" style="width: 20%" styleClass="text-center" >
+					<h:outputText value="#{error.codigoTecnologia}" />
+				</p:column>
+				<p:column headerText="Valor Error" style="width: 20%" styleClass="text-center">
+					<h:outputText value="#{error.valor}" />
+				</p:column>
+				<p:column headerText="Error" style="width: 30%">
+					<h:outputText value="#{error.error}" />
+				</p:column>
+			</p:dataTable>
+		</p:outputPanel>
+
+	</h:form>
+
+</f:view>

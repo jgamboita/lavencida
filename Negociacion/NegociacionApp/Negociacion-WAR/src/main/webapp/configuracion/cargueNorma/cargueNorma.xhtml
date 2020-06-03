@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cnx="http://conexia.com/utils">
+
+	<ui:composition template="/template/inner.xhtml">
+       	<ui:define name="title">
+        	<h:outputLabel value="#{i18n.cargue_norma_title}" />
+        </ui:define>
+        <ui:define name="content">
+			<h:form id="datosNorma">
+				<p:panel id="panelDatosNorma">
+					<div class="datosNorma">
+
+						<!-- Inicio 1ra Fila -->
+			            <div class="row">
+			            	<div class="col-lg-1">
+								<p:outputLabel for="anio"
+									value="#{i18n.cargue_norma_lbl_anio}" />
+								<p:inputText id="anio"
+									required="true" requiredMessage="#{i18n.form_label_required}"
+									maxlength="4" styleClass="form-control input-sm">
+									<f:validateRegex
+										pattern="#{i18n.form_label_validar_caracteres}" />
+								</p:inputText>
+								<p:message for="anio" />
+							</div>
+							<div class="col-lg-offset-2  col-lg-2">
+								<p:outputLabel for="resolucion"
+									value="#{i18n.cargue_norma_lbl_resolucion}" />
+								<p:inputText id="resolucion"
+									required="true" requiredMessage="#{i18n.form_label_required}"
+									maxlength="50" styleClass="form-control input-sm">
+								</p:inputText>
+								<p:message for="resolucion" />
+							</div>
+			                
+							<div class="col-lg-offset-1 col-lg-2">
+			                    <p:outputLabel for="regimen" value="#{i18n.cargue_norma_lbl_regimen}" />
+								<p:selectOneMenu id="regimen"
+									effect="fold"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									styleClass="anchoInput">
+								<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+			                                    </p:selectOneMenu>
+			                                    <p:message for="regimen" />
+							</div>
+
+							<div class="col-lg-offset-1 col-lg-2">
+			                    <p:outputLabel for="zona" value="#{i18n.cargue_norma_lbl_zona}" /> 
+								
+								<div class="anchoInput">
+								<p:selectOneMenu id="zona"
+									effect="fold"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									>
+								<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+								</p:selectOneMenu>
+								<p:commandButton id="btnAddZona"
+									alt="#{i18n.cargue_norma_lbl_zona}"
+									title="#{i18n.cargue_norma_lbl_zona}"
+									icon="fa fa-plus"
+									process="@this" />
+			                    <p:message for="zona" />
+			                    </div>
+							</div>							
+						</div>
+						<!-- Fin Primera Fila -->
+			        	<!-- Segunda Fila -->
+						<div class="row">
+
+							<div class="col-lg-2">
+								<p:outputLabel for="pyp"
+									value="#{i18n.cargue_norma_lbl_pyp_anual}" />
+								<p:inputText id="pyp"
+									required="true" requiredMessage="#{i18n.form_label_required}"
+									maxlength="20" styleClass="form-control input-sm">
+									<f:validateRegex
+										pattern="#{i18n.form_label_validar_caracteres}" />
+								</p:inputText>
+								<p:message for="pyp" />
+							</div>
+							
+							<div class="col-lg-offset-1 col-lg-2">
+								<p:outputLabel for="prima"
+									value="#{i18n.cargue_norma_lbl_prima} " />
+								<p:selectBooleanCheckbox id="prima" styleClass="anchoInput"/>
+								<p:message for="prima" />
+							</div>
+							<div class="col-lg-offset-1  col-lg-2">
+								<p:outputLabel for="poblacionEspecial"
+									value="#{i18n.cargue_norma_lbl_pob_especial} " />
+								<p:selectBooleanCheckbox id="poblacionEspecial" styleClass="anchoInput"/>
+								<p:message for="poblacionEspecial" />
+							</div>
+							<div class="col-lg-offset-1  col-lg-2">
+								<p:outputLabel 
+									value="#{i18n.cargue_norma_lbl_sel_municipios} " />
+								<p:commandButton id="btnSelMunicipios" styleClass="anchoInput"
+									alt="#{i18n.cargue_norma_lbl_sel_municipios}"
+									title="#{i18n.cargue_norma_lbl_sel_municipios}"
+									icon="fa fa-globe"
+									process="@this" />
+							</div>
+							
+						</div>
+			        	<!--Fin Segunda Fila -->
+					</div>
+				</p:panel>
+				<p:panel id="panelTblDatosNorma">
+					<div class="datosTablaNorma">
+						<p:dataTable id="tblCargueNorma" var="cargueNorma"
+							value="#{cargueNormaController.lsGrupoNorma}"
+							widgetVar="negociacionesTable" style="margin: 0 auto;"
+							emptyMessage="#{i18n.form_label_datatable_noregistros}" rows="15"
+							paginator="true" paginatorPosition="bottom"
+							paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15">
+
+							<p:column headerText="#{i18n.cargue_norma_col_grupos}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.nombreGrupo}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_genero}"
+								styleClass="text-center col-lg-1">
+								<p:selectOneMenu id="zona"
+									effect="fold"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									styleClass="anchoInput">
+								<f:selectItem itemLabel="#{i18n.form_label_combo_seleccione}" itemValue="" noSelectionOption="true" />
+								<f:selectItem itemLabel="Masculino" itemValue="" noSelectionOption="true"/>
+								<f:selectItem itemLabel="Femenino" itemValue="" noSelectionOption="true"/>
+								<f:selectItem itemLabel="Ambos" itemValue="" noSelectionOption="true"/>
+			                    </p:selectOneMenu>
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_anio}"
+								styleClass="text-center col-lg-1">
+								<p:inputText id="valorAnio"
+									value="#{{cargueNorma.valorAño}}"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									maxlength="12" styleClass="form-control input-sm"
+									validatorMessage="#{i18n.form_label_validar_caracteres_msg}">
+									<!-- Validación de caracteres especiales -->
+									<f:validateRegex
+										pattern="#{i18n.form_label_validar_caracteres}" />
+								</p:inputText>
+								<p:message for="valorAnio" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_mensual}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorMensual}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_porc_prima}"
+								styleClass="text-center col-lg-1">
+								<p:inputText id="porcPrima"
+									value="#{{cargueNorma.porcPrima}}"
+									required="false" requiredMessage="#{i18n.form_label_required}"
+									maxlength="3" styleClass="form-control input-sm"
+									validatorMessage="#{i18n.form_label_validar_caracteres_msg}">
+									<!-- Validación de caracteres especiales -->
+									<f:validateRegex
+										pattern="#{i18n.form_label_validar_caracteres}" />
+								</p:inputText>
+								<p:message for="porcPrima" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_prima}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorPrima}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_valor_prima}"
+								styleClass="text-center col-lg-1">
+								<h:outputText value="#{cargueNorma.valorPrima}" />
+							</p:column>
+
+							<p:column headerText="#{i18n.cargue_norma_col_estructura_costro}"
+								styleClass="text-center col-lg-1">
+								
+							</p:column>
+
+						</p:dataTable>
+
+						<h:panelGroup id="botonera">
+                            <p:commandButton id="btnGuardar"
+							value="#{i18n.form_label_button_guardar}"
+							icon="fa fa-floppy-o" styleClass="btn btn-sm btn-info"/>
+                    	</h:panelGroup>
+					</div>
+				</p:panel>
+			</h:form>
+		</ui:define>		
+	</ui:composition>
+</f:view>
