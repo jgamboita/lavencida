@@ -1,28 +1,54 @@
 pipeline {
-   agent any
-
-   
-   stages {
-      stage('Build') {
-         steps {
-            // Get some code from a GitHub repository
-            git 'https://github.com/jglick/simple-maven-project-with-tests.git'
-
-            // Run Maven on a Unix agent.
-            sh "mvn -Dmaven.test.failure.ignore=true clean package"
-
-            // To run Maven on a Windows agent, use
-            // bat "mvn -Dmaven.test.failure.ignore=true clean package"
-         }
-
-         post {
-            // If Maven was able to run the tests, even if some of the test
-            // failed, record the test results and archive the jar file.
-            success {
-               junit '**/target/surefire-reports/TEST-*.xml'
-               archiveArtifacts 'target/*.jar'
+    agent { label 'jenkins-did-slave' }
+    stages {
+        stage('Prepare') {
+            steps {
+                sh 'chmod +x ./mvnw'
             }
-         }
-      }
-   }
+        }
+        stage('Compile') {
+            steps {
+                withMaven(
+                    mavenSettingsConfig: 'MavenJenkinsSettings') {
+                    sh './mvnw clean package -DskipTests'
+                 }
+            }
+        }
+        stage('Test') {
+            steps {
+                withMaven(
+                    mavenSettingsConfig: 'MavenJenkinsSettings') {
+                    sh './mvnw verify'
+                }
+            }
+        }
+        stage('SonarQube analysis') {
+            when {
+                anyOf {
+                    branch 'develop'; branch 'master'; branch 'feature/*'
+                }
+            }
+            steps {
+                withSonarQubeEnv('conexia-sonar') {
+                      sh './mvnw sonar:sonar'
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                anyOf {
+                    branch 'develop'
+                }
+            }
+            steps {
+               echo "SIN DESPLIEGUE"
+            }
+        }
+    }
+    post {
+        always{
+          echo 'Run some clean steps and test reports'
+          junit "**/**/**/target/surefire-reports/*.xml"
+        }
+    }
 }
