@@ -40,17 +40,26 @@ pipeline {
                     branch 'develop'
                 }
             }
-            steps {
+             steps {
+                withMaven(
+                    mavenSettingsConfig: 'MavenJenkinsSettings') {
+                        withCredentials([usernamePassword(credentialsId: 'emssa-dev-usrpass', usernameVariable: 'USRNM', passwordVariable: 'USRPASS')]){
+                        sh './mvnw clean install -Pdeploy -Dusername.deploy=${USRNM} -Dpassword.deploy=${USRPASS} \
+                        -Dhostname.deploy=192.168.2.31 -Dport.deploy=9990  -Dcas.server=https://desarrollo-emssanar.conexia.com.co:8443/cas \
+                        -Dcas.server.verifier=https://desarrollo-emssanar.conexia.com.co:8443/cas -Dhost.verifier=192.168.2.31 \
+                        -Dprincipal.server=https://desarrollo-emssanar.conexia.com.co:8443 -Dserver-web-service-negociacion=https://desarrollo-emssanar.conexia.com.co:8443'}
+                   
 
                echo "SIN DESPLIEGUE"
 
+             }
             }
         }
     }
     post {
         always{
           echo 'Run some clean steps and test reports'
-          
+          junit "**/**/**/target/surefire-reports/*.xml"
         }
     }
 }
