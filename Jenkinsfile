@@ -59,7 +59,7 @@ pipeline {
     post {
         always{
           echo 'Run some clean steps and test reports'
-          junit "**/**/**/target/surefire-reports/*.xml"
+          
         }
     }
 }
